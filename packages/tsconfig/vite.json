@@ -1,0 +1,15 @@
+{
+  "extends": "./react-library.json",
+  "Display": "Vite",
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ES2020"],
+    "types": ["vite/client"],
+    "allowJs": false,
+    "esModuleInterop": false,
+    "module": "ESNext",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  }
+}

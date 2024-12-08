@@ -1,0 +1,38 @@
+# docker-compose.yml
+
+version: "3"
+services:
+  nest_postgres_auto-send-message_dev:
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - TZ=Asia/Shanghai
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data/pgdata'
+    ports:
+      - "5432:5432"
+
+  redis_auto-send-message_dev:
+    restart: always
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  nest_api_dev:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file: ./apps/api/.env
+    restart: always
+    environment:
+    - DATABASE_URL=postgres://postgres:password@nest_postgres_auto-send-message_dev:5432/auto-send-message-api
+    - REDIS_HOST=redis_auto-send-message_dev
+    - REDIS_PORT=6379
+    ports:
+      - 3000:3000
+
+volumes:
+  postgres_data:

@@ -1,0 +1,18 @@
+{
+  "extends": "@auto-send-message/tsconfig/base.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "module": "Node16",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "outDir": "../../dist",
+    "baseUrl": "./",
+    "strictPropertyInitialization": false,
+    "target": "es6",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "moduleResolution": "node16",
+    "resolveJsonModule": true,
+  },
+  "include": ["src", "test", "prisma", "admin"],
+}

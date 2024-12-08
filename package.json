@@ -1,0 +1,50 @@
+{
+  "name": "auto-send-message-fullstack",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "build:api": "turbo run build --filter=@auto-send-message/api",
+    "build:dev": "turbo run build:dev",
+    "build:staging": "turbo run build:staging",
+    "start": "turbo run start --parallel",
+    "start:dev": "turbo run start:dev --parallel",
+    "dev": "turbo run dev --parallel",
+    "dev:staging": "turbo run dev:staging --parallel",
+    "dev:prod": "turbo run dev:prod --parallel",
+    "lint:fix": "turbo run lint --continue=true -- --fix",
+    "lint": "turbo run lint -- --max-warnings=0",
+    "test": "turbo run test",
+    "clean": "yarn clean:dist & yarn clean:node_modules",
+    "clean:node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "clean:dist": "rm -rf ./dist",
+    "prepare": "husky install",
+    "prisma:push": "turbo prisma:push --filter @auto-send-message/api",
+    "prisma:seed": "turbo prisma:seed --filter @auto-send-message/api"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.3",
+    "@commitlint/config-conventional": "^17.0.3",
+    "eslint-config-auto-send-message": "*",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "turbo": "^1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "@nestjs/swagger": "^6.3.0",
+    "swagger-ui-express": "^4.6.3"
+  },
+  "packageManager": "yarn@1.22.17",
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint \"**/*.{ts,tsx}\" --fix"
+    ]
+  }
+}
