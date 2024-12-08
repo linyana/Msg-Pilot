@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const roundsOfHashing = 10;
 
 async function main() {
-  const passwordTest = await bcrypt.hash('Silk123456', roundsOfHashing);
+  const passwordTest = await bcrypt.hash('123456', roundsOfHashing);
 
   const merchant = await prisma.merchant.upsert({
     where: {

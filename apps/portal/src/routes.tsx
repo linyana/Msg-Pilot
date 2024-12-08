@@ -6,11 +6,13 @@ import {
 } from 'react-router-dom'
 import {
   DashboardOutlined,
+  RobotOutlined,
 } from '@ant-design/icons'
 import {
   Dashboard,
   Login,
   Registration,
+  Task,
 } from './pages'
 
 export interface RouteItem {
@@ -46,6 +48,13 @@ export const routes: Array<RouteItem> = [
     text: 'Dashboard',
     icon: <DashboardOutlined />,
     path: '/dashboard',
+  },
+  {
+    id: 'task',
+    element: <Task />,
+    text: 'Task',
+    icon: <RobotOutlined />,
+    path: '/task',
   },
 ]
 

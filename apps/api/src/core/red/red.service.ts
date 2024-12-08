@@ -8,7 +8,7 @@ export class RedService {
     // this.init();
   }
 
-  async init() {
+  async createTask(body: any) {
     try {
       const browser = await puppeteer.launch({
         headless: false,
@@ -52,7 +52,7 @@ export class RedService {
       }
 
       await searchInput?.focus();
-      await searchInput.type('程序员');
+      await searchInput.type(body.filter);
 
       const searchButton = await page.waitForSelector('#global > div.header-container > header > div.input-box > div > div.search-icon');
 
@@ -79,7 +79,7 @@ export class RedService {
 
       commentButton.click();
       await sleep(2000);
-      await page.keyboard.type('文章写的不错');
+      await page.keyboard.type(body.content);
 
       const submitButton = await page.waitForSelector('#noteContainer > div.interaction-container > div.interactions.engage-bar > div > div > div.bottom > div > div.right-btn-area > button.btn.submit');
 
@@ -88,6 +88,7 @@ export class RedService {
       }
 
       submitButton.click();
+      await browser.close();
     } catch (error) {
       console.log(error);
     }
