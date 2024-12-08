@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateUserLogDto } from './dto/update-user-log.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IUserLogType } from './user-log.types';
 import { getUserLogSearchParams } from './utils';
@@ -43,17 +42,5 @@ export class UserLogService {
         },
       },
     };
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} userLog`;
-  }
-
-  update(id: number, updateUserLogDto: UpdateUserLogDto) {
-    return `This action updates a #${id} userLog`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} userLog`;
   }
 }

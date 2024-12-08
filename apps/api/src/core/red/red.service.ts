@@ -1,6 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateRedDto } from './dto/create-red.dto';
-import { UpdateRedDto } from './dto/update-red.dto';
 import puppeteer from 'puppeteer';
 import { sleep } from 'src/utils';
 
@@ -93,25 +91,5 @@ export class RedService {
     } catch (error) {
       console.log(error);
     }
-  }
-
-  create(createRedDto: CreateRedDto) {
-    return 'This action adds a new red';
-  }
-
-  findAll() {
-    return `This action returns all red`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} red`;
-  }
-
-  update(id: number, updateRedDto: UpdateRedDto) {
-    return `This action updates a #${id} red`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} red`;
   }
 }
