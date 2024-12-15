@@ -12,7 +12,7 @@ export class socketGateway implements OnGatewayInit {
   constructor(private readonly prisma: PrismaService) {}
 
   async afterInit() {
-    const merchants = await this.prisma.merchant.findMany({
+    const merchants = await this.prisma.tenants.findMany({
       distinct: ['sub_domain'],
     });
     const subDomain = merchants?.filter((item) => item.sub_domain)?.map((item) => item.sub_domain || '');

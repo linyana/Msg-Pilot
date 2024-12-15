@@ -8,7 +8,7 @@ const roundsOfHashing = 10;
 async function main() {
   const passwordTest = await bcrypt.hash('123456', roundsOfHashing);
 
-  const merchant = await prisma.merchant.upsert({
+  const merchant = await prisma.tenants.upsert({
     where: {
       email: 'test@test.com',
     },
@@ -20,7 +20,7 @@ async function main() {
     },
   });
 
-  const user = await prisma.user.upsert({
+  const user = await prisma.users.upsert({
     where: { email: 'test@test.com' },
     update: {
       password: passwordTest,
