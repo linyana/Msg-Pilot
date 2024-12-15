@@ -10,7 +10,7 @@ export class UserLogService {
 
   async createUserLog(data: IUserLogType) {
     try {
-      await this.prisma.userLog.create({
+      await this.prisma.user_logs.create({
         data,
       });
     } catch (error) {
@@ -27,8 +27,8 @@ export class UserLogService {
 
     const searchParams: any = getUserLogSearchParams(userLogDto, merchant_id);
 
-    const userLogs = await this.prisma.userLog.findMany(take ? { ...searchParams, take, skip } : { ...searchParams, skip });
-    const allUserLogs = await this.prisma.userLog.count({
+    const userLogs = await this.prisma.user_logs.findMany(take ? { ...searchParams, take, skip } : { ...searchParams, skip });
+    const allUserLogs = await this.prisma.user_logs.count({
       where: searchParams.where,
     });
 

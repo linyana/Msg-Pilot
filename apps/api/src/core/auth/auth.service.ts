@@ -11,7 +11,7 @@ export class AuthService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
   async login(email: string, password: string): Promise<AuthEntity> {
-    const user = await this.prisma.user.findFirst({ where: { email: email.toLowerCase() } });
+    const user = await this.prisma.users.findFirst({ where: { email: email.toLowerCase() } });
 
     if (!user) {
       throw new NotFoundException(`No user found for email: ${email}`);
@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   async shopSession(userId: any, shop_id: any) {
-    const user = await this.prisma.user.findFirst({ where: { id: userId } });
+    const user = await this.prisma.users.findFirst({ where: { id: userId } });
     const shop_access = this.jwtService.sign({ userId: userId, shop_id: shop_id }, { secret: process.env.JWT_SECRET_KEY });
 
     const shopUser = {

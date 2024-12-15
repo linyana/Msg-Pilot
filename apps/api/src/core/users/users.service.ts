@@ -9,7 +9,7 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   findOne(id: number) {
-    return this.prisma.merchant.findUnique({
+    return this.prisma.tenants.findUnique({
       where: { id },
     });
   }
@@ -19,7 +19,7 @@ export class UsersService {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, roundsOfHashing);
     }
 
-    return this.prisma.merchant.update({
+    return this.prisma.tenants.update({
       where: { id },
       data: updateUserDto,
     });

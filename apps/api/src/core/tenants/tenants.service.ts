@@ -8,7 +8,7 @@ export class TenantsService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
   findOne(id: number) {
-    return this.prisma.user.findUnique({
+    return this.prisma.users.findUnique({
       where: {
         id: id,
       },
