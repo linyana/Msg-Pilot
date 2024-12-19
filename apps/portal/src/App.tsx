@@ -1,7 +1,4 @@
 import {
-  ConfigProvider,
-} from '@auto-send-message/hooks'
-import {
   Route,
   Routes,
   useNavigate,
@@ -12,11 +9,6 @@ import {
   createContext,
   useMemo,
 } from 'react'
-import {
-  message,
-  ConfigProvider as AntdConfigProvider,
-} from 'antd'
-import enUS from 'antd/locale/en_US'
 import {
   useDispatch,
 } from 'react-redux'
@@ -46,57 +38,31 @@ export default () => {
   const {
     token,
   } = useAppSelector((state) => state.global)
-  const dispatch = useDispatch()
-  const [messageApi, contextHolder] = message.useMessage()
+
   const {
     pathname,
   } = useLocation()
   const navigate = useNavigate()
 
   const routeKey: string = pathname.split('/')[1]
-  const memoPageType = useMemo(() => (pageTypes.noFrame.includes(routeKey) ? 'noFrame' : 'frame'), [pageTypes, routeKey])
-
-  const appContextMemoValue = useMemo(() => ({
-    messageApi,
-  }), [
-    messageApi,
-  ])
+  const needFrame = useMemo(() => (pageTypes.noFrame.includes(routeKey)), [pageTypes, routeKey])
 
   return (
     <I18nextProvider i18n={i18n}>
-      <AppContext.Provider value={appContextMemoValue}>
-        {contextHolder}
-        <ConfigProvider config={{
-          token,
-          apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
-          httpStrategy: {
-            401: () => {
-              // delete token
-              navigate('/login')
-            },
-          },
-        }}
-        >
-          <AntdConfigProvider
-            locale={enUS}
-          >
-            <Layout
-              routes={routes}
-              pageType={memoPageType}
-            >
-              <Routes>
-                {routes.map((route) => (
-                  <Route
-                    key={route.id}
-                    path={route.path}
-                    element={token || route.isPublic ? route.element : <Navigate to="/login" />}
-                  />
-                ))}
-              </Routes>
-            </Layout>
-          </AntdConfigProvider>
-        </ConfigProvider>
-      </AppContext.Provider>
+      <Layout
+        routes={routes}
+        needFrame={needFrame}
+      >
+        <Routes>
+          {routes.map((route) => (
+            <Route
+              key={route.id}
+              path={route.path}
+              element={token || route.isPublic ? route.element : <Navigate to="/login" />}
+            />
+          ))}
+        </Routes>
+      </Layout>
     </I18nextProvider>
   )
 }

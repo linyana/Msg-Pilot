@@ -4,10 +4,9 @@ import {
 import {
   Navigate,
 } from 'react-router-dom'
-import {
-  DashboardOutlined,
-  RobotOutlined,
-} from '@ant-design/icons'
+import DashboardIcon from '@mui/icons-material/Dashboard'
+import AssignmentIcon from '@mui/icons-material/Assignment'
+import SettingsIcon from '@mui/icons-material/Settings'
 import {
   Dashboard,
   Login,
@@ -16,9 +15,10 @@ import {
 } from './pages'
 
 export interface RouteItem {
-  id: string;
-  element: ReactNode;
-  path: string;
+  id?: string;
+  element?: ReactNode;
+  path?: string;
+  kind?: any;
   text?: string;
   isPublic?: boolean;
   icon?: ReactNode;
@@ -29,6 +29,7 @@ export const routes: Array<RouteItem> = [
     id: 'not-found',
     path: '*',
     element: <Navigate to="/login" />,
+    isPublic: true,
   },
   {
     id: 'login',
@@ -46,15 +47,27 @@ export const routes: Array<RouteItem> = [
     id: 'dashboard',
     element: <Dashboard />,
     text: 'Dashboard',
-    icon: <DashboardOutlined />,
     path: '/dashboard',
+    icon: <DashboardIcon />,
   },
   {
     id: 'task',
     element: <Task />,
     text: 'Task',
-    icon: <RobotOutlined />,
     path: '/task',
+    icon: <AssignmentIcon />,
+  },
+  {
+    id: 'divider',
+    kind: 'divider',
+  },
+  {
+    kind: 'header',
+    text: 'Setting',
+  },
+  {
+    text: 'Setting',
+    icon: <SettingsIcon />,
   },
 ]
 
