@@ -7,6 +7,14 @@ import {
   useNavigate,
 } from 'react-router-dom'
 import {
+  Button,
+} from '@mui/material'
+import {
+  AuthProvider,
+  AuthResponse,
+  SignInPage,
+} from '@toolpad/core'
+import {
   updateToken,
   updateUserEmail,
   updateUserId,
@@ -26,6 +34,10 @@ import {
 import {
   AppContext,
 } from '@/App'
+
+const providers = [{
+  id: 'credentials', name: 'Email and password',
+}]
 
 export const Login = () => {
   const navigate = useNavigate()
@@ -80,9 +92,29 @@ export const Login = () => {
       messageApi.error(error)
     }
   }, [error])
+
+  const signIn = (
+    _provider: AuthProvider,
+    formData?: FormData,
+  ) => {
+    const submitData = {
+      email: formData?.get('email'),
+      password: formData?.get('password'),
+    }
+    window.console.log(submitData)
+  }
+
   return (
     <>
-      1
+      <SignInPage
+        signIn={signIn}
+        providers={providers}
+        slotProps={{
+          emailField: {
+            autoFocus: false,
+          },
+        }}
+      />
     </>
   )
 }

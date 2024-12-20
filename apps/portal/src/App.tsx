@@ -16,6 +16,9 @@ import {
   I18nextProvider,
 } from 'react-i18next'
 import {
+  ConfigProvider,
+} from '@msg-pilot/hooks'
+import {
   pageTypes,
   routes,
 } from './routes'
@@ -26,6 +29,9 @@ import {
   Layout,
 } from './components'
 import i18n from './lang'
+import {
+  MUIThemeProvider,
+} from './provider'
 
 interface IAppContext {
   messageApi: any
@@ -45,24 +51,38 @@ export default () => {
   const navigate = useNavigate()
 
   const routeKey: string = pathname.split('/')[1]
-  const needFrame = useMemo(() => (pageTypes.noFrame.includes(routeKey)), [pageTypes, routeKey])
+  const needFrame = useMemo(() => !(pageTypes.noFrame.includes(routeKey)), [pageTypes, routeKey])
+
+  const config = useMemo(() => ({
+    token,
+    apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
+    httpStrategy: {
+      401: () => {
+        navigate('/login')
+      },
+    },
+  }), [token])
 
   return (
     <I18nextProvider i18n={i18n}>
-      <Layout
-        routes={routes}
-        needFrame={needFrame}
-      >
-        <Routes>
-          {routes.map((route) => (
-            <Route
-              key={route.id}
-              path={route.path}
-              element={token || route.isPublic ? route.element : <Navigate to="/login" />}
-            />
-          ))}
-        </Routes>
-      </Layout>
+      <ConfigProvider config={config}>
+        <MUIThemeProvider>
+          <Layout
+            routes={routes}
+            needFrame={needFrame}
+          >
+            <Routes>
+              {routes.map((route) => (
+                <Route
+                  key={route.id}
+                  path={route.path}
+                  element={token || route.isPublic ? route.element : <Navigate to="/login" />}
+                />
+              ))}
+            </Routes>
+          </Layout>
+        </MUIThemeProvider>
+      </ConfigProvider>
     </I18nextProvider>
   )
 }

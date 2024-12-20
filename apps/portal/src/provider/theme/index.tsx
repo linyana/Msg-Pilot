@@ -21,8 +21,13 @@ export const MUIThemeProvider = ({
   children,
 }: IPropsType) => {
   const theme: Theme = createTheme({
-    status: {
-      danger: '',
+    palette: {
+      primary: {
+        light: '#95d85a',
+        main: '#75C82B',
+        dark: '#69ad2e',
+        contrastText: '#fff',
+      },
     },
   })
 

@@ -1,8 +1,5 @@
 import * as React from 'react'
 import {
-  extendTheme,
-} from '@mui/material/styles'
-import {
   AppProvider,
   Navigation,
   Router,
@@ -16,27 +13,15 @@ import {
 import {
   Stack,
   Typography,
+  useTheme,
 } from '@mui/material'
 import {
   RouteItem,
 } from '@/routes'
 import logo from '@/accsets/message.svg'
-
-const theme: any = extendTheme({
-  colorSchemes: {
-    light: true, dark: true,
-  },
-  colorSchemeSelector: 'class',
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
-})
+import {
+  useAppSelector,
+} from '@/store'
 
 const useDemoRouter = (initialPath: string): Router => {
   const [pathname, setPathname] = React.useState(initialPath)
@@ -85,7 +70,11 @@ export const Layout = ({
   routes,
   needFrame,
 }: IPropsType) => {
-  const router = useDemoRouter('/dashboard')
+  const {
+    userName,
+  } = useAppSelector((state) => state.global)
+  const theme = useTheme()
+
   const navigation: Navigation = React.useMemo(() => routes.filter((route) => !route.isPublic || route.kind || route.text).map((route) => ({
     kind: route.kind,
     segment: route.text,
@@ -96,8 +85,10 @@ export const Layout = ({
   return (
     <AppProvider
       navigation={navigation}
-      router={router}
       theme={theme}
+      session={{
+        user: userName,
+      }}
     >
       {
         needFrame
