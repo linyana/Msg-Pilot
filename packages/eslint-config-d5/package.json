@@ -1,5 +1,5 @@
 {
-  "name": "eslint-config-auto-send-message",
+  "name": "eslint-config-msg-pilot",
   "version": "0.0.0",
   "main": "index.js",
   "publishConfig": {

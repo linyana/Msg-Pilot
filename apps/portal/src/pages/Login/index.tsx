@@ -53,9 +53,9 @@ export const Login = () => {
   }
 
   useEffect(() => {
-    window.localStorage.removeItem('auto-send-message-jwt-token')
-    window.localStorage.removeItem('auto-send-message-jwt-userEmail')
-    window.localStorage.removeItem('auto-send-message-jwt-userName')
+    window.localStorage.removeItem('msg-pilot-jwt-token')
+    window.localStorage.removeItem('msg-pilot-jwt-userEmail')
+    window.localStorage.removeItem('msg-pilot-jwt-userName')
     dispatch(updateUserName(''))
     dispatch(updateToken(''))
     dispatch(updateUserEmail(''))

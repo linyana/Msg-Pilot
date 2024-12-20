@@ -3,7 +3,7 @@ import {
   useEffect,
 } from 'react'
 
-type KeyRule = `auto-send-message-${string}`
+type KeyRule = `msg-pilot-${string}`
 
 const parseJSON = <T, >(value: string | null): T | undefined => {
   try {
@@ -21,8 +21,8 @@ export const useStorage = (
   defaultValue: any,
   storageType: 'localStorage' | 'sessionStorage',
 ) => {
-  if (!key.startsWith('auto-send-message-')) {
-    throw new Error('storage key should start with "auto-send-message-"')
+  if (!key.startsWith('msg-pilot-')) {
+    throw new Error('storage key should start with "msg-pilot-"')
   }
 
   const [value, setValue] = useState(defaultValue)

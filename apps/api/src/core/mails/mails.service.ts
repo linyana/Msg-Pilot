@@ -7,7 +7,7 @@ export class MailService {
   public async sendExportSubmissionMail(mail_address: string, file_url: string | false) {
     return this.mailerService.sendMail({
       to: mail_address,
-      from: `Pauto-send-message Team ${process.env.FROM_EMAIL}`,
+      from: `Pmsg-pilot Team ${process.env.FROM_EMAIL}`,
       subject: 'Download Submissions Export File',
       context: {
         email: mail_address,

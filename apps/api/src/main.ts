@@ -18,7 +18,7 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '10mb' }));
 
   app.setGlobalPrefix('api/v1', { exclude: ['apidoc'] });
-  const config = new DocumentBuilder().setTitle('auto-send-message API').setDescription('auto-send-message API description').setVersion('1').build();
+  const config = new DocumentBuilder().setTitle('msg-pilot API').setDescription('msg-pilot API description').setVersion('1').build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('apidoc', app, document);
 

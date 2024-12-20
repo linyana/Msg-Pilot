@@ -1,5 +1,5 @@
 {
-  "name": "@auto-send-message/portal",
+  "name": "@msg-pilot/portal",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -16,7 +16,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@auto-send-message/hooks": "*",
+    "@msg-pilot/hooks": "*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.1.0",
@@ -38,7 +38,7 @@
     "styled-components": "^6.1.13"
   },
   "devDependencies": {
-    "@auto-send-message/tsconfig": "*",
+    "@msg-pilot/tsconfig": "*",
     "@types/i18next": "^13.0.0",
     "@types/mime": "3.0.4",
     "@types/mocha": "^10.0.1",

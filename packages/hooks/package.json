@@ -1,5 +1,5 @@
 {
-  "name": "@auto-send-message/hooks",
+  "name": "@msg-pilot/hooks",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -22,7 +22,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "devDependencies": {
-    "@auto-send-message/tsconfig": "*",
+    "@msg-pilot/tsconfig": "*",
     "@types/react": "^18.0.0",
     "eslint": "^8.2.0",
     "tsup": "^5.10.1",

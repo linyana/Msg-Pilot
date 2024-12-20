@@ -1,6 +1,6 @@
 import {
   useHttp,
-} from '@auto-send-message/hooks'
+} from '@msg-pilot/hooks'
 import {
   ILoginType,
   ILoginResponseType,
