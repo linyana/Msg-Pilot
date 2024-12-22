@@ -1,7 +1,6 @@
 export type ILoginType = {
   email: string
   password: string
-  agree?: boolean
 }
 
 export type ILoginResponseType = {

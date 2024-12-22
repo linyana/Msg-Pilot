@@ -32,6 +32,9 @@ import i18n from './lang'
 import {
   MUIThemeProvider,
 } from './provider'
+import {
+  MessageApiProvider,
+} from './hooks'
 
 interface IAppContext {
   messageApi: any
@@ -66,22 +69,24 @@ export default () => {
   return (
     <I18nextProvider i18n={i18n}>
       <ConfigProvider config={config}>
-        <MUIThemeProvider>
-          <Layout
-            routes={routes}
-            needFrame={needFrame}
-          >
-            <Routes>
-              {routes.map((route) => (
-                <Route
-                  key={route.id}
-                  path={route.path}
-                  element={token || route.isPublic ? route.element : <Navigate to="/login" />}
-                />
-              ))}
-            </Routes>
-          </Layout>
-        </MUIThemeProvider>
+        <MessageApiProvider>
+          <MUIThemeProvider>
+            <Layout
+              routes={routes}
+              needFrame={needFrame}
+            >
+              <Routes>
+                {routes.map((route) => (
+                  <Route
+                    key={route.id}
+                    path={route.path}
+                    element={token || route.isPublic ? route.element : <Navigate to="/login" />}
+                  />
+                ))}
+              </Routes>
+            </Layout>
+          </MUIThemeProvider>
+        </MessageApiProvider>
       </ConfigProvider>
     </I18nextProvider>
   )

@@ -8,12 +8,27 @@ import {
 } from 'react-router-dom'
 import {
   Button,
+  Card,
+  CardContent,
+  FormControl,
+  FormHelperText,
+  Input,
+  TextField,
+  Typography,
 } from '@mui/material'
 import {
   AuthProvider,
   AuthResponse,
   SignInPage,
 } from '@toolpad/core'
+import {
+  Controller,
+  SubmitHandler,
+  useForm,
+} from 'react-hook-form'
+import {
+  LoadingButton,
+} from '@mui/lab'
 import {
   updateToken,
   updateUserEmail,
@@ -23,7 +38,9 @@ import {
   useAppSelector,
 } from '@/store'
 import {
+  Center,
   CopyRight,
+  Flex,
 } from '@/components'
 import {
   StyledOrWrapper,
@@ -34,6 +51,13 @@ import {
 import {
   AppContext,
 } from '@/App'
+import logo from '@/accsets/message.svg'
+import {
+  ILoginType,
+} from './types'
+import {
+  useMessage,
+} from '@/hooks/useMessage'
 
 const providers = [{
   id: 'credentials', name: 'Email and password',
@@ -46,12 +70,13 @@ export const Login = () => {
     token,
   } = useAppSelector((state) => state.global)
   const {
-    messageApi,
-  } = useContext(AppContext)
-  const [formData, setFormData] = useState<{ email: string; password: string }>({
-    email: '',
-    password: '',
-  })
+    control, handleSubmit, formState: {
+      errors,
+    },
+  } = useForm<ILoginType>()
+  const message = useMessage()
+
+  const [formData, setFormData] = useState<ILoginType>()
 
   const {
     data,
@@ -60,9 +85,11 @@ export const Login = () => {
     error,
   } = useLogin(formData)
 
-  const handleLogin = () => {
-    fetchData?.()
-  }
+  useEffect(() => {
+    if (formData) {
+      fetchData?.()
+    }
+  }, [formData])
 
   useEffect(() => {
     window.localStorage.removeItem('msg-pilot-jwt-token')
@@ -89,32 +116,117 @@ export const Login = () => {
 
   useEffect(() => {
     if (error) {
-      messageApi.error(error)
+      message.error(error)
     }
   }, [error])
 
-  const signIn = (
-    _provider: AuthProvider,
-    formData?: FormData,
-  ) => {
-    const submitData = {
-      email: formData?.get('email'),
-      password: formData?.get('password'),
-    }
-    window.console.log(submitData)
+  const onSubmit = (data: ILoginType) => {
+    setFormData(data)
   }
 
   return (
-    <>
-      <SignInPage
-        signIn={signIn}
-        providers={providers}
-        slotProps={{
-          emailField: {
-            autoFocus: false,
-          },
+    <Center>
+      <Card
+        variant="outlined"
+        sx={{
+          width: 400,
+          padding: '16px',
         }}
-      />
-    </>
+      >
+        <CardContent>
+          <Flex
+            style={{
+              marginBottom: 16,
+            }}
+            justifyContent="center"
+          >
+            <img
+              src={logo}
+              style={{
+                width: 32,
+                height: 32,
+              }}
+              alt=""
+            />
+          </Flex>
+          <Typography
+            variant="h5"
+            gutterBottom
+            align="center"
+            style={{
+              fontWeight: 500,
+            }}
+          >
+            Sign in to Msg Pilot
+          </Typography>
+          <Typography
+            variant="body2"
+            gutterBottom
+            align="center"
+            marginBottom="16px"
+            color="#8C8C8C"
+          >
+            Welcome, please sign in to continue
+          </Typography>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Please enter the corrent email',
+                },
+              }}
+              render={({
+                field,
+              }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label="email"
+                  margin="normal"
+                  required
+                  size="small"
+                  error={!!errors.email}
+                  helperText={errors.email ? errors.email.message as string : ''}
+                />
+              )}
+            />
+            <Controller
+              name="password"
+              control={control}
+              render={({
+                field,
+              }) => (
+                <TextField
+                  {...field}
+                  type="password"
+                  fullWidth
+                  label="password"
+                  margin="normal"
+                  required
+                  size="small"
+                  error={!!errors.password}
+                  helperText={errors.password ? errors.password.message as string : ''}
+                />
+              )}
+            />
+            <LoadingButton
+              type="submit"
+              loading={loading}
+              variant="contained"
+              color="primary"
+              fullWidth
+              style={{
+                marginTop: 16,
+              }}
+            >
+              Sign In
+            </LoadingButton>
+          </form>
+        </CardContent>
+      </Card>
+    </Center>
   )
 }
