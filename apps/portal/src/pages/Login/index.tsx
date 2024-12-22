@@ -1,5 +1,4 @@
 import {
-  useContext,
   useEffect,
   useState,
 } from 'react'
@@ -7,23 +6,13 @@ import {
   useNavigate,
 } from 'react-router-dom'
 import {
-  Button,
   Card,
   CardContent,
-  FormControl,
-  FormHelperText,
-  Input,
   TextField,
   Typography,
 } from '@mui/material'
 import {
-  AuthProvider,
-  AuthResponse,
-  SignInPage,
-} from '@toolpad/core'
-import {
   Controller,
-  SubmitHandler,
   useForm,
 } from 'react-hook-form'
 import {
@@ -39,29 +28,18 @@ import {
 } from '@/store'
 import {
   Center,
-  CopyRight,
   Flex,
 } from '@/components'
 import {
-  StyledOrWrapper,
-} from './styled'
-import {
   useLogin,
 } from '@/services'
-import {
-  AppContext,
-} from '@/App'
-import logo from '@/accsets/message.svg'
+import logo from '@/assets/logo.svg'
 import {
   ILoginType,
 } from './types'
 import {
   useMessage,
 } from '@/hooks/useMessage'
-
-const providers = [{
-  id: 'credentials', name: 'Email and password',
-}]
 
 export const Login = () => {
   const navigate = useNavigate()
@@ -157,7 +135,7 @@ export const Login = () => {
               fontWeight: 500,
             }}
           >
-            Sign in to Msg Pilot
+            Sign in
           </Typography>
           <Typography
             variant="body2"

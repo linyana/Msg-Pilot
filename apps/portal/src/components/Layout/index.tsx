@@ -24,7 +24,7 @@ import {
 import {
   IRouteType,
 } from '@/routes'
-import logo from '@/accsets/message.svg'
+import logo from '@/assets/logo.svg'
 import {
   updateToken,
   updateUserName,
