@@ -11,6 +11,7 @@ import {
   Dashboard,
   Login,
   Registration,
+  Setting,
   Task,
 } from './pages'
 
@@ -62,11 +63,15 @@ export const routes: Array<RouteItem> = [
     kind: 'divider',
   },
   {
+    id: 'header',
     kind: 'header',
     text: 'Setting',
   },
   {
+    id: 'setting',
+    element: <Setting />,
     text: 'Setting',
+    path: '/setting',
     icon: <SettingsIcon />,
   },
 ]

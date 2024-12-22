@@ -1,5 +1,5 @@
 export const Task = () => (
   <>
-    1
+    Task
   </>
 )
