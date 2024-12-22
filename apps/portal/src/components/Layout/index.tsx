@@ -2,7 +2,6 @@ import * as React from 'react'
 import {
   AppProvider,
   Navigation,
-  Router,
 } from '@toolpad/core/AppProvider'
 import {
   DashboardLayout,
@@ -16,28 +15,25 @@ import {
   useTheme,
 } from '@mui/material'
 import {
-  RouteItem,
+  useDispatch,
+} from 'react-redux'
+import {
+  useLocation,
+  useNavigate,
+} from 'react-router-dom'
+import {
+  IRouteType,
 } from '@/routes'
 import logo from '@/accsets/message.svg'
 import {
+  updateToken,
+  updateUserName,
   useAppSelector,
 } from '@/store'
 
-const useDemoRouter = (initialPath: string): Router => {
-  const [pathname, setPathname] = React.useState(initialPath)
-
-  const router = React.useMemo(() => ({
-    pathname,
-    searchParams: new URLSearchParams(),
-    navigate: (path: string | URL) => setPathname(String(path)),
-  }), [pathname])
-
-  return router
-}
-
 type IPropsType = {
   children: React.ReactNode
-  routes: Array<RouteItem>
+  routes: Array<IRouteType>
   needFrame: boolean
 }
 
@@ -72,23 +68,57 @@ export const Layout = ({
 }: IPropsType) => {
   const {
     userName,
+    userEmial,
   } = useAppSelector((state) => state.global)
   const theme = useTheme()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const {
+    pathname,
+  } = useLocation()
+  const router = {
+    navigate: (value: string | URL) => {
+      navigate(value)
+    },
+    pathname,
+    searchParams: new URLSearchParams(window.location.search),
+  }
 
   const navigation: Navigation = React.useMemo(() => routes.filter((route) => !route.isPublic || route.kind || route.text).map((route) => ({
     kind: route.kind,
-    segment: route.text,
+    segment: route.path,
     title: route.text,
     icon: route.icon,
+    children: route.children?.filter((child) => child.path).map((child) => ({
+      kind: child.kind,
+      segment: child.path?.split('/')[(child.path?.split('/') || []).length - 1],
+      title: child.text,
+      icon: child.icon,
+    })),
   })), [routes])
+
+  const authentication = React.useMemo(() => ({
+    signIn: () => {
+      window.console.log()
+    },
+    signOut: () => {
+      dispatch(updateToken(''))
+      dispatch(updateUserName(''))
+    },
+  }), [])
 
   return (
     <AppProvider
       navigation={navigation}
       theme={theme}
+      router={router}
       session={{
-        user: userName,
+        user: {
+          name: userName,
+          email: userEmial,
+        },
       }}
+      authentication={authentication}
     >
       {
         needFrame
@@ -96,6 +126,7 @@ export const Layout = ({
             <DashboardLayout slots={{
               appTitle: CustomAppTitle,
             }}
+
             >
               <PageContainer>
                 {children}

@@ -7,15 +7,16 @@ import {
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import AssignmentIcon from '@mui/icons-material/Assignment'
 import SettingsIcon from '@mui/icons-material/Settings'
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import {
+  Account,
   Dashboard,
   Login,
   Registration,
-  Setting,
   Task,
 } from './pages'
 
-export interface RouteItem {
+export interface IRouteType {
   id?: string;
   element?: ReactNode;
   path?: string;
@@ -23,9 +24,10 @@ export interface RouteItem {
   text?: string;
   isPublic?: boolean;
   icon?: ReactNode;
+  children?: IRouteType[]
 }
 
-export const routes: Array<RouteItem> = [
+export const routes: Array<IRouteType> = [
   {
     id: 'not-found',
     path: '*',
@@ -48,14 +50,14 @@ export const routes: Array<RouteItem> = [
     id: 'dashboard',
     element: <Dashboard />,
     text: 'Dashboard',
-    path: '/dashboard',
+    path: 'dashboard',
     icon: <DashboardIcon />,
   },
   {
     id: 'task',
     element: <Task />,
-    text: 'Task',
-    path: '/task',
+    text: 'Tasks',
+    path: 'tasks',
     icon: <AssignmentIcon />,
   },
   {
@@ -69,10 +71,18 @@ export const routes: Array<RouteItem> = [
   },
   {
     id: 'setting',
-    element: <Setting />,
-    text: 'Setting',
-    path: '/setting',
+    text: 'Settings',
+    path: 'settings',
     icon: <SettingsIcon />,
+    children: [
+      {
+        id: 'setting/account',
+        element: <Account />,
+        text: 'Account',
+        path: 'settings/account',
+        icon: <AdminPanelSettingsIcon />,
+      },
+    ],
   },
 ]
 

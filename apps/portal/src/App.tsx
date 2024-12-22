@@ -10,15 +10,13 @@ import {
   useMemo,
 } from 'react'
 import {
-  useDispatch,
-} from 'react-redux'
-import {
   I18nextProvider,
 } from 'react-i18next'
 import {
   ConfigProvider,
 } from '@msg-pilot/hooks'
 import {
+  IRouteType,
   pageTypes,
   routes,
 } from './routes'
@@ -66,6 +64,22 @@ export default () => {
     },
   }), [token])
 
+  const flattenedRoutes = useMemo(() => {
+    const flattenRoutes: IRouteType[] = []
+
+    const flatten = (routeList: IRouteType[]) => {
+      routeList.forEach((route) => {
+        flattenRoutes.push(route)
+        if (route.children) {
+          flatten(route.children)
+        }
+      })
+    }
+
+    flatten(routes)
+    return flattenRoutes
+  }, [routes])
+
   return (
     <I18nextProvider i18n={i18n}>
       <ConfigProvider config={config}>
@@ -76,7 +90,7 @@ export default () => {
               needFrame={needFrame}
             >
               <Routes>
-                {routes.map((route) => (
+                {flattenedRoutes.map((route) => (
                   <Route
                     key={route.id}
                     path={route.path}
