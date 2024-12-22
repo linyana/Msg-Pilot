@@ -1,6 +1,6 @@
 import {
   useHttp,
-} from '@auto-send-message/hooks'
+} from '@msg-pilot/hooks'
 
 export const useAddTask = (data: any) => useHttp<{
   data: any,

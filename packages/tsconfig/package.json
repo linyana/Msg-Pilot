@@ -1,5 +1,5 @@
 {
-  "name": "@auto-send-message/tsconfig",
+  "name": "@msg-pilot/tsconfig",
   "version": "0.0.0",
   "private": true,
   "main": "index.js",

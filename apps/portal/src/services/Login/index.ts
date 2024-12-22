@@ -1,12 +1,12 @@
 import {
   useHttp,
-} from '@auto-send-message/hooks'
+} from '@msg-pilot/hooks'
 import {
   ILoginType,
   ILoginResponseType,
 } from '@/pages/Login/types'
 
-export const useLogin = (data: ILoginType) => useHttp<ILoginResponseType>({
+export const useLogin = (data?: ILoginType) => useHttp<ILoginResponseType>({
   url: '/tenants/sessions',
   method: 'post',
   data,

@@ -1,5 +1,5 @@
 {
-  "name": "auto-send-message-fullstack",
+  "name": "msg-pilot-fullstack",
   "version": "0.0.0",
   "private": true,
   "workspaces": [
@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "build:api": "turbo run build --filter=@auto-send-message/api",
+    "build:api": "turbo run build --filter=@msg-pilot/api",
     "build:dev": "turbo run build:dev",
     "build:staging": "turbo run build:staging",
     "start": "turbo run start --parallel",
@@ -23,13 +23,13 @@
     "clean:node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "clean:dist": "rm -rf ./dist",
     "prepare": "husky install",
-    "prisma:push": "turbo prisma:push --filter @auto-send-message/api",
-    "prisma:seed": "turbo prisma:seed --filter @auto-send-message/api"
+    "prisma:push": "turbo prisma:push --filter @msg-pilot/api",
+    "prisma:seed": "turbo prisma:seed --filter @msg-pilot/api"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
-    "eslint-config-auto-send-message": "*",
+    "eslint-config-msg-pilot": "*",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "turbo": "^1"

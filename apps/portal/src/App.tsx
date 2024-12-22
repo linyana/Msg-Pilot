@@ -1,7 +1,4 @@
 import {
-  ConfigProvider,
-} from '@auto-send-message/hooks'
-import {
   Route,
   Routes,
   useNavigate,
@@ -13,17 +10,13 @@ import {
   useMemo,
 } from 'react'
 import {
-  message,
-  ConfigProvider as AntdConfigProvider,
-} from 'antd'
-import enUS from 'antd/locale/en_US'
-import {
-  useDispatch,
-} from 'react-redux'
-import {
   I18nextProvider,
 } from 'react-i18next'
 import {
+  ConfigProvider,
+} from '@msg-pilot/hooks'
+import {
+  IRouteType,
   pageTypes,
   routes,
 } from './routes'
@@ -34,6 +27,12 @@ import {
   Layout,
 } from './components'
 import i18n from './lang'
+import {
+  MUIThemeProvider,
+} from './provider'
+import {
+  MessageApiProvider,
+} from './hooks'
 
 interface IAppContext {
   messageApi: any
@@ -46,46 +45,52 @@ export default () => {
   const {
     token,
   } = useAppSelector((state) => state.global)
-  const dispatch = useDispatch()
-  const [messageApi, contextHolder] = message.useMessage()
+
   const {
     pathname,
   } = useLocation()
   const navigate = useNavigate()
 
   const routeKey: string = pathname.split('/')[1]
-  const memoPageType = useMemo(() => (pageTypes.noFrame.includes(routeKey) ? 'noFrame' : 'frame'), [pageTypes, routeKey])
+  const needFrame = useMemo(() => !(pageTypes.noFrame.includes(routeKey)), [pageTypes, routeKey])
 
-  const appContextMemoValue = useMemo(() => ({
-    messageApi,
-  }), [
-    messageApi,
-  ])
+  const config = useMemo(() => ({
+    token,
+    apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
+    httpStrategy: {
+      401: () => {
+        navigate('/login')
+      },
+    },
+  }), [token])
+
+  const flattenedRoutes = useMemo(() => {
+    const flattenRoutes: IRouteType[] = []
+
+    const flatten = (routeList: IRouteType[]) => {
+      routeList.forEach((route) => {
+        flattenRoutes.push(route)
+        if (route.children) {
+          flatten(route.children)
+        }
+      })
+    }
+
+    flatten(routes)
+    return flattenRoutes
+  }, [routes])
 
   return (
     <I18nextProvider i18n={i18n}>
-      <AppContext.Provider value={appContextMemoValue}>
-        {contextHolder}
-        <ConfigProvider config={{
-          token,
-          apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
-          httpStrategy: {
-            401: () => {
-              // delete token
-              navigate('/login')
-            },
-          },
-        }}
-        >
-          <AntdConfigProvider
-            locale={enUS}
-          >
+      <ConfigProvider config={config}>
+        <MessageApiProvider>
+          <MUIThemeProvider>
             <Layout
               routes={routes}
-              pageType={memoPageType}
+              needFrame={needFrame}
             >
               <Routes>
-                {routes.map((route) => (
+                {flattenedRoutes.map((route) => (
                   <Route
                     key={route.id}
                     path={route.path}
@@ -94,9 +99,9 @@ export default () => {
                 ))}
               </Routes>
             </Layout>
-          </AntdConfigProvider>
-        </ConfigProvider>
-      </AppContext.Provider>
+          </MUIThemeProvider>
+        </MessageApiProvider>
+      </ConfigProvider>
     </I18nextProvider>
   )
 }

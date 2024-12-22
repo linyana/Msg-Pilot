@@ -1,5 +1,5 @@
 {
-  "name": "@auto-send-message/api",
+  "name": "@msg-pilot/api",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -65,7 +65,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@auto-send-message/tsconfig": "*",
+    "@msg-pilot/tsconfig": "*",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",

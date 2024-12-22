@@ -1,239 +1,142 @@
-import React, {
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import * as React from 'react'
 import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  LogoutOutlined,
-} from '@ant-design/icons'
+  AppProvider,
+  Navigation,
+} from '@toolpad/core/AppProvider'
 import {
-  Layout as AntdLayout,
-  Menu,
-  Button,
-  theme,
-  Avatar,
+  DashboardLayout,
+} from '@toolpad/core/DashboardLayout'
+import {
+  PageContainer,
+} from '@toolpad/core/PageContainer'
+import {
+  Stack,
   Typography,
-  MenuProps,
-  Dropdown,
-  Tooltip,
-  Space,
-} from 'antd'
+  useTheme,
+} from '@mui/material'
+import {
+  useDispatch,
+} from 'react-redux'
 import {
   useLocation,
   useNavigate,
 } from 'react-router-dom'
 import {
-  RouteItem,
+  IRouteType,
 } from '@/routes'
+import logo from '@/assets/logo.svg'
 import {
-  Flex,
-} from '..'
-import {
+  updateToken,
+  updateUserName,
   useAppSelector,
 } from '@/store'
 
-const {
-  Header,
-  Sider,
-  Content,
-} = AntdLayout
-
 type IPropsType = {
   children: React.ReactNode
-  routes: RouteItem[]
-  pageType?: 'noFrame' | 'frame'
+  routes: Array<IRouteType>
+  needFrame: boolean
 }
 
-const {
-  Text,
-} = Typography
+const CustomAppTitle = () => (
+  <Stack
+    direction="row"
+    alignItems="center"
+    spacing={1.5}
+  >
+    <img
+      src={logo}
+      style={{
+        width: 28,
+        height: 28,
+        marginTop: 4,
+      }}
+      alt=""
+    />
+    <Typography
+      variant="h6"
+      color="#75C82B"
+    >
+      Msg Pilot
+    </Typography>
+  </Stack>
+)
 
 export const Layout = ({
   children,
   routes,
-  pageType,
+  needFrame,
 }: IPropsType) => {
-  const navigate = useNavigate()
-  const location = useLocation()
   const {
     userName,
+    userEmial,
   } = useAppSelector((state) => state.global)
+  const theme = useTheme()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const {
-    token: {
-      colorBgContainer,
+    pathname,
+  } = useLocation()
+  const router = {
+    navigate: (value: string | URL) => {
+      navigate(value)
     },
-  } = theme.useToken()
-
-  const [collapsed, setCollapsed] = useState(false)
-  const [currentRoute, setCurrentRoute] = useState(location.pathname.slice(1))
-
-  const handleLinkTo = (target: string) => {
-    navigate(target)
+    pathname,
+    searchParams: new URLSearchParams(window.location.search),
   }
 
-  const getItem = (route: RouteItem) => ({
-    key: route.id,
+  const navigation: Navigation = React.useMemo(() => routes.filter((route) => !route.isPublic || route.kind || route.text).map((route) => ({
+    kind: route.kind,
+    segment: route.path,
+    title: route.text,
     icon: route.icon,
-    label: route.text,
-    onClick: ({
-      keyPath,
-    }: any) => {
-      handleLinkTo(`/${keyPath[0]}` || route.path)
+    children: route.children?.filter((child) => child.path).map((child) => ({
+      kind: child.kind,
+      segment: child.path?.split('/')[(child.path?.split('/') || []).length - 1],
+      title: child.text,
+      icon: child.icon,
+    })),
+  })), [routes])
+
+  const authentication = React.useMemo(() => ({
+    signIn: () => {
+      window.console.log()
     },
-  })
-
-  useEffect(() => {
-    const routeIds = routes.filter((route) => route.text).map((route) => route.id)
-    let existRouteName = location.pathname.slice(1)
-    let safetyGuardsTimes = 0
-    while (!routeIds.includes(existRouteName) && safetyGuardsTimes <= 20) {
-      existRouteName = existRouteName.slice(0, -1)
-      safetyGuardsTimes += 1
-    }
-    setCurrentRoute(existRouteName)
-  }, [location.pathname])
-
-  const items = useMemo(() => {
-    const finalRoutes: any[] = []
-    const filterRoutes = routes.filter((route) => route.text)
-    for (let index = 0; index < filterRoutes?.length; index += 1) {
-      const filterRoute = filterRoutes[index]
-      if (filterRoute.icon) {
-        finalRoutes.push(getItem(filterRoute))
-      } else {
-        const category = filterRoute.id.split('/')[0]
-        const firstLevelRoute = finalRoutes.find((item) => item.key.split('/')[0] === category)
-        if (firstLevelRoute?.children?.length) {
-          firstLevelRoute?.children.push(getItem(filterRoute))
-        } else {
-          firstLevelRoute.children = [getItem(filterRoute)]
-        }
-      }
-    }
-    return finalRoutes
-  }, [routes])
-
-  const userActions: MenuProps['items'] = [
-    {
-      key: '1',
-      label: (
-        <Text>
-          Logout
-        </Text>
-      ),
-      icon: <LogoutOutlined />,
-      onClick: () => {
-        navigate('/login')
-      },
+    signOut: () => {
+      dispatch(updateToken(''))
+      dispatch(updateUserName(''))
     },
-  ]
+  }), [])
 
   return (
-    <>
+    <AppProvider
+      navigation={navigation}
+      theme={theme}
+      router={router}
+      session={{
+        user: {
+          name: userName,
+          email: userEmial,
+        },
+      }}
+      authentication={authentication}
+    >
       {
-        pageType === 'frame' ? (
-          <AntdLayout style={{
-            height: '100vh',
-          }}
-          >
-            <Sider
-              trigger={null}
-              collapsible
-              collapsed={collapsed}
-            >
-              <div className="demo-logo-vertical" />
-              <Menu
-                theme="dark"
-                mode="inline"
-                defaultSelectedKeys={['1']}
-                selectedKeys={[currentRoute || '']}
-                items={items}
-              />
-            </Sider>
-            <AntdLayout style={{
-              height: '100vh',
+        needFrame
+          ? (
+            <DashboardLayout slots={{
+              appTitle: CustomAppTitle,
             }}
-            >
-              <Header style={{
-                padding: 0,
-                background: colorBgContainer,
-              }}
-              >
-                <Flex
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <Button
-                    type="text"
-                    icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                    onClick={() => setCollapsed(!collapsed)}
-                    style={{
-                      fontSize: '16px',
-                      width: 64,
-                      height: 64,
-                    }}
-                  />
-                  <Space size="large">
-                    <Dropdown
-                      menu={{
-                        items: userActions,
-                      }}
-                    >
-                      <Button
-                        style={{
-                          marginRight: '32px',
-                          padding: '0 12px',
-                        }}
-                        size="large"
-                        type="text"
-                      >
-                        <Flex
-                          justifyContent="center"
-                          alignItems="center"
-                          gap="8px"
-                        >
-                          <Avatar>{userName?.charAt(0).toUpperCase()}</Avatar>
-                          {
-                            userName?.length < 10
-                              ? (
-                                <Text type="secondary">
-                                  {userName}
-                                </Text>
-                              ) : (
-                                <Tooltip
-                                  placement="left"
-                                  title={userName}
-                                >
-                                  <Text type="secondary">{`${userName?.slice(0, 10)}...`}</Text>
-                                </Tooltip>
-                              )
-                          }
-                        </Flex>
-                      </Button>
-                    </Dropdown>
-                  </Space>
 
-                </Flex>
-              </Header>
-              <Content style={{
-                height: 'calc(100vh - 64px)',
-                overflow: 'auto',
-              }}
-              >
-                <div style={{
-                  margin: '24px 16px',
-                }}
-                >
-                  {children}
-                </div>
-              </Content>
-            </AntdLayout>
-          </AntdLayout>
-        )
-          : <Content>{children}</Content>
+            >
+              <PageContainer>
+                {children}
+              </PageContainer>
+            </DashboardLayout>
+          )
+          : (
+            <>{children}</>
+          )
       }
-    </>
+    </AppProvider>
   )
 }

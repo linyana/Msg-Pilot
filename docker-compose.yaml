@@ -2,7 +2,7 @@
 
 version: "3"
 services:
-  nest_postgres_auto-send-message_dev:
+  nest_postgres_msg-pilot_dev:
     image: postgres:13.5
     restart: always
     environment:
@@ -15,7 +15,7 @@ services:
     ports:
       - "5432:5432"
 
-  redis_auto-send-message_dev:
+  redis_msg-pilot_dev:
     restart: always
     image: redis:alpine
     ports:
@@ -28,8 +28,8 @@ services:
     env_file: ./apps/api/.env
     restart: always
     environment:
-    - DATABASE_URL=postgres://postgres:password@nest_postgres_auto-send-message_dev:5432/auto-send-message-api
-    - REDIS_HOST=redis_auto-send-message_dev
+    - DATABASE_URL=postgres://postgres:password@nest_postgres_msg-pilot_dev:5432/msg-pilot-api
+    - REDIS_HOST=redis_msg-pilot_dev
     - REDIS_PORT=6379
     ports:
       - 3000:3000

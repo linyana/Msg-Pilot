@@ -1,5 +1,5 @@
 {
-  "extends": "@auto-send-message/tsconfig/base.json",
+  "extends": "@msg-pilot/tsconfig/base.json",
   "compilerOptions": {
     "jsx": "react",
     "module": "Node16",

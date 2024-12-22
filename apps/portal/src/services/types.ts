@@ -7,7 +7,7 @@ export interface IMetaType {
   };
 }
 
-export interface Iauto-send-messagePaginationType {
+export interface Imsg-pilotPaginationType {
     current: number;
     limit: number;
     offset: number;

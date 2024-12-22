@@ -15,7 +15,7 @@ export default defineConfig({
   build: {
     outDir: path.resolve(
       process.env.INIT_CWD || './',
-      './dist/auto-send-message',
+      './dist/msg-pilot',
     ),
   },
   server: {

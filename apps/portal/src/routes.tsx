@@ -4,31 +4,35 @@ import {
 import {
   Navigate,
 } from 'react-router-dom'
+import DashboardIcon from '@mui/icons-material/Dashboard'
+import AssignmentIcon from '@mui/icons-material/Assignment'
+import SettingsIcon from '@mui/icons-material/Settings'
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import {
-  DashboardOutlined,
-  RobotOutlined,
-} from '@ant-design/icons'
-import {
+  Account,
   Dashboard,
   Login,
   Registration,
   Task,
 } from './pages'
 
-export interface RouteItem {
-  id: string;
-  element: ReactNode;
-  path: string;
+export interface IRouteType {
+  id?: string;
+  element?: ReactNode;
+  path?: string;
+  kind?: any;
   text?: string;
   isPublic?: boolean;
   icon?: ReactNode;
+  children?: IRouteType[]
 }
 
-export const routes: Array<RouteItem> = [
+export const routes: Array<IRouteType> = [
   {
     id: 'not-found',
     path: '*',
     element: <Navigate to="/login" />,
+    isPublic: true,
   },
   {
     id: 'login',
@@ -46,15 +50,39 @@ export const routes: Array<RouteItem> = [
     id: 'dashboard',
     element: <Dashboard />,
     text: 'Dashboard',
-    icon: <DashboardOutlined />,
-    path: '/dashboard',
+    path: 'dashboard',
+    icon: <DashboardIcon />,
   },
   {
     id: 'task',
     element: <Task />,
-    text: 'Task',
-    icon: <RobotOutlined />,
-    path: '/task',
+    text: 'Tasks',
+    path: 'tasks',
+    icon: <AssignmentIcon />,
+  },
+  {
+    id: 'divider',
+    kind: 'divider',
+  },
+  {
+    id: 'header',
+    kind: 'header',
+    text: 'Setting',
+  },
+  {
+    id: 'setting',
+    text: 'Settings',
+    path: 'settings',
+    icon: <SettingsIcon />,
+    children: [
+      {
+        id: 'setting/account',
+        element: <Account />,
+        text: 'Account',
+        path: 'settings/account',
+        icon: <AdminPanelSettingsIcon />,
+      },
+    ],
   },
 ]
 

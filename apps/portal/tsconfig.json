@@ -1,6 +1,6 @@
 {
   "exclude": ["node_modules"],
-  "extends": "@auto-send-message/tsconfig/vite.json",
+  "extends": "@msg-pilot/tsconfig/vite.json",
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "dist",
