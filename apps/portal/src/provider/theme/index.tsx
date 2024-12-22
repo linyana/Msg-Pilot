@@ -24,7 +24,7 @@ export const MUIThemeProvider = ({
     palette: {
       primary: {
         light: '#95d85a',
-        main: '#75C82B',
+        main: '#5da919',
         dark: '#69ad2e',
         contrastText: '#fff',
       },

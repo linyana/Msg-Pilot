@@ -48,7 +48,6 @@ const CustomAppTitle = () => (
       style={{
         width: 28,
         height: 28,
-        marginTop: 4,
       }}
       alt=""
     />
