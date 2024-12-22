@@ -29,6 +29,11 @@ export const MUIThemeProvider = ({
         contrastText: '#fff',
       },
     },
+    typography: {
+      allVariants: {
+        color: '#4e4d4d',
+      },
+    }
   })
 
   return (
