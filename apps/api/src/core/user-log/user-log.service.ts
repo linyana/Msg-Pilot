@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { IUserLogType } from './user-log.types';
+import { IUserLogType } from './types';
 import { getUserLogSearchParams } from './utils';
 import { GetUserLogsDto } from './dto/get-user-log.dto';
 
