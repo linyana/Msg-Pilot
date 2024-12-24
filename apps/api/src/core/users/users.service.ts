@@ -42,8 +42,18 @@ export class UsersService {
   async getCurrentInfo(params: { connection_id: number }) {
     const { connection_id } = params;
 
+    const connection = await this.prisma.connections.findUnique({
+      where: {
+        id: connection_id,
+      },
+      select: {
+        name: true,
+        type: true,
+      },
+    });
+
     return {
-      connection_id,
+      connection,
     };
   }
 }
