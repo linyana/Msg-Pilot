@@ -6,10 +6,3 @@ export interface IMetaType {
     totalCount: number;
   };
 }
-
-export interface Imsg-pilotPaginationType {
-    current: number;
-    limit: number;
-    offset: number;
-    total_count: number;
-}

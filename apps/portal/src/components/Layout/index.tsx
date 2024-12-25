@@ -34,7 +34,7 @@ import {
 type IPropsType = {
   children: React.ReactNode
   routes: Array<IRouteType>
-  needFrame: boolean
+  currentRoute?: IRouteType
 }
 
 const CustomAppTitle = () => (
@@ -63,7 +63,7 @@ const CustomAppTitle = () => (
 export const Layout = ({
   children,
   routes,
-  needFrame,
+  currentRoute,
 }: IPropsType) => {
   const {
     userName,
@@ -83,7 +83,7 @@ export const Layout = ({
     searchParams: new URLSearchParams(window.location.search),
   }
 
-  const navigation: Navigation = React.useMemo(() => routes.filter((route) => !route.isPublic || route.kind || route.text).map((route) => ({
+  const navigation: Navigation = React.useMemo(() => routes.filter((route) => route.kind || route.text).map((route) => ({
     kind: route.kind,
     segment: route.path,
     title: route.text,
@@ -120,20 +120,21 @@ export const Layout = ({
       authentication={authentication}
     >
       {
-        needFrame
+        currentRoute?.isNoFrame
           ? (
-            <DashboardLayout slots={{
-              appTitle: CustomAppTitle,
-            }}
-
+            <>{ children }</>
+          )
+          : (
+            <DashboardLayout
+              slots={{
+                appTitle: CustomAppTitle,
+              }}
+              hideNavigation={currentRoute?.isNoNavigate}
             >
               <PageContainer>
                 {children}
               </PageContainer>
             </DashboardLayout>
-          )
-          : (
-            <>{children}</>
           )
       }
     </AppProvider>

@@ -17,7 +17,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { RedisModule } from './core/redis/redis.module';
 import { RedModule } from './core/red/red.module';
 import { ConnectionModule } from './core/connection/connection.module';
-import { NoNeedConnectionGuard } from './core/guard';
+import { NoNeedConnectionGuard } from './guard';
 
 if (process.env.NODE_ENV === 'development') {
   dotenv.config({ path: '.env.local' });

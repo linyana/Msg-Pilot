@@ -88,7 +88,7 @@ export const Login = () => {
     }
 
     if (token) {
-      navigate('/dashboard')
+      navigate('/connections')
     }
   }, [data?.data, token])
 
@@ -106,10 +106,6 @@ export const Login = () => {
     <Center>
       <Card
         variant="outlined"
-        sx={{
-          width: 400,
-          padding: '16px',
-        }}
       >
         <CardContent>
           <Flex
