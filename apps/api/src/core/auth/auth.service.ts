@@ -1,13 +1,11 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthEntity } from '../users/entities/auth.entity';
 import * as bcrypt from 'bcryptjs';
-import { ShopAuthEntity } from '../users/entities/shopAuth.entity';
 
 @Injectable()
 export class AuthService {
-  private roundsOfHashing = 10;
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
   async login(email: string, password: string): Promise<AuthEntity> {
@@ -27,24 +25,33 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password');
     }
 
-    const access = this.jwtService.sign({ userId: user.id }, { secret: process.env.JWT_SECRET_KEY, expiresIn: '8h' });
-
-    // const refresh = this.jwtService.sign({ userId: user.id }, { secret: process.env.JWT_REFRESH_SECRET_KEY, expiresIn: '1d' });
+    const access = this.jwtService.sign({ user_id: user.id }, { secret: process.env.JWT_SECRET_KEY, expiresIn: '1d' });
     const loginUser = { access, ...user };
 
     return new AuthEntity(loginUser);
   }
 
-  async shopSession(userId: any, shop_id: any) {
-    const user = await this.prisma.users.findFirst({ where: { id: userId } });
-    const shop_access = this.jwtService.sign({ userId: userId, shop_id: shop_id }, { secret: process.env.JWT_SECRET_KEY });
+  async chooseConnection(tenant_id: number, user_id: number, connection_id: number) {
+    if (!tenant_id || !connection_id) {
+      throw new BadRequestException();
+    }
 
-    const shopUser = {
-      shop_access,
-      shop_id,
-      userId,
-      ...user,
-    };
-    return new ShopAuthEntity(shopUser);
+    const connection = await this.prisma.connections.findFirst({
+      where: {
+        id: Number(connection_id),
+        tenant_id,
+      },
+      select: {
+        type: true,
+        name: true,
+      },
+    });
+
+    if (!connection) {
+      throw new BadRequestException("Can't find this connection");
+    }
+
+    const access = this.jwtService.sign({ user_id }, { secret: process.env.JWT_SECRET_KEY, expiresIn: '1d' });
+    return { access, connection };
   }
 }

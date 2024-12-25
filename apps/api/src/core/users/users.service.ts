@@ -24,4 +24,36 @@ export class UsersService {
       data: updateUserDto,
     });
   }
+
+  async findUserProfile(id: number) {
+    return this.prisma.users.findUnique({
+      where: { id },
+    });
+  }
+
+  async findConnector(id: number) {
+    return await this.prisma.connections.findFirst({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async getCurrentInfo(params: { connection_id: number }) {
+    const { connection_id } = params;
+
+    const connection = await this.prisma.connections.findUnique({
+      where: {
+        id: connection_id,
+      },
+      select: {
+        name: true,
+        type: true,
+      },
+    });
+
+    return {
+      connection,
+    };
+  }
 }

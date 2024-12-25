@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { TenantsService } from '../tenants/tenants.service';
+import { UsersService } from '../users/users.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private tenantService: TenantsService) {
+  constructor(private usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -12,13 +12,22 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: { userId: number; shop_id: number }) {
-    const tenant = await this.tenantService.findOne(Number(payload.userId));
+  async validate(payload: { user_id: number; admin_user_id: number; connection_id: number }) {
+    const user = await this.usersService.findUserProfile(Number(payload.user_id));
 
-    if (!tenant) {
-      throw new UnauthorizedException();
+    if (!user) {
+      throw new UnauthorizedException("Can't find user");
     }
 
-    return { tenant };
+    const connection = await this.usersService.findConnector(Number(payload.connection_id));
+
+    if (!connection) {
+      throw new UnauthorizedException("Can't find connection");
+    }
+
+    return {
+      user,
+      connection,
+    };
   }
 }
