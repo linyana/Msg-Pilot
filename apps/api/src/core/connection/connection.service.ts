@@ -1,12 +1,34 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateConnectionDto } from './dto/create-connection.dto';
 
 @Injectable()
 export class ConnectionService {
-  findAll() {
-    return `This action returns all connection`;
+  constructor(private prisma: PrismaService) {}
+
+  async findAll(tenant_id: number) {
+    const connections = await this.prisma.connections.findMany({
+      where: {
+        tenant_id,
+      },
+      select: {
+        id: true,
+        type: true,
+        name: true,
+      },
+    });
+    return connections;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} connection`;
+  async createConnection(tenant_id: number, createConnectionDto: CreateConnectionDto) {
+    const { name, type } = createConnectionDto;
+    await this.prisma.connections.create({
+      data: {
+        name: name.trim(),
+        type,
+        tenant_id,
+      },
+    });
+    return 'Successfully created connection';
   }
 }

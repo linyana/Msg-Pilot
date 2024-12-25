@@ -17,8 +17,8 @@ export class TenantsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post('choose-connection')
-  chooseConnection(@Req('tenant_id') tenant_id: number, @Req('user_id') user_id: number, @Body() body: { connecion_id: number }) {
-    const connection_id = body.connecion_id;
-    return this.authService.chooseConnection(tenant_id, user_id, connection_id);
+  chooseConnection(@Req('tenant_id') tenant_id: number, @Req('user_id') user_id: number, @Body() body: { connection_id: number }) {
+    const connection_id = body.connection_id;
+    return this.authService.chooseConnection(tenant_id, user_id, Number(connection_id));
   }
 }
