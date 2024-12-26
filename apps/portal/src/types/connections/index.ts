@@ -7,3 +7,9 @@ export type IConnectionType = {
   name: string
   description?: string
 }
+
+export type ICreateConnectionType = {
+  type: CONNECTION_TYPE
+  name: string
+  description?: string
+}

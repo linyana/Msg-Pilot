@@ -1,6 +1,7 @@
 import {
   Button,
   Card,
+  FormControl,
   MobileStepper,
   Step,
   StepIconProps,
@@ -19,6 +20,9 @@ import {
   KeyboardArrowRight,
 } from '@mui/icons-material'
 import {
+  useForm,
+} from 'react-hook-form'
+import {
   ColorlibConnector,
   ColorlibStepIconRoot,
 } from './styled'
@@ -26,8 +30,14 @@ import {
   Center,
   Flex,
 } from '@/components'
+import {
+  Step1,
+} from './Step1'
+import {
+  ICreateConnectionType,
+} from '@/types'
 
-function ColorlibStepIcon(props: StepIconProps) {
+const stepIcon = (props: StepIconProps) => {
   const {
     active,
     completed,
@@ -53,8 +63,9 @@ function ColorlibStepIcon(props: StepIconProps) {
 }
 
 export const CreateConnection = () => {
-  const steps = ['Platform info', 'Connection info', 'Settings']
+  const [formData, setFormData] = useState<ICreateConnectionType>()
   const [activeStep, setActiveStep] = useState(0)
+  const steps = ['Platform info', 'Connection info', 'Settings']
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
@@ -63,6 +74,16 @@ export const CreateConnection = () => {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
+
+  const onSubmit = (data: ICreateConnectionType) => {
+    setFormData(data)
+  }
+
+  const {
+    control, handleSubmit, formState: {
+      errors,
+    },
+  } = useForm<ICreateConnectionType>()
   return (
     <Center>
       <Typography
@@ -93,10 +114,41 @@ export const CreateConnection = () => {
         >
           {steps.map((label) => (
             <Step key={label}>
-              <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
+              <StepLabel
+                slots={{
+                  stepIcon,
+                }}
+              >
+                {label}
+              </StepLabel>
             </Step>
           ))}
         </Stepper>
+        <Flex
+          justifyContent="center"
+          style={{
+            marginTop: 32,
+            width: '100%',
+          }}
+        >
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            style={{
+              width: '60%',
+            }}
+          >
+            <FormControl fullWidth>
+              {
+                activeStep === 0 && (
+                  <Step1
+                    control={control}
+                    errors={errors}
+                  />
+                )
+              }
+            </FormControl>
+          </form>
+        </Flex>
         <Flex
           justifyContent="center"
           style={{
