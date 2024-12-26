@@ -10,6 +10,8 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import {
   Account,
+  Connections,
+  CreateConnection,
   Dashboard,
   Login,
   Registration,
@@ -23,6 +25,9 @@ export interface IRouteType {
   kind?: any;
   text?: string;
   isPublic?: boolean;
+  isNoConnection?: boolean;
+  isNoFrame?: boolean;
+  isNoNavigate?: boolean;
   icon?: ReactNode;
   children?: IRouteType[]
 }
@@ -38,13 +43,29 @@ export const routes: Array<IRouteType> = [
     id: 'login',
     element: <Login />,
     path: '/login',
+    isNoFrame: true,
     isPublic: true,
   },
   {
     id: 'registration',
     element: <Registration />,
     path: '/registration',
+    isNoFrame: true,
     isPublic: true,
+  },
+  {
+    id: 'connections',
+    element: <Connections />,
+    path: '/connections',
+    isNoConnection: true,
+    isNoNavigate: true,
+  },
+  {
+    id: 'create-connection',
+    element: <CreateConnection />,
+    path: '/create-connection',
+    isNoConnection: true,
+    isNoNavigate: true,
   },
   {
     id: 'dashboard',
@@ -85,7 +106,3 @@ export const routes: Array<IRouteType> = [
     ],
   },
 ]
-
-export const pageTypes = {
-  noFrame: ['', 'login', 'registration'],
-}

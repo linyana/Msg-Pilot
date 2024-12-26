@@ -12,18 +12,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: { user_id: number; admin_user_id: number; connection_id: number }) {
-    const user = await this.usersService.findUserProfile(Number(payload.user_id));
+  async validate(payload: { user_id: number; connection_id: number }) {
+    const user = await this.usersService.findUserProfile(Number(payload.user_id || 0));
 
     if (!user) {
       throw new UnauthorizedException("Can't find user");
     }
 
-    const connection = await this.usersService.findConnector(Number(payload.connection_id));
-
-    if (!connection) {
-      throw new UnauthorizedException("Can't find connection");
-    }
+    const connection = await this.usersService.findConnector(Number(payload.connection_id || 0));
 
     return {
       user,

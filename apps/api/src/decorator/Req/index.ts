@@ -2,20 +2,17 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export const Req = createParamDecorator((data: string, ctx: ExecutionContext): number | undefined => {
   const req = ctx.switchToHttp().getRequest();
-  let response = req;
 
   switch (data) {
     case 'connection':
-      response = req.connection;
+      return req.user.connection;
     case 'connection_id':
-      response = Number(req.connection.id);
+      return Number(req.user.connection.id);
     case 'user_id':
-      response = Number(req.user.id);
+      return Number(req.user.user.id);
     case 'tenant_id':
-      response = Number(req.user.tenant_id);
+      return Number(req.user.user.tenant_id);
     default:
-      response = req;
+      return req;
   }
-
-  return response;
 });

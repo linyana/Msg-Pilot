@@ -4,7 +4,7 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TenantsModule } from './core/tenants/tenants.module';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { HttpExceptionFilter } from './filters/httpException.filter';
 import { AuthModule } from './core/auth/auth.module';
@@ -13,10 +13,11 @@ import path from 'path';
 import { MailerModule } from '@nestjs-modules/mailer';
 import dotenv from 'dotenv';
 import { MailModule } from './core/mails/mails.module';
-import { RateLimitMiddleware } from './middleware/rate-limit.middleware';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { RedisModule } from './core/redis/redis.module';
 import { RedModule } from './core/red/red.module';
+import { ConnectionModule } from './core/connection/connection.module';
+import { NoNeedConnectionGuard } from './guard';
 
 if (process.env.NODE_ENV === 'development') {
   dotenv.config({ path: '.env.local' });
@@ -57,6 +58,7 @@ if (process.env.NODE_ENV === 'development') {
     }),
     MailModule,
     RedModule,
+    ConnectionModule,
     PrismaModule,
     TenantsModule,
     ConfigModule.forRoot({ isGlobal: true }),
@@ -71,10 +73,14 @@ if (process.env.NODE_ENV === 'development') {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
+    {
+      provide: APP_GUARD,
+      useClass: NoNeedConnectionGuard,
+    },
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RateLimitMiddleware).forRoutes('affiliates');
+    console.log(consumer);
   }
 }

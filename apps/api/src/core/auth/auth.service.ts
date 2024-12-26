@@ -1,14 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthEntity } from '../users/entities/auth.entity';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
-  async login(email: string, password: string): Promise<AuthEntity> {
+  async login(email: string, password: string) {
     const user = await this.prisma.users.findFirst({ where: { email: email.toLowerCase() } });
 
     if (!user) {
@@ -26,19 +25,20 @@ export class AuthService {
     }
 
     const access = this.jwtService.sign({ user_id: user.id }, { secret: process.env.JWT_SECRET_KEY, expiresIn: '1d' });
-    const loginUser = { access, ...user };
 
-    return new AuthEntity(loginUser);
+    return {
+      access,
+    };
   }
 
   async chooseConnection(tenant_id: number, user_id: number, connection_id: number) {
-    if (!tenant_id || !connection_id) {
+    if (!tenant_id || !connection_id || isNaN(connection_id)) {
       throw new BadRequestException();
     }
 
     const connection = await this.prisma.connections.findFirst({
       where: {
-        id: Number(connection_id),
+        id: connection_id,
         tenant_id,
       },
       select: {
@@ -51,7 +51,7 @@ export class AuthService {
       throw new BadRequestException("Can't find this connection");
     }
 
-    const access = this.jwtService.sign({ user_id }, { secret: process.env.JWT_SECRET_KEY, expiresIn: '1d' });
+    const access = this.jwtService.sign({ user_id, connection_id }, { secret: process.env.JWT_SECRET_KEY, expiresIn: '1d' });
     return { access, connection };
   }
 }

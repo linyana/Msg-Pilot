@@ -1,2 +1,3 @@
-export * from './Login'
-export * from './Task'
+export * from './login'
+export * from './task'
+export * from './connections'

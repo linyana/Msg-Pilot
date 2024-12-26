@@ -17,7 +17,6 @@ import {
 } from '@msg-pilot/hooks'
 import {
   IRouteType,
-  pageTypes,
   routes,
 } from './routes'
 import {
@@ -51,8 +50,7 @@ export default () => {
   } = useLocation()
   const navigate = useNavigate()
 
-  const routeKey: string = pathname.split('/')[1]
-  const needFrame = useMemo(() => !(pageTypes.noFrame.includes(routeKey)), [pageTypes, routeKey])
+  const currentRoute = routes.find((route) => route.path === pathname?.split('?')[0])
 
   const config = useMemo(() => ({
     token,
@@ -87,7 +85,7 @@ export default () => {
           <MUIThemeProvider>
             <Layout
               routes={routes}
-              needFrame={needFrame}
+              currentRoute={currentRoute}
             >
               <Routes>
                 {flattenedRoutes.map((route) => (
