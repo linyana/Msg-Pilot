@@ -15,6 +15,9 @@ import {
 } from '@mui/material'
 import StoreIcon from '@mui/icons-material/Store'
 import {
+  useNavigate,
+} from 'react-router-dom'
+import {
   useGetConnections,
 } from '@/services'
 import {
@@ -36,6 +39,7 @@ export const Connections = () => {
   const [connections, setConnections] = useState<IConnectionType[]>([])
 
   const message = useMessage()
+  const navigate = useNavigate()
 
   const {
     data,
@@ -86,7 +90,7 @@ export const Connections = () => {
         <Loading loading={loading}>
           {
             !connections.length && (
-            <Empty tip="No connections" />
+              <Empty tip="No connections" />
             )
           }
           {
@@ -128,6 +132,9 @@ export const Connections = () => {
             <Button
               fullWidth
               variant="contained"
+              onClick={() => {
+                navigate('/create-connection')
+              }}
             >
               {
                 !connections.length ? 'Create your first connection' : 'Create a new connection'

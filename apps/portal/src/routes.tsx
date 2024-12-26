@@ -11,6 +11,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import {
   Account,
   Connections,
+  CreateConnection,
   Dashboard,
   Login,
   Registration,
@@ -56,6 +57,13 @@ export const routes: Array<IRouteType> = [
     id: 'connections',
     element: <Connections />,
     path: '/connections',
+    isNoConnection: true,
+    isNoNavigate: true,
+  },
+  {
+    id: 'create-connection',
+    element: <CreateConnection />,
+    path: '/create-connection',
     isNoConnection: true,
     isNoNavigate: true,
   },

@@ -53,7 +53,7 @@ const CustomAppTitle = () => (
     />
     <Typography
       variant="h6"
-      color="#75C82B"
+      color="#3cb96c"
     >
       Msg Pilot
     </Typography>
