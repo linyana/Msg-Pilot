@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useState,
 } from 'react'
 import {
   Button,
@@ -40,6 +41,10 @@ export const AuthProvider = ({
   const {
     token,
   } = useAppSelector((state) => state.global)
+  const [userInfo, setUserInfo] = useState<{
+    name?: string,
+    email?: string
+  } | null>(null)
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -51,23 +56,31 @@ export const AuthProvider = ({
   } = useGetInfo()
 
   useEffect(() => {
-    if (token && !currentRoute?.isPublic) {
+    if (token) {
       fetchData?.()
+    } else {
+      setUserInfo(null)
     }
   }, [token])
 
   useEffect(() => {
     if (data?.data) {
-      dispatch(updateUser({
-        name: data.data.user?.name || '',
-        email: data.data.user?.email || '',
-      }))
+      setUserInfo(data.data.user)
     }
   }, [data?.data])
 
+  useEffect(() => {
+    if (userInfo) {
+      dispatch(updateUser({
+        name: userInfo?.name || '',
+        email: userInfo?.email || '',
+      }))
+    }
+  }, [userInfo])
+
   return (
     <Loading
-      loading={loading}
+      loading={loading || (!currentRoute?.isPublic && !userInfo)}
       isGlobal
     >
       {

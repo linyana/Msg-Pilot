@@ -86,7 +86,7 @@ export const CreateConnection = () => {
   const [formData, setFormData] = useState<ICreateConnectionType>()
   const [activeStep, setActiveStep] = useState(0)
   const [selectedPlatform, setSelectedPlatform] = useState<CONNECTION_TYPE>()
-  const steps = ['Platform info', 'Connection info', 'Settings']
+  const steps = ['Platform', 'Connection Information', 'Settings']
 
   const message = useMessage()
   const navigate = useNavigate()
@@ -221,6 +221,15 @@ export const CreateConnection = () => {
             }}
           >
             <div>
+              <Typography
+                textAlign="center"
+                variant="h4"
+                style={{
+                  padding: 16,
+                }}
+              >
+                {steps[activeStep]}
+              </Typography>
               {
                 activeStep === 0 && (
                   <Step1
@@ -271,6 +280,7 @@ export const CreateConnection = () => {
               sx={{
                 maxWidth: 480,
                 flexGrow: 1,
+                padding: 0,
               }}
               nextButton={(
                 <>
