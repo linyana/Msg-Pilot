@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UsersService } from './users.service';
-import { Req } from 'src/decorator';
+import { NoNeedConnection, Req } from 'src/decorator';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -16,6 +16,7 @@ export class UsersController {
   }
 
   @Get('info')
+  @NoNeedConnection()
   getCurrentInfo(@Req('connection_id') connection_id: number) {
     return this.usersService.getCurrentInfo({
       connection_id,

@@ -27,6 +27,7 @@ import {
 } from './components'
 import i18n from './lang'
 import {
+  AuthProvider,
   MUIThemeProvider,
 } from './provider'
 import {
@@ -83,20 +84,22 @@ export default () => {
       <ConfigProvider config={config}>
         <MessageApiProvider>
           <MUIThemeProvider>
-            <Layout
-              routes={routes}
-              currentRoute={currentRoute}
-            >
-              <Routes>
-                {flattenedRoutes.map((route) => (
-                  <Route
-                    key={route.id}
-                    path={route.path}
-                    element={token || route.isPublic ? route.element : <Navigate to="/login" />}
-                  />
-                ))}
-              </Routes>
-            </Layout>
+            <AuthProvider>
+              <Layout
+                routes={routes}
+                currentRoute={currentRoute}
+              >
+                <Routes>
+                  {flattenedRoutes.map((route) => (
+                    <Route
+                      key={route.id}
+                      path={route.path}
+                      element={token || route.isPublic ? route.element : <Navigate to="/login" />}
+                    />
+                  ))}
+                </Routes>
+              </Layout>
+            </AuthProvider>
           </MUIThemeProvider>
         </MessageApiProvider>
       </ConfigProvider>

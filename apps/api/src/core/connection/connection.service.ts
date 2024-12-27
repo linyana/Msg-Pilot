@@ -21,14 +21,28 @@ export class ConnectionService {
   }
 
   async createConnection(tenant_id: number, createConnectionDto: CreateConnectionDto) {
-    const { name, type } = createConnectionDto;
-    await this.prisma.connections.create({
+    const { account, connection, type } = createConnectionDto;
+
+    const newConnection = await this.prisma.connections.create({
       data: {
-        name: name.trim(),
+        name: connection.name.trim(),
+        description: connection.description,
         type,
         tenant_id,
       },
     });
+
+    if (account.cookie || account.description || account.name) {
+      await this.prisma.accounts.create({
+        data: {
+          name: account.name?.trim(),
+          description: account.description,
+          tenant_id,
+          connection_id: Number(newConnection.id),
+        },
+      });
+    }
+
     return 'Successfully created connection';
   }
 }
