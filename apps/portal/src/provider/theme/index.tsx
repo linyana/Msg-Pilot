@@ -13,6 +13,6 @@ export const MUIThemeProvider = ({
   children,
 }: IPropsType) => (
   <ThemeProvider theme={theme}>
-    { children}
+    {children}
   </ThemeProvider>
 )

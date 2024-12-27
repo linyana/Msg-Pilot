@@ -20,8 +20,6 @@ import {
 } from '@mui/lab'
 import {
   updateToken,
-  updateUserEmail,
-  updateUserName,
   useAppDispatch,
   useAppSelector,
 } from '@/store'
@@ -71,20 +69,9 @@ export const Login = () => {
   }, [formData])
 
   useEffect(() => {
-    window.localStorage.removeItem('msg-pilot-jwt-token')
-    window.localStorage.removeItem('msg-pilot-jwt-userEmail')
-    window.localStorage.removeItem('msg-pilot-jwt-userName')
-    dispatch(updateUserName(''))
-    dispatch(updateToken(''))
-    dispatch(updateUserEmail(''))
-  }, [])
-
-  useEffect(() => {
     const response = data?.data
     if (response) {
-      dispatch(updateUserName(response?.name || ''))
       dispatch(updateToken(response?.access || ''))
-      dispatch(updateUserEmail(response?.email || ''))
     }
 
     if (token && response) {

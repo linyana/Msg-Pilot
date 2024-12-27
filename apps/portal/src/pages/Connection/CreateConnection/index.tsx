@@ -300,14 +300,32 @@ export const CreateConnection = () => {
                 </>
               )}
               backButton={(
-                <Button
-                  size="small"
-                  onClick={handleBack}
-                  disabled={activeStep === 0 || loading}
-                >
-                  <KeyboardArrowLeft />
-                  Back
-                </Button>
+                <>
+                  {
+                    activeStep
+                      ? (
+                        <Button
+                          size="small"
+                          onClick={handleBack}
+                          disabled={loading}
+                        >
+                          <KeyboardArrowLeft />
+                          Back
+                        </Button>
+                      )
+                      : (
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            navigate('/connections')
+                          }}
+                        >
+                          <KeyboardArrowLeft />
+                          Return
+                        </Button>
+                      )
+                  }
+                </>
               )}
             />
           </Flex>

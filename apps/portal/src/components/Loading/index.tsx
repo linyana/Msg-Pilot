@@ -3,8 +3,14 @@ import {
   CircularProgress,
 } from '@mui/material'
 import {
+  createPortal,
+} from 'react-dom'
+import {
   Flex,
 } from '../Flex'
+import {
+  Center,
+} from '../Center'
 
 type IPropsType = {
   loading: boolean;
@@ -13,6 +19,7 @@ type IPropsType = {
   size?: number;
   needMask?: boolean;
   zIndex?: number;
+  isGlobal?: boolean;
 };
 
 export const Loading = ({
@@ -22,50 +29,68 @@ export const Loading = ({
   size = 40,
   needMask = false,
   zIndex = 999,
-}: IPropsType) => (
-  <div style={{
-    position: 'relative',
-  }}
-  >
-    {
-      loading ? (
-        <>
-          {
-            needMask ? (
-              <>
-                <div
-                  style={{
-                    display: loading ? 'flex' : 'none',
-                    zIndex,
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: needMask ? 'rgba(255,255,255,0.5)' : 'transparent',
-                    backdropFilter: needMask ? 'blur(2px)' : 'none',
-                  }}
+  isGlobal = false,
+}: IPropsType) => {
+  if (isGlobal && loading) {
+    return createPortal(
+      <Center>
+        <Flex
+          justifyContent="center"
+          alignItems="center"
+          padding="40px"
+        >
+          <CircularProgress size={size} />
+        </Flex>
+      </Center>,
+      document.body,
+    )
+  }
+
+  return (
+    <div style={{
+      position: 'relative',
+    }}
+    >
+      {
+        loading ? (
+          <>
+            {
+              needMask ? (
+                <>
+                  <div
+                    style={{
+                      display: loading ? 'flex' : 'none',
+                      zIndex,
+                      position: 'absolute',
+                      left: 0,
+                      top: 0,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '100%',
+                      height: '100%',
+                      backgroundColor: needMask ? 'rgba(255,255,255,0.5)' : 'transparent',
+                      backdropFilter: needMask ? 'blur(2px)' : 'none',
+                    }}
+                  >
+                    {content || (
+                      <CircularProgress size={size} />
+                    )}
+                  </div>
+                  {children}
+                </>
+              ) : (
+                <Flex
+                  justifyContent="center"
+                  alignItems="center"
+                  padding="40px"
                 >
-                  {content || (
                   <CircularProgress size={size} />
-                  )}
-                </div>
-                {children}
-              </>
-            ) : (
-              <Flex
-                justifyContent="center"
-                alignItems="center"
-                padding="40px"
-              >
-                <CircularProgress size={size} />
-              </Flex>
-            )
-          }
-        </>
-      ) : <>{children}</>
-    }
-  </div>
-)
+                </Flex>
+              )
+            }
+          </>
+        ) : <>{children}</>
+      }
+    </div>
+  )
+}
