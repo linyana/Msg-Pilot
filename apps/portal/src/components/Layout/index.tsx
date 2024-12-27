@@ -27,7 +27,7 @@ import {
 import logo from '@/assets/logo.svg'
 import {
   updateToken,
-  updateUserName,
+  updateUser,
   useAppSelector,
 } from '@/store'
 
@@ -66,8 +66,7 @@ export const Layout = ({
   currentRoute,
 }: IPropsType) => {
   const {
-    userName,
-    userEmial,
+    user,
   } = useAppSelector((state) => state.global)
   const theme = useTheme()
   const dispatch = useDispatch()
@@ -102,7 +101,7 @@ export const Layout = ({
     },
     signOut: () => {
       dispatch(updateToken(''))
-      dispatch(updateUserName(''))
+      dispatch(updateUser({}))
     },
   }), [])
 
@@ -113,8 +112,8 @@ export const Layout = ({
       router={router}
       session={{
         user: {
-          name: userName,
-          email: userEmial,
+          name: user.name,
+          email: user.email,
         },
       }}
       authentication={authentication}

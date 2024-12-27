@@ -39,8 +39,8 @@ export class UsersService {
     });
   }
 
-  async getCurrentInfo(params: { connection_id: number }) {
-    const { connection_id } = params;
+  async getCurrentInfo(params: { connection_id: number; user_id: number }) {
+    const { connection_id, user_id } = params;
 
     const connection = await this.prisma.connections.findUnique({
       where: {
@@ -52,8 +52,19 @@ export class UsersService {
       },
     });
 
+    const user = await this.prisma.users.findUnique({
+      where: {
+        id: user_id,
+      },
+      select: {
+        name: true,
+        email: true,
+      },
+    });
+
     return {
       connection,
+      user,
     };
   }
 }

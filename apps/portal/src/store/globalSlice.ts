@@ -4,47 +4,48 @@ import {
 } from '@reduxjs/toolkit'
 
 interface GlobalState {
-  userName: string
   token: string
-  userEmail: string
-  msgPilotLanguage: string
+  user: {
+    name?: string
+    email?: string
+  }
+  language: string
 }
 
+const localStorageUser = JSON.parse(window.localStorage.getItem('msg-pilot-user') || '{}')
+
 const initialState: GlobalState = {
-  userName: window.localStorage.getItem('msg-pilot-jwt-userName') || '',
   token: window.localStorage.getItem('msg-pilot-jwt-token') || '',
-  userEmail: window.localStorage.getItem('msg-pilot-jwt-userEmail') || '',
-  msgPilotLanguage: window.localStorage.getItem('msg-pilot-language') || 'en',
+  user: {
+    name: localStorageUser?.name || '',
+    email: localStorageUser?.email || '',
+  },
+  language: window.localStorage.getItem('msg-pilot-language') || 'en',
 }
 
 export const globalSlice = createSlice({
   name: 'global',
   initialState,
   reducers: {
-    updateUserName: (state, action: PayloadAction<string>) => {
-      state.userName = action.payload
-      window.localStorage.setItem('msg-pilot-jwt-userName', state.userName)
-    },
     updateToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload
       window.localStorage.setItem('msg-pilot-jwt-token', state.token)
     },
-    updateUserEmail: (state, action: PayloadAction<string>) => {
-      state.userEmail = action.payload
-      window.localStorage.setItem('msg-pilot-jwt-userEmail', state.userEmail)
+    updateUser: (state, action: PayloadAction<{name?: string, email?: string}>) => {
+      state.user = action.payload
+      window.localStorage.setItem('msg-pilot-user', JSON.stringify(state.user))
     },
-    updateMsgPilotLanguage: (state, action: PayloadAction<string>) => {
-      state.msgPilotLanguage = action.payload
-      window.localStorage.setItem('msg-pilot-language', state.msgPilotLanguage)
+    updateLanguage: (state, action: PayloadAction<string>) => {
+      state.language = action.payload
+      window.localStorage.setItem('msg-pilot-language', state.language)
     },
   },
 })
 
 export const {
-  updateUserName,
+  updateUser,
   updateToken,
-  updateUserEmail,
-  updateMsgPilotLanguage,
+  updateLanguage,
 } = globalSlice.actions
 
 export default globalSlice.reducer

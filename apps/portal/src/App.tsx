@@ -84,7 +84,7 @@ export default () => {
       <ConfigProvider config={config}>
         <MessageApiProvider>
           <MUIThemeProvider>
-            <AuthProvider>
+            <AuthProvider currentRoute={currentRoute}>
               <Layout
                 routes={routes}
                 currentRoute={currentRoute}

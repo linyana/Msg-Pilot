@@ -17,9 +17,10 @@ export class UsersController {
 
   @Get('info')
   @NoNeedConnection()
-  getCurrentInfo(@Req('connection_id') connection_id: number) {
+  getCurrentInfo(@Req('connection_id') connection_id: number, @Req('user_id') user_id: number) {
     return this.usersService.getCurrentInfo({
       connection_id,
+      user_id,
     });
   }
 }
