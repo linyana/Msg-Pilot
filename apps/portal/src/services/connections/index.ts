@@ -18,10 +18,23 @@ export const useGetConnections = () => useHttp<{
 })
 
 export const useCreateConnection = (data?: ICreateConnectionType) => useHttp<{
-  data: IConnectionType[],
+  data: string,
   meta: IMetaType
 }>({
   url: '/connections',
+  method: 'post',
+  data,
+})
+
+export const useChooseConnection = (data: {
+  connection_id?: number
+}) => useHttp<{
+  data: {
+    access: string
+  },
+  meta: IMetaType
+}>({
+  url: '/tenants/choose-connection',
   method: 'post',
   data,
 })

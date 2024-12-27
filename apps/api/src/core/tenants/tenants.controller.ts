@@ -4,7 +4,7 @@ import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from '../users/dto/login-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { Req } from 'src/decorator';
+import { NoNeedConnection, Req } from 'src/decorator';
 
 @Controller('tenants')
 export class TenantsController {
@@ -16,6 +16,7 @@ export class TenantsController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @NoNeedConnection()
   @Post('choose-connection')
   chooseConnection(@Req('tenant_id') tenant_id: number, @Req('user_id') user_id: number, @Body() body: { connection_id: number }) {
     const connection_id = body.connection_id;

@@ -5,6 +5,7 @@ import {
 export * from './enum'
 
 export type IConnectionType = {
+  id?: string | number
   type: CONNECTION_TYPE
   name: string
   description?: string

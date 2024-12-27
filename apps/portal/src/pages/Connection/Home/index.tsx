@@ -18,6 +18,10 @@ import {
   useNavigate,
 } from 'react-router-dom'
 import {
+  useDispatch,
+} from 'react-redux'
+import {
+  useChooseConnection,
   useGetConnections,
 } from '@/services'
 import {
@@ -34,12 +38,21 @@ import {
 import {
   CONNECTION_INFO,
 } from '@/constants'
+import {
+  updateToken,
+  useAppSelector,
+} from '@/store'
 
 export const Connections = () => {
   const [connections, setConnections] = useState<IConnectionType[]>([])
+  const [selectedConnection, setSelectedConnection] = useState<number>()
 
   const message = useMessage()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const {
+    token,
+  } = useAppSelector((state) => state.global)
 
   const {
     data,
@@ -47,6 +60,39 @@ export const Connections = () => {
     loading,
     error,
   } = useGetConnections()
+
+  const {
+    data: chooseData,
+    fetchData: fetchChooseData,
+    loading: chooseLoading,
+    error: chooseError,
+  } = useChooseConnection({
+    connection_id: selectedConnection,
+  })
+
+  useEffect(() => {
+    if (selectedConnection) {
+      fetchChooseData?.()
+    }
+  }, [selectedConnection])
+
+  useEffect(() => {
+    if (chooseError) {
+      message.error(chooseError)
+      setSelectedConnection(0)
+    }
+  }, [chooseError])
+
+  useEffect(() => {
+    const response = chooseData?.data
+    if (response) {
+      dispatch(updateToken(response?.access || ''))
+    }
+
+    if (token && response) {
+      navigate('/dashboard')
+    }
+  }, [chooseData?.data, token])
 
   useEffect(() => {
     fetchData?.()
@@ -88,44 +134,54 @@ export const Connections = () => {
           width: 600,
         }}
         >
-          <Loading loading={loading}>
+          <Loading
+            loading={loading || chooseLoading}
+            needMask
+          >
             {
-            !connections.length && (
-              <Empty tip="No connections" />
-            )
-          }
+              !connections.length && (
+                <Empty tip="No connections" />
+              )
+            }
             {
-            connections.map((connection, index) => (
-              <>
-                {
-                  index && <Divider />
-                }
-                <ListItem
-                  component="div"
-                  disablePadding
-                >
-                  <ListItemButton style={{
-                    padding: '16px',
-                  }}
+              connections.map((connection, index) => (
+                <div key={connection.id}>
+                  {
+                    index ? <Divider /> : <></>
+                  }
+                  <ListItem
+                    component="div"
+                    disablePadding
+                    onClick={() => {
+                      setSelectedConnection(Number(connection.id))
+                    }}
                   >
-                    <ListItemAvatar>
-                      <Avatar alt="Connection">
-                        {CONNECTION_INFO[connection.type]?.logo || <StoreIcon />}
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={connection.name}
-                      secondary={connection.description ? (
-                        <>
-                          {connection.description}
-                        </>
-                      ) : undefined}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              </>
-            ))
-          }
+                    <ListItemButton
+                      style={{
+                        padding: '16px',
+                      }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          alt="Connection"
+                          src={CONNECTION_INFO[connection.type]?.logo}
+                        >
+                          <StoreIcon />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={connection.name}
+                        secondary={connection.description ? (
+                          <>
+                            {connection.description}
+                          </>
+                        ) : undefined}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                </div>
+              ))
+            }
             <div style={{
               padding: 16,
             }}
@@ -138,8 +194,8 @@ export const Connections = () => {
                 }}
               >
                 {
-                !connections.length ? 'Create your first connection' : 'Create a new connection'
-              }
+                  !connections.length ? 'Create your first connection' : 'Create a new connection'
+                }
               </Button>
             </div>
           </Loading>

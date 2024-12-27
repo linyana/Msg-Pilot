@@ -21,7 +21,6 @@ import {
 import {
   updateToken,
   updateUserEmail,
-  updateUserId,
   updateUserName,
   useAppDispatch,
   useAppSelector,
@@ -86,10 +85,9 @@ export const Login = () => {
       dispatch(updateUserName(response?.name || ''))
       dispatch(updateToken(response?.access || ''))
       dispatch(updateUserEmail(response?.email || ''))
-      dispatch(updateUserId(response?.id || ''))
     }
 
-    if (token) {
+    if (token && response) {
       navigate('/connections')
     }
   }, [data?.data, token])

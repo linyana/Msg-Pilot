@@ -27,6 +27,9 @@ import {
   LoadingButton,
 } from '@mui/lab'
 import {
+  useNavigate,
+} from 'react-router-dom'
+import {
   ColorlibConnector,
   ColorlibStepIconRoot,
 } from './styled'
@@ -86,6 +89,7 @@ export const CreateConnection = () => {
   const steps = ['Platform info', 'Connection info', 'Settings']
 
   const message = useMessage()
+  const navigate = useNavigate()
 
   const {
     control,
@@ -150,6 +154,7 @@ export const CreateConnection = () => {
   useEffect(() => {
     if (data?.data) {
       message.success('Successfully created a new connection.')
+      navigate('/connections')
     }
   }, [data?.data])
 

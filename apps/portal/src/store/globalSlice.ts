@@ -8,8 +8,6 @@ interface GlobalState {
   token: string
   userEmail: string
   msgPilotLanguage: string
-  userId:string
-  merchant_id: string
 }
 
 const initialState: GlobalState = {
@@ -17,18 +15,12 @@ const initialState: GlobalState = {
   token: window.localStorage.getItem('msg-pilot-jwt-token') || '',
   userEmail: window.localStorage.getItem('msg-pilot-jwt-userEmail') || '',
   msgPilotLanguage: window.localStorage.getItem('msg-pilot-language') || 'en',
-  userId: window.localStorage.getItem('msg-pilot-jwr-userId') || '',
-  merchant_id: window.localStorage.getItem('msg-pilot-merchant-id') || '',
 }
 
 export const globalSlice = createSlice({
   name: 'global',
   initialState,
   reducers: {
-    updateUserId: (state, action: PayloadAction<string>) => {
-      state.userId = action.payload
-      window.localStorage.setItem('msg-pilot-jwr-userId', state.userId)
-    },
     updateUserName: (state, action: PayloadAction<string>) => {
       state.userName = action.payload
       window.localStorage.setItem('msg-pilot-jwt-userName', state.userName)
@@ -53,7 +45,6 @@ export const {
   updateToken,
   updateUserEmail,
   updateMsgPilotLanguage,
-  updateUserId,
 } = globalSlice.actions
 
 export default globalSlice.reducer

@@ -5,6 +5,9 @@ import {
   ILoginType,
   ILoginResponseType,
 } from '@/pages/Login/types'
+import {
+  IMetaType,
+} from '../types'
 
 export const useLogin = (data?: ILoginType) => useHttp<ILoginResponseType>({
   url: '/tenants/sessions',
@@ -12,14 +15,10 @@ export const useLogin = (data?: ILoginType) => useHttp<ILoginResponseType>({
   data,
 })
 
-export const useSampleLogin = (data: ILoginType) => useHttp<ILoginResponseType>({
-  url: '/sample/sessions',
-  method: 'post',
-  data,
-})
-
-export const useSampleRegister = (data: ILoginType) => useHttp<ILoginResponseType>({
-  url: '/sample/register',
-  method: 'post',
-  data,
+export const useGetInfo = () => useHttp<{
+  data: any,
+  meta: IMetaType
+}>({
+  url: '/users/info',
+  method: 'get',
 })
