@@ -1,5 +1,6 @@
 enum CONNECTIONTYPE {
-  Red
+  Red,
+  TikTok,
 }
 
 export const CONNECTION_TYPE = Object.fromEntries(

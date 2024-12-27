@@ -3,6 +3,7 @@ import {
 } from '@msg-pilot/hooks'
 import {
   IConnectionType,
+  ICreateConnectionType,
 } from '@/types'
 import {
   IMetaType,
@@ -14,4 +15,13 @@ export const useGetConnections = () => useHttp<{
 }>({
   url: '/connections',
   method: 'get',
+})
+
+export const useCreateConnection = (data?: ICreateConnectionType) => useHttp<{
+  data: IConnectionType[],
+  meta: IMetaType
+}>({
+  url: '/connections',
+  method: 'post',
+  data,
 })

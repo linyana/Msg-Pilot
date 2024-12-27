@@ -48,7 +48,9 @@ export const Login = () => {
     token,
   } = useAppSelector((state) => state.global)
   const {
-    control, handleSubmit, formState: {
+    control,
+    handleSubmit,
+    formState: {
       errors,
     },
   } = useForm<ILoginType>()

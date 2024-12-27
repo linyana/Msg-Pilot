@@ -24,8 +24,8 @@ import {
   IConnectionType,
 } from '@/types'
 import {
-  Center,
   Empty,
+  Flex,
   Loading,
 } from '@/components'
 import {
@@ -65,35 +65,36 @@ export const Connections = () => {
   }, [error])
 
   return (
-    <Center>
-      <Typography
-        variant="h3"
-        gutterBottom
-        textAlign="center"
-        marginBottom="8px"
-      >
-        Connection List
-      </Typography>
-      <Typography
-        variant="h5"
-        gutterBottom
-        textAlign="center"
-        marginBottom="40px"
-      >
-        Manage your connection list.
-      </Typography>
-      <Card sx={{
-        padding: 0,
-        width: 600,
-      }}
-      >
-        <Loading loading={loading}>
-          {
+    <Flex justifyContent="center">
+      <div>
+        <Typography
+          variant="h3"
+          gutterBottom
+          textAlign="center"
+          marginBottom="8px"
+        >
+          Connection List
+        </Typography>
+        <Typography
+          variant="h5"
+          gutterBottom
+          textAlign="center"
+          marginBottom="40px"
+        >
+          Manage your connection list.
+        </Typography>
+        <Card sx={{
+          padding: 0,
+          width: 600,
+        }}
+        >
+          <Loading loading={loading}>
+            {
             !connections.length && (
               <Empty tip="No connections" />
             )
           }
-          {
+            {
             connections.map((connection, index) => (
               <>
                 {
@@ -125,24 +126,25 @@ export const Connections = () => {
               </>
             ))
           }
-          <div style={{
-            padding: 16,
-          }}
-          >
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={() => {
-                navigate('/create-connection')
-              }}
+            <div style={{
+              padding: 16,
+            }}
             >
-              {
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={() => {
+                  navigate('/create-connection')
+                }}
+              >
+                {
                 !connections.length ? 'Create your first connection' : 'Create a new connection'
               }
-            </Button>
-          </div>
-        </Loading>
-      </Card>
-    </Center>
+              </Button>
+            </div>
+          </Loading>
+        </Card>
+      </div>
+    </Flex>
   )
 }
