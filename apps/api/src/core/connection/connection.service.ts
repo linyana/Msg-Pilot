@@ -23,14 +23,6 @@ export class ConnectionService {
   async createConnection(tenant_id: number, createConnectionDto: CreateConnectionDto) {
     const { account, connection, type } = createConnectionDto;
 
-    await this.prisma.connections.create({
-      data: {
-        name: connection.name.trim(),
-        type,
-        tenant_id,
-      },
-    });
-
     const newConnection = await this.prisma.connections.create({
       data: {
         name: connection.name.trim(),
