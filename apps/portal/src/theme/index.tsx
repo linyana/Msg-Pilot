@@ -25,7 +25,6 @@ export const theme: Theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          width: '400px',
           padding: '16px',
           borderRadius: '0.5rem',
           borderColor: 'rgb(299,299,299)',
@@ -52,6 +51,14 @@ export const theme: Theme = createTheme({
       color: 'rgb(123, 128, 154)',
       fontSize: '1.25rem',
       fontWeight: 400,
+    },
+    h6: {
+      fontSize: '1rem',
+      fontWeight: 700,
+    },
+    body2: {
+      color: 'rgb(115, 115, 115)',
+      fontSize: '14px',
     },
   },
 })

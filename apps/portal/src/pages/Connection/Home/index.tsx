@@ -131,7 +131,8 @@ export const Connections = () => {
         </Typography>
         <Card sx={{
           padding: 0,
-          width: 600,
+          width: '40vw',
+          minWidth: 600,
         }}
         >
           <Loading

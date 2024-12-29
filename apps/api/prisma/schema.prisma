@@ -60,6 +60,8 @@ model accounts {
   name          String?     @db.VarChar(255)
   cookie        String?
   description   String?
+  is_expired    Boolean     @default(false)
+  expired_at    DateTime?
   connection_id BigInt
   tenant_id     BigInt
   connection    connections @relation(fields: [connection_id], references: [id])

@@ -4,12 +4,14 @@ import { AuthService } from '../auth/auth.service';
 import { LoginUserDto } from '../users/dto/login-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { NoNeedConnection, Req } from 'src/decorator';
+import { isPublic, NoNeedConnection, Req } from 'src/decorator';
 
 @Controller('tenants')
 export class TenantsController {
   constructor(private readonly tenantsService: TenantsService, private authService: AuthService) {}
+
   @Post('sessions')
+  @isPublic()
   login(@Body() { email, password }: LoginUserDto) {
     return this.authService.login(email, password);
   }
