@@ -30,6 +30,10 @@ type IPropsType = {
   record: IAccountType
 }
 
+const {
+  TextArea,
+} = Input
+
 export const EditDrawer = ({
   refreshData,
   record,
@@ -109,12 +113,14 @@ export const EditDrawer = ({
           <Form.Item
             label="Cookie"
             name="cookie"
-            rules={[{
-              required: true,
-              message: 'please type your cookie.',
-            }]}
           >
             <Input />
+          </Form.Item>
+          <Form.Item
+            label="Cookie"
+            name="cookie"
+          >
+            <TextArea />
           </Form.Item>
         </Form>
         <Flex justifyContent="flex-end">

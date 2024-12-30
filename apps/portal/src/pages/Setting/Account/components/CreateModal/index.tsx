@@ -6,7 +6,6 @@ import {
   FormProps,
 } from 'antd'
 import {
-  useContext,
   useEffect,
   useState,
 } from 'react'
@@ -26,6 +25,10 @@ import {
 type IPropsType = {
   refreshData: () => void
 }
+
+const {
+  TextArea,
+} = Input
 
 export const CreateModal = (
   {
@@ -123,12 +126,14 @@ export const CreateModal = (
           <Form.Item
             label="Cookie"
             name="cookie"
-            rules={[{
-              required: true,
-              message: 'please type your cookie.',
-            }]}
           >
             <Input />
+          </Form.Item>
+          <Form.Item
+            label="Description"
+            name="desription"
+          >
+            <TextArea />
           </Form.Item>
         </Form>
       </Modal>
