@@ -1,48 +1,58 @@
-import {
-  useEffect,
+import React, {
   useState,
+  useEffect,
+  useContext,
 } from 'react'
 import {
   Card,
   Typography,
-} from '@mui/material'
+  Table,
+  TableProps,
+  Tooltip,
+} from 'antd'
+import {
+  ExclamationCircleFilled,
+} from '@ant-design/icons'
 import {
   useGetAccounts,
 } from '@/services'
 import {
-  useMessage,
-} from '@/hooks'
+  Flex,
+} from '@/components'
+import {
+  CreateModal,
+  DeleteModal,
+  EditDrawer,
+} from './components'
 import {
   IAccountType,
 } from '@/types'
 import {
-  Loading,
-  Table,
-} from '@/components'
+  useMessage,
+} from '@/hooks'
 
-export const Account = () => {
-  const [accounts, setAccounts] = useState<IAccountType[]>([])
-  const [filter, setFilter] = useState<object>({})
-  const [selectedKey, setSelectedKey] = useState<number[]>([])
+const {
+  Text,
+} = Typography
 
+export const Account = React.memo(() => {
+  const [data, setData] = useState<any>([])
   const message = useMessage()
 
   const {
-    data,
+    data: getData,
     fetchData,
     loading,
     error,
   } = useGetAccounts()
 
-  useEffect(() => {
+  const refreshData = () => {
     fetchData?.()
-  }, [])
+  }
 
   useEffect(() => {
-    if (data?.data) {
-      setAccounts(data.data)
-    }
-  }, [data?.data])
+    refreshData()
+  }, [])
 
   useEffect(() => {
     if (error) {
@@ -50,27 +60,88 @@ export const Account = () => {
     }
   }, [error])
 
+  useEffect(() => {
+    setData(getData?.data || [])
+  }, [getData?.data])
+
+  const columns: TableProps<IAccountType>['columns'] = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (_, record) => (
+        <Flex gap="8px">
+          {record?.name || record?.name || ''}
+          {
+            record?.is_expired && (
+              <Tooltip
+                placement="right"
+                title={(
+                  <>
+                    The cookie may have expired, please check it.
+                  </>
+                )}
+              >
+                <div style={{
+                  color: '#ECB424',
+                }}
+                >
+                  <ExclamationCircleFilled />
+                </div>
+              </Tooltip>
+            )
+          }
+        </Flex>
+      ),
+    },
+    {
+      title: 'Cookie',
+      dataIndex: 'cookie',
+      key: 'cookie',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      fixed: 'right',
+      render: (_, record) => (
+        <Flex>
+          <EditDrawer
+            refreshData={refreshData}
+            record={record}
+          />
+          <DeleteModal
+            refreshData={refreshData}
+            record={record}
+          />
+        </Flex>
+      ),
+    },
+  ]
+
   return (
-    <Loading loading={loading}>
+    <>
       <Card>
-        <Typography
-          variant="h6"
-          marginBottom="8px"
+        <Flex alignItems="center">
+          <Text>Add your Account</Text>
+        </Flex>
+        <Flex
+          justifyContent="space-between"
+          alignItems="center"
+          gap="16px"
         >
-          Account
-        </Typography>
+          <Text>Please keep your login status when adding the cookie. Once log out your Account, please reset your cookie again.</Text>
+          <CreateModal refreshData={refreshData} />
+        </Flex>
         <Table
-          data={accounts}
-          filter={filter}
-          setFilter={setFilter}
-          selectedKey={selectedKey}
-          setSelectedKey={setSelectedKey}
-          columns={[{
-            header: 'Name',
-            hash: 'name',
-          }]}
+          style={{
+            marginTop: 16,
+          }}
+          loading={loading}
+          columns={columns}
+          dataSource={data}
+          rowKey="id"
         />
       </Card>
-    </Loading>
+    </>
   )
-}
+})

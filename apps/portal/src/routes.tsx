@@ -22,7 +22,6 @@ export interface IRouteType {
   id?: string;
   element?: ReactNode;
   path?: string;
-  kind?: any;
   text?: string;
   isPublic?: boolean;
   isNoConnection?: boolean;
@@ -71,36 +70,27 @@ export const routes: Array<IRouteType> = [
     id: 'dashboard',
     element: <Dashboard />,
     text: 'Dashboard',
-    path: 'dashboard',
+    path: '/dashboard',
     icon: <DashboardIcon />,
   },
   {
-    id: 'task',
+    id: 'tasks',
     element: <Task />,
     text: 'Tasks',
-    path: 'tasks',
+    path: '/tasks',
     icon: <AssignmentIcon />,
   },
   {
-    id: 'divider',
-    kind: 'divider',
-  },
-  {
-    id: 'header',
-    kind: 'header',
-    text: 'Setting',
-  },
-  {
-    id: 'setting',
+    id: 'settings',
     text: 'Settings',
-    path: 'settings',
+    path: '/settings',
     icon: <SettingsIcon />,
     children: [
       {
-        id: 'setting/account',
+        id: 'settings/account',
         element: <Account />,
         text: 'Account',
-        path: 'settings/account',
+        path: '/settings/account',
         icon: <AdminPanelSettingsIcon />,
       },
     ],

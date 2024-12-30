@@ -1,5 +1,5 @@
 export type IAccountType = {
-  id: number
+  id: string
   name?: string
   description?: string
   cookie?: string

@@ -27,6 +27,7 @@ import {
 } from './components'
 import i18n from './lang'
 import {
+  AntdThemeProvider,
   AuthProvider,
   MUIThemeProvider,
 } from './provider'
@@ -50,9 +51,6 @@ export default () => {
     pathname,
   } = useLocation()
   const navigate = useNavigate()
-
-  const currentRoute = routes.find((route) => route.path === pathname?.split('?')[0])
-
   const config = useMemo(() => ({
     token,
     apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
@@ -79,27 +77,31 @@ export default () => {
     return flattenRoutes
   }, [routes])
 
+  const currentRoute = flattenedRoutes?.find((route) => route.path === pathname)
+
   return (
     <I18nextProvider i18n={i18n}>
       <ConfigProvider config={config}>
         <MessageApiProvider>
           <MUIThemeProvider>
-            <AuthProvider currentRoute={currentRoute}>
-              <Layout
-                routes={routes}
-                currentRoute={currentRoute}
-              >
-                <Routes>
-                  {flattenedRoutes.map((route) => (
-                    <Route
-                      key={route.id}
-                      path={route.path}
-                      element={token || route.isPublic ? route.element : <Navigate to="/login" />}
-                    />
-                  ))}
-                </Routes>
-              </Layout>
-            </AuthProvider>
+            <AntdThemeProvider>
+              <AuthProvider currentRoute={currentRoute}>
+                <Layout
+                  routes={routes}
+                  currentRoute={currentRoute}
+                >
+                  <Routes>
+                    {flattenedRoutes.map((route) => (
+                      <Route
+                        key={route.id}
+                        path={route.path}
+                        element={token || route.isPublic ? route.element : <Navigate to="/login" />}
+                      />
+                    ))}
+                  </Routes>
+                </Layout>
+              </AuthProvider>
+            </AntdThemeProvider>
           </MUIThemeProvider>
         </MessageApiProvider>
       </ConfigProvider>
