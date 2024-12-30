@@ -18,6 +18,7 @@ import { RedisModule } from './core/redis/redis.module';
 import { RedModule } from './core/red/red.module';
 import { ConnectionModule } from './core/connection/connection.module';
 import { NoNeedConnectionGuard } from './guard';
+import { AccountsModule } from './core/accounts/accounts.module';
 
 if (process.env.NODE_ENV === 'development') {
   dotenv.config({ path: '.env.local' });
@@ -59,6 +60,7 @@ if (process.env.NODE_ENV === 'development') {
     MailModule,
     RedModule,
     ConnectionModule,
+    AccountsModule,
     PrismaModule,
     TenantsModule,
     ConfigModule.forRoot({ isGlobal: true }),

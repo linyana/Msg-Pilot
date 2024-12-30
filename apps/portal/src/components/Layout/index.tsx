@@ -1,22 +1,25 @@
-import * as React from 'react'
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import {
-  AppProvider,
-  Navigation,
-} from '@toolpad/core/AppProvider'
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  LogoutOutlined,
+} from '@ant-design/icons'
 import {
-  DashboardLayout,
-} from '@toolpad/core/DashboardLayout'
-import {
-  PageContainer,
-} from '@toolpad/core/PageContainer'
-import {
-  Stack,
+  Layout as AntdLayout,
+  Menu,
+  Button,
+  theme,
+  Avatar,
   Typography,
-  useTheme,
-} from '@mui/material'
-import {
-  useDispatch,
-} from 'react-redux'
+  MenuProps,
+  Dropdown,
+  Tooltip,
+  Space,
+} from 'antd'
 import {
   useLocation,
   useNavigate,
@@ -24,118 +27,203 @@ import {
 import {
   IRouteType,
 } from '@/routes'
-import logo from '@/assets/logo.svg'
 import {
-  updateToken,
-  updateUser,
+  Flex,
+} from '..'
+import {
   useAppSelector,
 } from '@/store'
 
+const {
+  Header,
+  Sider,
+  Content,
+} = AntdLayout
+
 type IPropsType = {
   children: React.ReactNode
-  routes: Array<IRouteType>
+  routes: IRouteType[]
   currentRoute?: IRouteType
 }
 
-const CustomAppTitle = () => (
-  <Stack
-    direction="row"
-    alignItems="center"
-    spacing={1.5}
-  >
-    <img
-      src={logo}
-      style={{
-        width: 28,
-        height: 28,
-      }}
-      alt=""
-    />
-    <Typography
-      variant="h6"
-      color="#3cb96c"
-    >
-      Msg Pilot
-    </Typography>
-  </Stack>
-)
+const {
+  Text,
+} = Typography
 
 export const Layout = ({
   children,
   routes,
   currentRoute,
 }: IPropsType) => {
+  const navigate = useNavigate()
+  const location = useLocation()
   const {
     user,
   } = useAppSelector((state) => state.global)
-  const theme = useTheme()
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
   const {
-    pathname,
-  } = useLocation()
-  const router = {
-    navigate: (value: string | URL) => {
-      navigate(value)
+    name,
+  } = user
+  const {
+    token: {
+      colorBgContainer,
     },
-    pathname,
-    searchParams: new URLSearchParams(window.location.search),
+  } = theme.useToken()
+
+  const [collapsed, setCollapsed] = useState(false)
+
+  const handleLinkTo = (target: string) => {
+    navigate(target)
   }
 
-  const navigation: Navigation = React.useMemo(() => routes.filter((route) => route.kind || route.text).map((route) => ({
-    kind: route.kind,
-    segment: route.path,
-    title: route.text,
+  const getItem = (route: IRouteType): any => ({
+    key: route.id,
     icon: route.icon,
-    children: route.children?.filter((child) => child.path).map((child) => ({
-      kind: child.kind,
-      segment: child.path?.split('/')[(child.path?.split('/') || []).length - 1],
-      title: child.text,
-      icon: child.icon,
-    })),
-  })), [routes])
+    label: route.text,
+    children: route.children?.map((child) => getItem(child)),
+    onClick: ({
+      keyPath,
+    }: any) => {
+      handleLinkTo(`/${keyPath[0]}` || route.path || '')
+    },
+  })
 
-  const authentication = React.useMemo(() => ({
-    signIn: () => {
-      window.console.log()
+  useEffect(() => {
+    const routeIds = routes.filter((route) => route.text).map((route) => route.id)
+    let existRouteName = location.pathname.slice(1)
+    let safetyGuardsTimes = 0
+    while (!routeIds.includes(existRouteName) && safetyGuardsTimes <= 20) {
+      existRouteName = existRouteName.slice(0, -1)
+      safetyGuardsTimes += 1
+    }
+  }, [location.pathname])
+
+  const items = useMemo(() => {
+    const finalRoutes: any[] = []
+    const filterRoutes = routes.filter((route) => route.text)
+    for (let index = 0; index < filterRoutes?.length; index += 1) {
+      const filterRoute = filterRoutes[index]
+      finalRoutes.push(getItem(filterRoute))
+    }
+    return finalRoutes
+  }, [routes])
+
+  const userActions: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <Text>
+          Logout
+        </Text>
+      ),
+      icon: <LogoutOutlined />,
+      onClick: () => {
+        navigate('/login')
+      },
     },
-    signOut: () => {
-      dispatch(updateToken(''))
-      dispatch(updateUser({}))
-    },
-  }), [])
+  ]
 
   return (
-    <AppProvider
-      navigation={navigation}
-      theme={theme}
-      router={router}
-      session={{
-        user: {
-          name: user.name,
-          email: user.email,
-        },
-      }}
-      authentication={authentication}
-    >
+    <>
       {
-        currentRoute?.isNoFrame
-          ? (
-            <>{ children }</>
-          )
-          : (
-            <DashboardLayout
-              slots={{
-                appTitle: CustomAppTitle,
-              }}
-              hideNavigation={currentRoute?.isNoNavigate}
+        currentRoute?.isNoFrame ? <Content>{children}</Content> : (
+          <AntdLayout style={{
+            height: '100vh',
+          }}
+          >
+            <Sider
+              trigger={null}
+              collapsible
+              collapsed={collapsed}
+              theme="light"
             >
-              <PageContainer>
-                {children}
-              </PageContainer>
-            </DashboardLayout>
-          )
+              <div className="demo-logo-vertical" />
+              <Menu
+                theme="light"
+                mode="inline"
+                selectedKeys={[currentRoute?.id || '']}
+                items={items}
+              />
+            </Sider>
+            <AntdLayout style={{
+              height: '100vh',
+            }}
+            >
+              <Header style={{
+                padding: 0,
+                background: colorBgContainer,
+              }}
+              >
+                <Flex
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Button
+                    type="text"
+                    icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                    onClick={() => setCollapsed(!collapsed)}
+                    style={{
+                      fontSize: '16px',
+                      width: 64,
+                      height: 64,
+                    }}
+                  />
+                  <Space size="large">
+                    <Dropdown
+                      menu={{
+                        items: userActions,
+                      }}
+                    >
+                      <Button
+                        style={{
+                          marginRight: '32px',
+                          padding: '0 12px',
+                        }}
+                        size="large"
+                        type="text"
+                      >
+                        <Flex
+                          justifyContent="center"
+                          alignItems="center"
+                          gap="8px"
+                        >
+                          <Avatar>{name?.charAt(0).toUpperCase()}</Avatar>
+                          {
+                            name?.length < 10
+                              ? (
+                                <Text type="secondary">
+                                  {name}
+                                </Text>
+                              ) : (
+                                <Tooltip
+                                  placement="left"
+                                  title={name}
+                                >
+                                  <Text type="secondary">{`${name?.slice(0, 10)}...`}</Text>
+                                </Tooltip>
+                              )
+                          }
+                        </Flex>
+                      </Button>
+                    </Dropdown>
+                  </Space>
+                </Flex>
+              </Header>
+              <Content style={{
+                height: 'calc(100vh - 64px)',
+                overflow: 'auto',
+              }}
+              >
+                <div style={{
+                  margin: '24px 16px',
+                }}
+                >
+                  {children}
+                </div>
+              </Content>
+            </AntdLayout>
+          </AntdLayout>
+        )
       }
-    </AppProvider>
+    </>
   )
 }

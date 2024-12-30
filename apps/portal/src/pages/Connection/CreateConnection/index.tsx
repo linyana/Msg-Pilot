@@ -193,7 +193,8 @@ export const CreateConnection = () => {
         </Typography>
         <Card sx={{
           padding: '32px 16px',
-          width: 600,
+          width: '40vw',
+          minWidth: 600,
         }}
         >
           <Stepper
@@ -278,7 +279,7 @@ export const CreateConnection = () => {
               position="static"
               activeStep={activeStep}
               sx={{
-                maxWidth: 480,
+                maxWidth: '70%',
                 flexGrow: 1,
                 padding: 0,
               }}

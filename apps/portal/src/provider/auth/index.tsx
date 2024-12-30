@@ -80,16 +80,17 @@ export const AuthProvider = ({
 
   return (
     <Loading
-      loading={loading || (!currentRoute?.isPublic && !userInfo)}
+      loading={loading || (!!currentRoute && !currentRoute?.isPublic && !userInfo)}
       isGlobal
     >
       {
-        (error || (!currentRoute?.isNoConnection && !data?.data?.connection)) && !currentRoute?.isPublic ? (
+        (error || (!!currentRoute && !currentRoute?.isNoConnection && !data?.data?.connection)) && !currentRoute?.isPublic ? (
           <Center>
             <img
               src={errorSrc}
               style={{
-                width: 400, height: 300,
+                width: 400,
+                height: 300,
               }}
               alt="error"
             />

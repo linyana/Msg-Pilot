@@ -1,6 +1,7 @@
 import {
-  ThemeProvider,
-} from '@mui/material'
+  ConfigProvider,
+} from 'antd'
+import enUS from 'antd/locale/en_US'
 import {
   theme,
 } from '@/theme'
@@ -9,10 +10,13 @@ type IPropsType = {
   children: React.ReactNode
 }
 
-export const MUIThemeProvider = ({
+export const AntdThemeProvider = ({
   children,
 }: IPropsType) => (
-  <ThemeProvider theme={theme}>
+  <ConfigProvider
+    locale={enUS}
+    theme={theme}
+  >
     {children}
-  </ThemeProvider>
+  </ConfigProvider>
 )

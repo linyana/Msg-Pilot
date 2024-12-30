@@ -1,2 +1,3 @@
-export * from './theme'
+export * from './muitheme'
 export * from './auth'
+export * from './theme'
