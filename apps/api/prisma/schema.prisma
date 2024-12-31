@@ -19,6 +19,7 @@ model tenants {
   user_logs   user_logs[]
   connections connections[]
   accounts    accounts[]
+  tasks       tasks[]
 
   @@index([email], map: "merchant_email")
 }
@@ -51,21 +52,55 @@ model connections {
   tenant_id   BigInt
   tenant      tenants         @relation(fields: [tenant_id], references: [id])
   accounts    accounts[]
+  tasks       tasks[]
 }
 
 model accounts {
-  id            BigInt      @id @default(autoincrement())
-  created_at    DateTime    @default(now()) @db.Timestamptz(6)
-  updated_at    DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
-  name          String?     @db.VarChar(255)
+  id            BigInt          @id @default(autoincrement())
+  created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  name          String          @db.VarChar(255)
   cookie        String?
   description   String?
-  is_expired    Boolean     @default(false)
+  is_expired    Boolean         @default(false)
   expired_at    DateTime?
   connection_id BigInt
   tenant_id     BigInt
-  connection    connections @relation(fields: [connection_id], references: [id])
-  tenant        tenants     @relation(fields: [tenant_id], references: [id])
+  connection    connections     @relation(fields: [connection_id], references: [id])
+  tenant        tenants         @relation(fields: [tenant_id], references: [id])
+  task_accounts task_accounts[]
+}
+
+enum TaskStatus {
+  NOT_START
+  WAITING
+  RUNNING
+  FAILED
+  COMPLETED
+}
+
+model tasks {
+  id            BigInt          @id @default(autoincrement())
+  created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  name          String          @db.VarChar(255)
+  description   String?
+  status        TaskStatus      @default(NOT_START)
+  connection_id BigInt
+  tenant_id     BigInt
+  connection    connections     @relation(fields: [connection_id], references: [id])
+  tenant        tenants         @relation(fields: [tenant_id], references: [id])
+  task_accounts task_accounts[]
+}
+
+model task_accounts {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  account_id BigInt
+  task_id    BigInt
+  accounts   accounts @relation(fields: [account_id], references: [id])
+  tasks      tasks    @relation(fields: [task_id], references: [id])
 }
 
 model user_logs {

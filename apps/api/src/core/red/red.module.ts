@@ -4,6 +4,6 @@ import { RedController } from './red.controller';
 
 @Module({
   controllers: [RedController],
-  providers: [RedService]
+  providers: [RedService],
 })
 export class RedModule {}

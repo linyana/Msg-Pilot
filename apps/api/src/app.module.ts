@@ -19,6 +19,7 @@ import { RedModule } from './core/red/red.module';
 import { ConnectionModule } from './core/connection/connection.module';
 import { NoNeedConnectionGuard } from './guard';
 import { AccountsModule } from './core/accounts/accounts.module';
+import { TasksModule } from './core/tasks/tasks.module';
 
 if (process.env.NODE_ENV === 'development') {
   dotenv.config({ path: '.env.local' });
@@ -67,6 +68,7 @@ if (process.env.NODE_ENV === 'development') {
     AuthModule,
     EventEmitterModule.forRoot(),
     RedisModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [
