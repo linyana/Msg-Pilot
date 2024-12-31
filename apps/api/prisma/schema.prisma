@@ -8,18 +8,20 @@ datasource db {
 }
 
 model tenants {
-  id          BigInt        @id @default(autoincrement())
-  created_at  DateTime      @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime      @default(now()) @updatedAt @db.Timestamptz(6)
-  name        String        @db.VarChar(255)
-  email       String        @unique @db.VarChar(255)
-  phone       String        @db.VarChar(255)
-  sub_domain  String?       @db.VarChar(255)
-  user        users[]
-  user_logs   user_logs[]
-  connections connections[]
-  accounts    accounts[]
-  tasks       tasks[]
+  id            BigInt          @id @default(autoincrement())
+  created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  name          String          @db.VarChar(255)
+  email         String          @unique @db.VarChar(255)
+  phone         String          @db.VarChar(255)
+  sub_domain    String?         @db.VarChar(255)
+  user          users[]
+  user_logs     user_logs[]
+  connections   connections[]
+  accounts      accounts[]
+  tasks         tasks[]
+  task_accounts task_accounts[]
+  messages      messages[]
 
   @@index([email], map: "merchant_email")
 }
@@ -43,16 +45,18 @@ enum CONNECTION_TYPE {
 }
 
 model connections {
-  id          BigInt          @id @default(autoincrement())
-  created_at  DateTime        @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
-  name        String          @db.VarChar(255)
-  description String?
-  type        CONNECTION_TYPE
-  tenant_id   BigInt
-  tenant      tenants         @relation(fields: [tenant_id], references: [id])
-  accounts    accounts[]
-  tasks       tasks[]
+  id            BigInt          @id @default(autoincrement())
+  created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  name          String          @db.VarChar(255)
+  description   String?
+  type          CONNECTION_TYPE
+  tenant_id     BigInt
+  tenant        tenants         @relation(fields: [tenant_id], references: [id])
+  accounts      accounts[]
+  tasks         tasks[]
+  task_accounts task_accounts[]
+  messages      messages[]
 }
 
 model accounts {
@@ -69,6 +73,7 @@ model accounts {
   connection    connections     @relation(fields: [connection_id], references: [id])
   tenant        tenants         @relation(fields: [tenant_id], references: [id])
   task_accounts task_accounts[]
+  messages      messages[]
 }
 
 enum TaskStatus {
@@ -85,22 +90,52 @@ model tasks {
   updated_at    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
   name          String          @db.VarChar(255)
   description   String?
+  filter        String?
+  content       String?
   status        TaskStatus      @default(NOT_START)
+  faild_reason  Json?          
   connection_id BigInt
   tenant_id     BigInt
+  sended_count  Int             @default(0)
+  expect_count  Int             @default(0)
   connection    connections     @relation(fields: [connection_id], references: [id])
   tenant        tenants         @relation(fields: [tenant_id], references: [id])
   task_accounts task_accounts[]
+  messages      messages[]
 }
 
 model task_accounts {
-  id         BigInt   @id @default(autoincrement())
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
-  account_id BigInt
-  task_id    BigInt
-  accounts   accounts @relation(fields: [account_id], references: [id])
-  tasks      tasks    @relation(fields: [task_id], references: [id])
+  id            BigInt      @id @default(autoincrement())
+  created_at    DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
+  account_id    BigInt
+  task_id       BigInt
+  connection_id BigInt
+  tenant_id     BigInt
+  connection    connections @relation(fields: [connection_id], references: [id])
+  tenant        tenants     @relation(fields: [tenant_id], references: [id])
+  account       accounts    @relation(fields: [account_id], references: [id])
+  task          tasks       @relation(fields: [task_id], references: [id])
+}
+
+model messages {
+  id               BigInt      @id @default(autoincrement())
+  created_at       DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
+  is_sended        Boolean     @default(false)
+  filter           String?
+  text             String?
+  info             Json?
+  platform_unit_id String?
+  platform_name    String?
+  connection_id    BigInt
+  tenant_id        BigInt
+  task_id          BigInt
+  account_id       BigInt?
+  account          accounts?   @relation(fields: [account_id], references: [id])
+  task             tasks       @relation(fields: [task_id], references: [id])
+  connection       connections @relation(fields: [connection_id], references: [id])
+  tenant           tenants     @relation(fields: [tenant_id], references: [id])
 }
 
 model user_logs {

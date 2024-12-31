@@ -18,7 +18,7 @@ class Account {
 
   @IsString()
   @IsOptional()
-  name?: string;
+  name: string;
 
   @IsString()
   @IsOptional()

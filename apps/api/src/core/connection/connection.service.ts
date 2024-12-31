@@ -25,7 +25,7 @@ export class ConnectionService {
 
     const newConnection = await this.prisma.connections.create({
       data: {
-        name: connection.name.trim(),
+        name: connection.name.trim() || '',
         description: connection.description,
         type,
         tenant_id,
