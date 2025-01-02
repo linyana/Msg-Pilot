@@ -81,9 +81,62 @@ export class RedTaskService extends BaseTaskService {
 
       const data = task.data as ITaskData;
 
+      const hasLoginButton = await page.evaluate(() => {
+        return document.querySelector('#login-btn');
+      });
+
+      if (hasLoginButton) {
+        throw new BadRequestException('Cookie had expired.');
+      }
+
+      const filter = data.filter[0];
+      const content = data.content[0] || '';
+
+      let noteIds = [];
+      let unUsedNoteIndex = -1;
+
+      noteIds = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll('section.note-item > div > a')).map((element) => new URL((element as HTMLAnchorElement).href).pathname.split('/')[2]);
+      });
+
+      const getUsefulNoteIndex = async () => {
+        const usedNoteIds = await this.prisma.messages.findMany({
+          where: {
+            task_id,
+          },
+          select: {
+            platform_unit_id: true,
+          },
+        });
+
+        const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
+        const unUsedNoteIndex = noteIds.findIndex((id) => !usedIdsSet.has(id));
+        return unUsedNoteIndex;
+      };
+
+      unUsedNoteIndex = await getUsefulNoteIndex();
+
+      if (unUsedNoteIndex < 0) {
+        console.log('No more note to send');
+        return;
+      } else {
+        await this.prisma.messages.create({
+          data: {
+            task_id,
+            platform_unit_id: noteIds[unUsedNoteIndex],
+            filter,
+            content,
+            tenant_id: Number(task.tenant_id),
+            connection_id: Number(task.connection_id),
+          },
+        });
+      }
+      console.log(unUsedNoteIndex);
+
+      // search filter
       await Type({
         page,
-        content: data.filter[0],
+        content: filter,
         name: 'Dashboard Input',
         selector: '#search-input',
       });
@@ -102,7 +155,8 @@ export class RedTaskService extends BaseTaskService {
               id: task_id,
             },
           });
-          if (currentTask.expect_count - currentTask.sent_count) {
+          if (currentTask.expect_count - currentTask.sent_count <= 0) {
+            console.log(1);
             break;
           }
 
@@ -110,13 +164,13 @@ export class RedTaskService extends BaseTaskService {
             page,
             name: 'Article',
             delay: 3,
-            selector: '#global > div.main-container > div.with-side-bar.main-content > div > div.feeds-container > section:nth-child(1) > div > a.cover.ld.mask',
+            selector: 'section:nth-child(1) > div > a.cover.ld.mask',
           });
 
           if (!data.type || data.type === 'comment') {
             await this.sendComment({
               page,
-              content: data.content[0],
+              content,
             });
           }
 
@@ -124,7 +178,7 @@ export class RedTaskService extends BaseTaskService {
 
           await this.taskUtilService.updateTaskStatus({
             task_id,
-            status: 'COMPLETED',
+            status: 'RUNNING',
             send_count: 1,
           });
         } catch (error) {
@@ -132,9 +186,15 @@ export class RedTaskService extends BaseTaskService {
         }
       }
 
+      const currentTask = await this.prisma.tasks.findUniqueOrThrow({
+        where: {
+          id: task_id,
+        },
+      });
+
       await this.taskUtilService.updateTaskStatus({
         task_id,
-        status: 'COMPLETED',
+        status: currentTask.expect_count - currentTask.sent_count > 0 ? 'PARTIAL_COMPLETED' : 'COMPLETED',
       });
 
       await browser.close();
@@ -143,9 +203,15 @@ export class RedTaskService extends BaseTaskService {
 
       const failed_reason = error?.message || 'Unknown Error';
 
+      const currentTask = await this.prisma.tasks.findUniqueOrThrow({
+        where: {
+          id: task_id,
+        },
+      });
+
       await this.taskUtilService.updateTaskStatus({
         task_id,
-        status: 'FAILED',
+        status: currentTask.sent_count ? 'PARTIAL_COMPLETED' : 'FAILED',
         failed_reason,
       });
     }

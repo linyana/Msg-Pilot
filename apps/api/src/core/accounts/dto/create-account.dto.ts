@@ -12,6 +12,7 @@ export class CreateAccountDto {
   description: string;
 
   @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   cookie: string;
 }

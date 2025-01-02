@@ -19,7 +19,7 @@ export class TasksService {
     const tasks = await this.prisma.tasks.findMany({
       where: {
         status: {
-          in: ['NOT_START', 'FAILED', 'RUNNING', 'WAITING'],
+          in: ['NOT_START', 'FAILED', 'PARTIAL_COMPLETED', 'RUNNING', 'WAITING'],
         },
       },
       include: {

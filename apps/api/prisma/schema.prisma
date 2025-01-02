@@ -127,7 +127,7 @@ model messages {
   status           TaskStatus  @default(NOT_START)
   failed_reason    Json?
   filter           String?
-  text             String?
+  content          String?
   info             Json?
   platform_unit_id String?
   platform_name    String?

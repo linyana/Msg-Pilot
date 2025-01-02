@@ -130,20 +130,24 @@ export const Layout = ({
             height: '100vh',
           }}
           >
-            <Sider
-              trigger={null}
-              collapsible
-              collapsed={collapsed}
-              theme="light"
-            >
-              <div className="demo-logo-vertical" />
-              <Menu
-                theme="light"
-                mode="inline"
-                selectedKeys={[currentRoute?.id || '']}
-                items={items}
-              />
-            </Sider>
+            {
+              currentRoute?.isNoConnection ? null : (
+                <Sider
+                  trigger={null}
+                  collapsible
+                  collapsed={collapsed}
+                  theme="light"
+                >
+                  <div className="demo-logo-vertical" />
+                  <Menu
+                    theme="light"
+                    mode="inline"
+                    selectedKeys={[currentRoute?.id || '']}
+                    items={items}
+                  />
+                </Sider>
+              )
+            }
             <AntdLayout style={{
               height: '100vh',
             }}

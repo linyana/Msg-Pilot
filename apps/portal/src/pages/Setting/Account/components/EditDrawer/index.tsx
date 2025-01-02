@@ -117,8 +117,8 @@ export const EditDrawer = ({
             <Input />
           </Form.Item>
           <Form.Item
-            label="Cookie"
-            name="cookie"
+            label="Description"
+            name="description"
           >
             <TextArea />
           </Form.Item>
