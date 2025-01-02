@@ -1,3 +1,3 @@
 export abstract class BaseTaskService {
-  abstract SendMessage(params: { info: any }): Promise<void>;
+  abstract handleTask(params: { task_id: number; account_id: number }): Promise<void>;
 }
