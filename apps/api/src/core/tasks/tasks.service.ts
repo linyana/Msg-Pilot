@@ -12,7 +12,7 @@ export class TasksService {
     private prisma: PrismaService,
     private redService: RedTaskService,
   ) {
-    this.init();
+    // this.init();
   }
 
   async init() {
@@ -86,7 +86,7 @@ export class TasksService {
       },
     });
 
-    if (!accounts) {
+    if (!accounts.length) {
       throw new BadRequestException("Can't find any accounts, please try again");
     }
 

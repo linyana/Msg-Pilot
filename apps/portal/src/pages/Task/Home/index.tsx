@@ -13,7 +13,7 @@ import {
   ExclamationCircleFilled,
 } from '@ant-design/icons'
 import {
-  useGetAccounts,
+  useGetTasks,
 } from '@/services'
 import {
   Flex,
@@ -35,7 +35,7 @@ const {
   Title,
 } = Typography
 
-export const Account = React.memo(() => {
+export const Task = React.memo(() => {
   const [data, setData] = useState<any>([])
   const message = useMessage()
 
@@ -44,7 +44,7 @@ export const Account = React.memo(() => {
     fetchData,
     loading,
     error,
-  } = useGetAccounts()
+  } = useGetTasks()
 
   const refreshData = () => {
     fetchData?.()
@@ -122,7 +122,7 @@ export const Account = React.memo(() => {
     <>
       <Card>
         <Flex alignItems="center">
-          <Title level={4}>Manage your accounts</Title>
+          <Title level={4}>Manage your tasks</Title>
         </Flex>
         <Flex
           justifyContent="space-between"
