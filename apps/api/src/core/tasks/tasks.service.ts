@@ -12,14 +12,14 @@ export class TasksService {
     private prisma: PrismaService,
     private redService: RedTaskService,
   ) {
-    this.init();
+    // this.init();
   }
 
   async init() {
     const tasks = await this.prisma.tasks.findMany({
       where: {
         status: {
-          in: ['NOT_START', 'FAILED', 'RUNNING', 'WAITING'],
+          in: ['NOT_START', 'FAILED', 'PARTIAL_COMPLETED', 'RUNNING', 'WAITING'],
         },
       },
       include: {
@@ -38,6 +38,11 @@ export class TasksService {
       if (!account) {
         throw new BadRequestException("Can't find account.");
       }
+
+      await taskService.setMessages({
+        task_id: Number(task.id),
+        account_id: Number(account.id),
+      });
 
       await taskService.handleTask({
         task_id: Number(task.id),
@@ -75,7 +80,7 @@ export class TasksService {
   }
 
   async creatTask(connection_id: number, tenant_id: number, body: CreateTaskDto) {
-    const { name, description, expect_count, data, account_ids } = body;
+    const { name, description, expect_count, data, account_ids, type, destribution_rule } = body;
 
     const accounts = await this.prisma.accounts.findMany({
       where: {
@@ -86,7 +91,7 @@ export class TasksService {
       },
     });
 
-    if (!accounts) {
+    if (!accounts.length) {
       throw new BadRequestException("Can't find any accounts, please try again");
     }
 
@@ -98,6 +103,8 @@ export class TasksService {
         description,
         expect_count,
         data,
+        type,
+        destribution_rule,
       },
     });
 

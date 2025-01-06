@@ -12,6 +12,7 @@ import {
   Account,
   Connections,
   CreateConnection,
+  CreateTask,
   Dashboard,
   Login,
   Registration,
@@ -79,6 +80,11 @@ export const routes: Array<IRouteType> = [
     text: 'Tasks',
     path: '/tasks',
     icon: <AssignmentIcon />,
+  },
+  {
+    id: 'tasks/create-task',
+    element: <CreateTask />,
+    path: '/tasks/create-task',
   },
   {
     id: 'settings',

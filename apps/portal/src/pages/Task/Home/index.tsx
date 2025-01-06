@@ -8,18 +8,21 @@ import {
   Table,
   TableProps,
   Tooltip,
+  Button,
 } from 'antd'
 import {
   ExclamationCircleFilled,
 } from '@ant-design/icons'
 import {
-  useGetAccounts,
+  useNavigate,
+} from 'react-router-dom'
+import {
+  useGetTasks,
 } from '@/services'
 import {
   Flex,
 } from '@/components'
 import {
-  CreateModal,
   DeleteModal,
   EditDrawer,
 } from './components'
@@ -35,16 +38,17 @@ const {
   Title,
 } = Typography
 
-export const Account = React.memo(() => {
+export const Task = React.memo(() => {
   const [data, setData] = useState<any>([])
   const message = useMessage()
+  const navigate = useNavigate()
 
   const {
     data: getData,
     fetchData,
     loading,
     error,
-  } = useGetAccounts()
+  } = useGetTasks()
 
   const refreshData = () => {
     fetchData?.()
@@ -121,16 +125,21 @@ export const Account = React.memo(() => {
   return (
     <>
       <Card>
-        <Flex alignItems="center">
-          <Title level={4}>Manage your accounts</Title>
-        </Flex>
+        <Title level={4}>Manage your tasks</Title>
         <Flex
           justifyContent="space-between"
           alignItems="center"
           gap="16px"
         >
-          <Text>Please keep your login status when adding the cookie. Once log out your Account, please reset your cookie again.</Text>
-          <CreateModal refreshData={refreshData} />
+          <Text>Please create a task to send messages.</Text>
+          <Button
+            type="primary"
+            onClick={() => {
+              navigate('./create-task')
+            }}
+          >
+            Create task
+          </Button>
         </Flex>
         <Table
           style={{

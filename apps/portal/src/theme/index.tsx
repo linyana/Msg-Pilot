@@ -28,6 +28,17 @@ export const theme: ThemeConfig = {
       hoverBorderColor: 'var(--main-bg-color)',
       activeShadow: '0 2px 3px rgba(60, 185, 108, 0.3)',
     },
+    Select: {
+      activeBorderColor: 'var(--main-bg-color)',
+      hoverBorderColor: 'var(--main-bg-color)',
+      activeOutlineColor: 'var(--main-bg-color)',
+      optionSelectedBg: 'var(--main-bg-color)',
+    },
+    InputNumber: {
+      activeBorderColor: 'var(--main-bg-color)',
+      hoverBorderColor: 'var(--main-bg-color)',
+      activeShadow: '0 2px 3px rgba(60, 185, 108, 0.3)',
+    },
   },
   token: {
     colorPrimary: 'var(--main-bg-color)',

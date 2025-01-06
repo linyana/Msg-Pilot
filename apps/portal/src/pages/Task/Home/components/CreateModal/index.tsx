@@ -1,19 +1,16 @@
 import {
   Button,
-  Drawer,
+  Modal,
   Form,
-  FormProps,
   Input,
+  FormProps,
 } from 'antd'
 import {
   useEffect,
   useState,
 } from 'react'
 import {
-  EditOutlined,
-} from '@ant-design/icons'
-import {
-  useEditAccounts,
+  useCreateAccounts,
 } from '@/services'
 import {
   Flex,
@@ -27,36 +24,30 @@ import {
 
 type IPropsType = {
   refreshData: () => void
-  record: IAccountType
 }
 
 const {
   TextArea,
 } = Input
 
-export const EditDrawer = ({
-  refreshData,
-  record,
-}: IPropsType) => {
-  const [open, setOpen] = useState(false)
+export const CreateModal = (
+  {
+    refreshData,
+  }: IPropsType,
+) => {
   const message = useMessage()
 
-  const onClose = () => {
-    setOpen(false)
-  }
-
   const [form] = Form.useForm()
-  const name = Form.useWatch('name', form)
-  const cookie = Form.useWatch('cookie', form)
 
   const [formData, setFormData] = useState<IAccountType>()
+  const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const {
     data,
     fetchData,
     loading,
     error,
-  } = useEditAccounts(record?.id || '', formData)
+  } = useCreateAccounts(formData)
 
   useEffect(() => {
     if (error) {
@@ -67,7 +58,7 @@ export const EditDrawer = ({
   useEffect(() => {
     if (data?.data) {
       message?.success('Successfully create.')
-      setOpen(false)
+      setIsOpen(false)
       refreshData()
     }
   }, [data?.data])
@@ -88,17 +79,39 @@ export const EditDrawer = ({
 
   return (
     <>
-      <Drawer
-        title="Edit Account"
-        onClose={onClose}
-        open={open}
+      <Modal
+        open={isOpen}
+        title="Create a new account"
+        onCancel={() => {
+          setIsOpen(false)
+        }}
+        centered
+        footer={(
+          <Flex
+            justifyContent="flex-end"
+            gap="8px"
+          >
+            <Button onClick={() => {
+              setIsOpen(false)
+            }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="primary"
+              loading={loading}
+              onClick={onSubmit}
+            >
+              OK
+            </Button>
+          </Flex>
+        )}
       >
         <Form
           layout="vertical"
           form={form}
           autoComplete="off"
           onFinish={onFinish}
-          initialValues={record}
         >
           <Form.Item
             label="Name"
@@ -118,31 +131,20 @@ export const EditDrawer = ({
           </Form.Item>
           <Form.Item
             label="Description"
-            name="description"
+            name="desription"
           >
             <TextArea />
           </Form.Item>
         </Form>
-        <Flex justifyContent="flex-end">
-          <Button
-            type="primary"
-            disabled={
-              record?.name === name && record?.cookie === cookie
-            }
-            onClick={onSubmit}
-            loading={loading}
-          >
-            OK
-          </Button>
-        </Flex>
-      </Drawer>
+      </Modal>
       <Button
-        type="text"
+        type="primary"
         onClick={() => {
-          setOpen(true)
+          setIsOpen(true)
         }}
-        icon={<EditOutlined />}
-      />
+      >
+        Create Account
+      </Button>
     </>
   )
 }

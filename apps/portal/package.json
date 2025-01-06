@@ -27,7 +27,7 @@
     "@mui/x-data-grid": "7.0.0",
     "@reduxjs/toolkit": "^1.9.3",
     "@toolpad/core": "^0.11.0",
-    "antd": "^5.22.7",
+    "antd": "^5.23.0",
     "dayjs": "^1.11.7",
     "react": "19.0.0",
     "react-dom": "19.0.0",

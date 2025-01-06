@@ -2,9 +2,9 @@ import {
   StatusType,
 } from '@/constants/types'
 
-export const getSelectOptions = (status: StatusType) => Object.keys(status).map((key) => ({
-  label: status[key].displayName,
-  value: status[key].code,
+export const getSelectOptions = (options: Record<string, string>) => Object.keys(options).map((key) => ({
+  content: key,
+  value: options[key],
 }))
 
 export const getDisplayNameByCode = (
