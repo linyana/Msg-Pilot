@@ -2,14 +2,14 @@ import {
   useHttp,
 } from '@msg-pilot/hooks'
 import {
-  ITaskType,
+  IITaskType,
 } from '@/types'
 import {
   IMetaType,
 } from '../types'
 
 export const useGetTasks = () => useHttp<{
-  data: ITaskType[],
+  data: IITaskType[],
   meta: IMetaType
 }>({
   url: '/tasks',

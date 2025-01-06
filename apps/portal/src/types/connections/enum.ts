@@ -3,10 +3,10 @@ enum CONNECTIONTYPE {
   TikTok,
 }
 
-export const CONNECTION_TYPE = Object.fromEntries(
+export const IConnectionType = Object.fromEntries(
   Object.keys(CONNECTIONTYPE)
     .filter((key) => Number.isNaN(Number(key)))
     .map((key) => [key, key]),
 ) as Record<keyof typeof CONNECTIONTYPE, keyof typeof CONNECTIONTYPE>
 
-export type CONNECTION_TYPE = keyof typeof CONNECTION_TYPE;
+export type IConnectionType = keyof typeof IConnectionType;

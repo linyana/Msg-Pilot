@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { CONNECTION_TYPE } from '@prisma/client';
+import { IConnectionType } from '@prisma/client';
 import { BaseTaskService } from './services/base.service';
 import { RedTaskService } from './services/red/red.service';
 
@@ -39,6 +39,11 @@ export class TasksService {
         throw new BadRequestException("Can't find account.");
       }
 
+      await taskService.setMessages({
+        task_id: Number(task.id),
+        account_id: Number(account.id),
+      });
+
       await taskService.handleTask({
         task_id: Number(task.id),
         account_id: Number(account.id),
@@ -46,7 +51,7 @@ export class TasksService {
     }
   }
 
-  private getTaskService = (type: CONNECTION_TYPE): BaseTaskService => {
+  private getTaskService = (type: IConnectionType): BaseTaskService => {
     switch (type) {
       case 'Red':
         return this.redService;
@@ -75,7 +80,7 @@ export class TasksService {
   }
 
   async creatTask(connection_id: number, tenant_id: number, body: CreateTaskDto) {
-    const { name, description, expect_count, data, account_ids } = body;
+    const { name, description, expect_count, data, account_ids, type } = body;
 
     const accounts = await this.prisma.accounts.findMany({
       where: {
@@ -98,6 +103,7 @@ export class TasksService {
         description,
         expect_count,
         data,
+        type,
       },
     });
 

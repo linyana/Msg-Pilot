@@ -40,7 +40,7 @@ model users {
   @@index([email], map: "tenant_email")
 }
 
-enum CONNECTION_TYPE {
+enum IConnectionType {
   Red
 }
 
@@ -50,7 +50,7 @@ model connections {
   updated_at    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
   name          String          @db.VarChar(255)
   description   String?
-  type          CONNECTION_TYPE
+  type          IConnectionType
   tenant_id     BigInt
   tenant        tenants         @relation(fields: [tenant_id], references: [id])
   accounts      accounts[]
@@ -76,7 +76,7 @@ model accounts {
   messages      messages[]
 }
 
-enum TaskStatus {
+enum ITaskStatus {
   NOT_START
   WAITING
   RUNNING
@@ -85,13 +85,17 @@ enum TaskStatus {
   PARTIAL_COMPLETED
 }
 
+enum ITaskType {
+  NOTE_COMMENT
+}
+
 model tasks {
   id            BigInt          @id @default(autoincrement())
   created_at    DateTime        @default(now()) @db.Timestamptz(6)
   updated_at    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
   name          String          @db.VarChar(255)
   description   String?
-  status        TaskStatus      @default(NOT_START)
+  status        ITaskStatus     @default(NOT_START)
   failed_reason Json?
   data          Json?
   repeatable    Boolean         @default(false)
@@ -99,6 +103,7 @@ model tasks {
   expect_count  Int             @default(0)
   connection_id BigInt
   tenant_id     BigInt
+  type          ITaskType
   connection    connections     @relation(fields: [connection_id], references: [id])
   tenant        tenants         @relation(fields: [tenant_id], references: [id])
   task_accounts task_accounts[]
@@ -124,7 +129,8 @@ model messages {
   created_at       DateTime    @default(now()) @db.Timestamptz(6)
   updated_at       DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
   is_sended        Boolean     @default(false)
-  status           TaskStatus  @default(NOT_START)
+  status           ITaskStatus @default(NOT_START)
+  type             ITaskType
   failed_reason    Json?
   filter           String?
   content          String?

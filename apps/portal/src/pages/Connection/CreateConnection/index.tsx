@@ -41,7 +41,7 @@ import {
 } from './Step1'
 import {
   ICreateConnectionType,
-  CONNECTION_TYPE,
+  IConnectionType,
   ICreateConnectionFormType,
 } from '@/types'
 import {
@@ -85,7 +85,7 @@ const stepIcon = (props: StepIconProps) => {
 export const CreateConnection = () => {
   const [formData, setFormData] = useState<ICreateConnectionType>()
   const [activeStep, setActiveStep] = useState(0)
-  const [selectedPlatform, setSelectedPlatform] = useState<CONNECTION_TYPE>()
+  const [selectedPlatform, setSelectedPlatform] = useState<IConnectionType>()
   const steps = ['Platform', 'Connection Information', 'Settings']
 
   const message = useMessage()

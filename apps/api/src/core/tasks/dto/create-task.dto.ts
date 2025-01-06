@@ -1,4 +1,5 @@
-import { IsArray, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
+import { ITaskType } from '@prisma/client';
+import { IsArray, IsEnum, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class CreateTaskDto {
   @IsString()
@@ -13,6 +14,9 @@ export class CreateTaskDto {
 
   @IsNumber()
   expect_count: number;
+
+  @IsEnum(ITaskType)
+  type: ITaskType;
 
   @IsObject()
   @IsOptional()

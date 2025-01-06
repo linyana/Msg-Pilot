@@ -1,8 +1,8 @@
 import {
-  TASK_STATUS,
+  ITaskStatus,
 } from './enum'
 
-export type ITaskType = {
+export type IITaskType = {
   id: string
   name?: string
   description?: string
@@ -10,5 +10,5 @@ export type ITaskType = {
   expect_count: number
   sent_count: string
   data: any
-  status: TASK_STATUS
+  status: ITaskStatus
 }

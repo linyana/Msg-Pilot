@@ -6,20 +6,20 @@ import {
   PlatformCard,
 } from './styled'
 import {
-  CONNECTION_TYPE,
+  IConnectionType,
 } from '@/types'
 import {
   CONNECTION_INFO,
 } from '@/constants'
 
 type IPropsType = {
-  selectedPlatform: CONNECTION_TYPE | undefined,
-  setSelectedPlatform: React.Dispatch<React.SetStateAction<CONNECTION_TYPE | undefined>>
+  selectedPlatform: IConnectionType | undefined,
+  setSelectedPlatform: React.Dispatch<React.SetStateAction<IConnectionType | undefined>>
 }
 
 const platforms: {
   name: string,
-  type: CONNECTION_TYPE,
+  type: IConnectionType,
   logo: string,
   style: { [key in string]: any },
   disabled?: boolean
@@ -55,7 +55,7 @@ export const Step1 = ({
   selectedPlatform,
   setSelectedPlatform,
 }: IPropsType) => {
-  const handleSelect = (platform: CONNECTION_TYPE) => {
+  const handleSelect = (platform: IConnectionType) => {
     setSelectedPlatform(platform)
   }
   return (
