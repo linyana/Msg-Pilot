@@ -1,12 +1,12 @@
 import {
-  IConnectionType,
+  CONNECTION_TYPE,
 } from '@/types/connections/enum'
 import RedLogo from '@/assets/connections/red.svg'
 import RedsLogo from '@/assets/connections/reds.svg'
 import TikToksLogo from '@/assets/connections/tiktoks.svg'
 
 type IConnectionInfoType = {
-  [key in IConnectionType]: {
+  [key in CONNECTION_TYPE]: {
     name: string,
     logo: string,
     sLogo: string,

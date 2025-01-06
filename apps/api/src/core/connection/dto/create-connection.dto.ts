@@ -1,4 +1,4 @@
-import { IConnectionType } from '@prisma/client';
+import { CONNECTION_TYPE } from '@prisma/client';
 import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -26,8 +26,8 @@ class Account {
 }
 
 export class CreateConnectionDto {
-  @IsEnum(IConnectionType)
-  type: IConnectionType;
+  @IsEnum(CONNECTION_TYPE)
+  type: CONNECTION_TYPE;
 
   @ValidateNested()
   @Type(() => Connection)

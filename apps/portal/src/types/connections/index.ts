@@ -1,18 +1,18 @@
 import {
-  IConnectionType,
+  CONNECTION_TYPE,
 } from './enum'
 
 export * from './enum'
 
 export type IConnectionType = {
   id?: string | number
-  type: IConnectionType
+  type: CONNECTION_TYPE
   name: string
   description?: string
 }
 
 export type ICreateConnectionType = {
-  type?: IConnectionType
+  type?: CONNECTION_TYPE
   connection: {
     name: string
     description?: string

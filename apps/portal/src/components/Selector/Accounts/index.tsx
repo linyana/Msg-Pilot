@@ -13,7 +13,10 @@ import {
 } from '@/hooks'
 
 export const AccountSelector = () => {
-  const [accounts, setAccounts] = useState<any>([])
+  const [accounts, setAccounts] = useState<{
+    label: string,
+    value: string | number,
+  }[]>([])
 
   const message = useMessage()
 
@@ -34,8 +37,8 @@ export const AccountSelector = () => {
 
   useEffect(() => {
     setAccounts(getData?.data?.map((item) => ({
-      label: item.name,
-      value: item.id,
+      label: item.name || '',
+      value: item.id || '',
     })) || [])
   }, [getData?.data])
 
@@ -47,7 +50,7 @@ export const AccountSelector = () => {
 
   return (
     <Select
-      placeholder="Select an account"
+      placeholder="选择你要使用的账号"
       loading={loading}
       options={accounts}
     />

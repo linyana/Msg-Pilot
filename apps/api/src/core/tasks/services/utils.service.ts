@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ITaskStatus } from '@prisma/client';
+import { TASK_STATUS } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TaskUtilService {
   constructor(private prisma: PrismaService) {}
 
-  async updateITaskStatus(params: { task_id: number; status: ITaskStatus; failed_reason?: string; send_count?: number }) {
+  async updateTaskStatus(params: { task_id: number; status: TASK_STATUS; failed_reason?: string; send_count?: number }) {
     const { status, failed_reason, task_id, send_count } = params;
     if (status === 'FAILED' || status === 'PARTIAL_COMPLETED') {
       await this.prisma.tasks.update({

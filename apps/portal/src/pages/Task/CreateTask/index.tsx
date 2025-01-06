@@ -7,22 +7,30 @@ import {
   Typography,
 } from 'antd'
 import {
+  useNavigate,
+} from 'react-router-dom'
+import {
   Flex,
   Loading,
-} from '@/components'
-import {
   AccountSelector,
-} from '@/pages/Setting/Account/components'
+  DestributionRuleSelector,
+  TaskTypeSelector,
+} from '@/components'
 
 const {
   Text,
-  Title,
 } = Typography
 
 export const CreateTask = () => {
   const [form] = Form.useForm()
+  const navigate = useNavigate()
   return (
-    <Flex justifyContent="center">
+    <Flex
+      justifyContent="center"
+      style={{
+        marginTop: 32,
+      }}
+    >
       <div>
         <Flex justifyContent="center">
           <Text
@@ -31,7 +39,7 @@ export const CreateTask = () => {
               fontWeight: 700,
             }}
           >
-            Create a new task
+            创建新任务
           </Text>
         </Flex>
         <Flex justifyContent="center">
@@ -43,7 +51,7 @@ export const CreateTask = () => {
               marginBottom: '40px',
             }}
           >
-            Create a new task to send messages.
+            创建发送消息的任务.
           </Text>
         </Flex>
         <Card style={{
@@ -59,29 +67,30 @@ export const CreateTask = () => {
               form={form}
             >
               <Form.Item
-                label="Name"
+                label="任务名"
                 required
               >
-                <Input placeholder="type your name" />
+                <Input placeholder="输入该任务的名字" />
               </Form.Item>
               <Form.Item
-                label="Filter"
+                label="筛选"
                 required
               >
-                <Input placeholder="type your filter" />
+                <Input placeholder="输入你要查找的内容" />
               </Form.Item>
               <Form.Item
-                label="Content"
+                label="内容"
                 required
               >
-                <Input placeholder="type your content" />
+                <Input placeholder="输入你要发送的消息" />
               </Form.Item>
               <Flex justifyContent="space-between">
                 <Form.Item
-                  label="Count"
+                  label="预计发送数量"
                   style={{
                     width: '48%',
                   }}
+                  required
                 >
                   <InputNumber
                     min={1}
@@ -93,7 +102,8 @@ export const CreateTask = () => {
                   />
                 </Form.Item>
                 <Form.Item
-                  label="Account"
+                  label="账号"
+                  required
                   style={{
                     width: '48%',
                   }}
@@ -101,8 +111,28 @@ export const CreateTask = () => {
                   <AccountSelector />
                 </Form.Item>
               </Flex>
-              <Form.Item label="Description">
-                <Input.TextArea placeholder="type your description" />
+              <Flex justifyContent="space-between">
+                <Form.Item
+                  label="发送类型"
+                  style={{
+                    width: '48%',
+                  }}
+                  required
+                >
+                  <TaskTypeSelector />
+                </Form.Item>
+                <Form.Item
+                  label="分发规则"
+                  style={{
+                    width: '48%',
+                  }}
+                  required
+                >
+                  <DestributionRuleSelector />
+                </Form.Item>
+              </Flex>
+              <Form.Item label="描述">
+                <Input.TextArea placeholder="输入你的描述" />
               </Form.Item>
               <Flex
                 justifyContent="space-between"
@@ -118,8 +148,11 @@ export const CreateTask = () => {
                     style={{
                       width: '100%',
                     }}
+                    onClick={() => {
+                      navigate('/tasks')
+                    }}
                   >
-                    Cancel
+                    返回
                   </Button>
                 </div>
                 <Form.Item style={{
@@ -132,7 +165,7 @@ export const CreateTask = () => {
                       width: '100%',
                     }}
                   >
-                    Submit
+                    提交
                   </Button>
                 </Form.Item>
               </Flex>

@@ -31,7 +31,7 @@ export class RedTaskService extends BaseTaskService {
     let count = task.expect_count - task.sent_count;
 
     if (!count) {
-      await this.taskUtilService.updateITaskStatus({
+      await this.taskUtilService.updateTaskStatus({
         task_id,
         status: 'COMPLETED',
       });
@@ -66,7 +66,7 @@ export class RedTaskService extends BaseTaskService {
         await page.setCookie(cookie);
       }
 
-      await this.taskUtilService.updateITaskStatus({
+      await this.taskUtilService.updateTaskStatus({
         task_id,
         status: 'RUNNING',
       });
@@ -124,9 +124,6 @@ export class RedTaskService extends BaseTaskService {
           data: {
             task_id,
             platform_unit_id: noteIds[unUsedNoteIndex],
-            filter,
-            content,
-            type: task.type,
             tenant_id: Number(task.tenant_id),
             connection_id: Number(task.connection_id),
           },
@@ -177,7 +174,7 @@ export class RedTaskService extends BaseTaskService {
 
           count -= 1;
 
-          await this.taskUtilService.updateITaskStatus({
+          await this.taskUtilService.updateTaskStatus({
             task_id,
             status: 'RUNNING',
             send_count: 1,
@@ -193,7 +190,7 @@ export class RedTaskService extends BaseTaskService {
         },
       });
 
-      await this.taskUtilService.updateITaskStatus({
+      await this.taskUtilService.updateTaskStatus({
         task_id,
         status: currentTask.expect_count - currentTask.sent_count > 0 ? 'PARTIAL_COMPLETED' : 'COMPLETED',
       });
@@ -210,7 +207,7 @@ export class RedTaskService extends BaseTaskService {
         },
       });
 
-      await this.taskUtilService.updateITaskStatus({
+      await this.taskUtilService.updateTaskStatus({
         task_id,
         status: currentTask.sent_count ? 'PARTIAL_COMPLETED' : 'FAILED',
         failed_reason,
@@ -233,14 +230,27 @@ export class RedTaskService extends BaseTaskService {
         id: task_id,
       },
     });
+    const connection_id = Number(task.connection_id);
 
-    const count = task.expect_count - task.sent_count;
+    await this.taskUtilService.updateTaskStatus({
+      task_id,
+      status: 'SEARCHING',
+    });
 
-    if (!count) {
-      await this.taskUtilService.updateITaskStatus({
+    const messages = await this.prisma.messages.findMany({
+      where: {
+        connection_id,
+      },
+    });
+
+    const need_send_count = task.expect_count - messages.length;
+
+    if (!need_send_count) {
+      await this.taskUtilService.updateTaskStatus({
         task_id,
-        status: 'COMPLETED',
+        status: 'WAITING',
       });
+      return;
     }
 
     try {
@@ -272,7 +282,7 @@ export class RedTaskService extends BaseTaskService {
         await page.setCookie(cookie);
       }
 
-      await this.taskUtilService.updateITaskStatus({
+      await this.taskUtilService.updateTaskStatus({
         task_id,
         status: 'RUNNING',
       });
@@ -285,8 +295,6 @@ export class RedTaskService extends BaseTaskService {
         throw new BadRequestException(`Failed to create broswer.`);
       }
 
-      const data = task.data as ITaskData;
-
       const hasLoginButton = await page.evaluate(() => {
         return document.querySelector('#login-btn');
       });
@@ -295,30 +303,29 @@ export class RedTaskService extends BaseTaskService {
         throw new BadRequestException('Cookie had expired.');
       }
 
-      const filter = data.filter[0];
-      const content = data.content[0] || '';
-
       let noteIds: string[] = [];
-      const unUsedNoteIndex = -1;
 
-      const getUsefulNoteIndex = async () => {
+      const usedNoteIds = await this.prisma.messages.findMany({
+        where: {
+          task_id,
+        },
+        select: {
+          platform_unit_id: true,
+        },
+      });
+
+      const getUnUsedIds = async () => {
         noteIds = await page.evaluate(() => {
           return Array.from(document.querySelectorAll('section.note-item > div > a')).map((element) => new URL((element as HTMLAnchorElement).href).pathname.split('/')[2]);
         });
 
-        const usedNoteIds = await this.prisma.messages.findMany({
-          where: {
-            task_id,
-          },
-          select: {
-            platform_unit_id: true,
-          },
-        });
-
         const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
-        const unUsedNoteIndex = noteIds.filter((id) => !usedIdsSet.has(id));
-        return unUsedNoteIndex;
+        const unUsedIds = noteIds.filter((id) => !usedIdsSet.has(id));
+        return unUsedIds;
       };
+
+      const unUsedIds = await getUnUsedIds();
+      console.log(unUsedIds);
 
       await browser.close();
     } catch (error: any) {
@@ -332,7 +339,7 @@ export class RedTaskService extends BaseTaskService {
         },
       });
 
-      await this.taskUtilService.updateITaskStatus({
+      await this.taskUtilService.updateTaskStatus({
         task_id,
         status: currentTask.sent_count ? 'PARTIAL_COMPLETED' : 'FAILED',
         failed_reason,

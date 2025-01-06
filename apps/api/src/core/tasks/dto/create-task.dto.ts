@@ -1,4 +1,4 @@
-import { ITaskType } from '@prisma/client';
+import { DISTRIBUTION_RULE, TASK_TYPE } from '@prisma/client';
 import { IsArray, IsEnum, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class CreateTaskDto {
@@ -15,8 +15,11 @@ export class CreateTaskDto {
   @IsNumber()
   expect_count: number;
 
-  @IsEnum(ITaskType)
-  type: ITaskType;
+  @IsEnum(TASK_TYPE)
+  type: TASK_TYPE;
+
+  @IsEnum(DISTRIBUTION_RULE)
+  destribution_rule: DISTRIBUTION_RULE;
 
   @IsObject()
   @IsOptional()

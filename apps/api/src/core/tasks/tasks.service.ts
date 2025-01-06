@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { IConnectionType } from '@prisma/client';
+import { CONNECTION_TYPE } from '@prisma/client';
 import { BaseTaskService } from './services/base.service';
 import { RedTaskService } from './services/red/red.service';
 
@@ -51,7 +51,7 @@ export class TasksService {
     }
   }
 
-  private getTaskService = (type: IConnectionType): BaseTaskService => {
+  private getTaskService = (type: CONNECTION_TYPE): BaseTaskService => {
     switch (type) {
       case 'Red':
         return this.redService;
@@ -80,7 +80,7 @@ export class TasksService {
   }
 
   async creatTask(connection_id: number, tenant_id: number, body: CreateTaskDto) {
-    const { name, description, expect_count, data, account_ids, type } = body;
+    const { name, description, expect_count, data, account_ids, type, destribution_rule } = body;
 
     const accounts = await this.prisma.accounts.findMany({
       where: {
@@ -104,6 +104,7 @@ export class TasksService {
         expect_count,
         data,
         type,
+        destribution_rule,
       },
     });
 
