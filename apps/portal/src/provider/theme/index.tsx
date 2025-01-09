@@ -1,7 +1,7 @@
 import {
   ConfigProvider,
 } from 'antd'
-import enUS from 'antd/locale/en_US'
+import zhCN from 'antd/locale/zh_CN'
 import {
   theme,
 } from '@/theme'
@@ -14,7 +14,7 @@ export const AntdThemeProvider = ({
   children,
 }: IPropsType) => (
   <ConfigProvider
-    locale={enUS}
+    locale={zhCN}
     theme={theme}
   >
     {children}

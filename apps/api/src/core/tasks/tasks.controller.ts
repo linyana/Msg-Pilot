@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Req } from 'src/decorator';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -19,5 +19,10 @@ export class TasksController {
   @Get()
   findAllTasks(@Req('connection_id') connection_id: number) {
     return this.tasksService.findAllTasks(connection_id);
+  }
+
+  @Post('retry/:id')
+  retry(@Req('connection_id') connection_id: number, @Param() { id }: { id: number }) {
+    return this.tasksService.retry(connection_id, Number(id));
   }
 }

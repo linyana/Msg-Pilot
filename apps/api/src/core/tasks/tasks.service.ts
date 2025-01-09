@@ -15,6 +15,43 @@ export class TasksService {
     // this.init();
   }
 
+  async retry(connection_id: number, task_id: number) {
+    const task = await this.prisma.tasks.findFirst({
+      where: {
+        connection_id,
+        id: task_id,
+        NOT: {
+          status: 'COMPLETED',
+        },
+      },
+      include: {
+        task_accounts: {
+          include: {
+            account: true,
+          },
+        },
+      },
+    });
+
+    if (task) {
+      const { taskService } = await this.getConnector(Number(task.connection_id));
+
+      const account = task.task_accounts?.[0]?.account;
+      if (!account) {
+        throw new BadRequestException('无可用账号');
+      }
+
+      taskService.setMessages({
+        task_id: Number(task.id),
+        account_id: Number(account.id),
+      });
+
+      return '任务开启成功';
+    }
+
+    throw new BadRequestException('任务开启失败');
+  }
+
   async init() {
     const tasks = await this.prisma.tasks.findMany({
       where: {
@@ -43,11 +80,11 @@ export class TasksService {
         task_id: Number(task.id),
         account_id: Number(account.id),
       });
-
-      await taskService.handleTask({
-        task_id: Number(task.id),
-        account_id: Number(account.id),
-      });
+      console.log('end');
+      // await taskService.handleTask({
+      //   task_id: Number(task.id),
+      //   account_id: Number(account.id),
+      // });
     }
   }
 

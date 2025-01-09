@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ITaskData } from '../../types';
 import { TaskUtilService } from '../utils.service';
 import { Page } from 'puppeteer';
+import { sleep } from 'src/utils';
 
 @Injectable()
 export class RedTaskService extends BaseTaskService {
@@ -198,7 +199,7 @@ export class RedTaskService extends BaseTaskService {
     } catch (error: any) {
       await browser.close();
 
-      const failed_reason = error?.message || 'Unknown Error';
+      const failed_reason = error?.message || '未知错误';
 
       const currentTask = await this.prisma.tasks.findUniqueOrThrow({
         where: {
@@ -216,7 +217,6 @@ export class RedTaskService extends BaseTaskService {
 
   async setMessages(params: { account_id: number; task_id: number }) {
     const { account_id, task_id } = params;
-    const { browser, page } = await creatBrowser();
 
     const account = await this.prisma.accounts.findUniqueOrThrow({
       where: {
@@ -247,10 +247,12 @@ export class RedTaskService extends BaseTaskService {
     if (!need_send_count) {
       await this.taskUtilService.updateTaskStatus({
         task_id,
-        status: 'WAITING',
+        status: 'COMPLETED_SEARCH',
       });
       return;
     }
+
+    const { browser, page } = await creatBrowser();
 
     try {
       if (!account.cookie) {
@@ -302,7 +304,7 @@ export class RedTaskService extends BaseTaskService {
         throw new BadRequestException('账号授权已过期');
       }
 
-      let noteIds: string[] = [];
+      let noteIds: { id: string; name: string }[] = [];
 
       const usedNoteIds = await this.prisma.messages.findMany({
         where: {
@@ -312,25 +314,88 @@ export class RedTaskService extends BaseTaskService {
           platform_unit_id: true,
         },
       });
+      const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
 
       const getUnUsedIds = async () => {
-        noteIds = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('section.note-item > div > a')).map((element) => new URL((element as HTMLAnchorElement).href).pathname.split('/')[2]);
+        const newNoteIds = await page.evaluate(() => {
+          return Array.from(document.querySelectorAll('section.note-item > div > a')).map((element) => {
+            const id = new URL((element as HTMLAnchorElement).href).pathname.split('/')[2];
+            const name = element.textContent || '';
+            return { id, name };
+          });
         });
 
-        const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
-        const unUsedIds = noteIds.filter((id) => !usedIdsSet.has(id));
-        return unUsedIds;
+        let noMoreUsers = false;
+        const uniqueNewNoteIds = Array.from(new Map(newNoteIds.map((item) => [item.id, item])).values());
+        const newIds = uniqueNewNoteIds.filter((item) => !usedIdsSet.has(item.id));
+        if (!newIds.length) {
+          noMoreUsers = true;
+        }
+
+        noteIds = [...noteIds, ...newIds.filter((item) => !noteIds.some((existing) => existing.id === item.id))];
+        const unUsedIds = noteIds.filter((item) => !usedIdsSet.has(item.id));
+
+        return { unUsedIds, noMoreUsers };
       };
 
-      const unUsedIds = await getUnUsedIds();
-      console.log(unUsedIds);
+      const createMessages = async (usersToSend: { id: string; name: string }[]) => {
+        const data = usersToSend.map((item) => ({
+          platform_unit_id: item.id,
+          task_id,
+          account_id,
+          connection_id,
+          tenant_id: Number(task.tenant_id),
+          platform_data: {
+            name: item.name,
+          },
+        }));
+        await this.prisma.messages.createMany({
+          data,
+        });
+      };
+
+      let foundEnoughUsers = false;
+      let noMoreUsers = false;
+      let scrollCount = 100;
+
+      while (!foundEnoughUsers && !noMoreUsers) {
+        const { unUsedIds, noMoreUsers: isNoMoreUsers } = await getUnUsedIds();
+        noMoreUsers = isNoMoreUsers;
+
+        if (unUsedIds.length >= need_send_count) {
+          foundEnoughUsers = true;
+
+          const usersToSend = unUsedIds.slice(0, need_send_count);
+          await createMessages(usersToSend);
+
+          await this.taskUtilService.updateTaskStatus({
+            task_id,
+            status: 'COMPLETED_SEARCH',
+          });
+        } else if (noMoreUsers || scrollCount < 0) {
+          await createMessages(unUsedIds);
+
+          await this.taskUtilService.updateTaskStatus({
+            task_id,
+            status: 'PARTIAL_COMPLETED_SEARCH',
+          });
+          break;
+        } else {
+          await page.evaluate(() => {
+            window.scrollBy(0, window.innerHeight);
+          });
+
+          await sleep(2000);
+
+          scrollCount -= 1;
+        }
+      }
 
       await browser.close();
     } catch (error: any) {
       await browser.close();
 
-      const failed_reason = error?.message || 'Unknown Error';
+      const failed_reason = error?.message || '未知错误';
 
       const currentTask = await this.prisma.tasks.findUniqueOrThrow({
         where: {

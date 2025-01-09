@@ -23,6 +23,6 @@ export const CopyRight = ({
     Copyright &copy;
     {new Date().getFullYear()}
     {' '}
-    Silk Software Corp. All Rights Reserved
+    Msg Pilot. All Rights Reserved
   </Flex>
 )
