@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { BaseTaskService } from '../base.service';
 import { Click, creatBrowser, Type } from '../../utils';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ITaskData } from '../../types';
+import { IRedMessagePlatformDataType, ITaskDataType } from '../../types';
 import { TaskUtilService } from '../utils.service';
 import { Page } from 'puppeteer';
 import { sleep } from 'src/utils';
@@ -81,7 +81,7 @@ export class RedTaskService extends BaseTaskService {
         throw new BadRequestException(`创建浏览器失败`);
       }
 
-      const data = task.data as ITaskData;
+      const data = task.data as ITaskDataType;
 
       const hasLoginButton = await page.evaluate(() => {
         return document.querySelector('#login-btn');
@@ -281,7 +281,7 @@ export class RedTaskService extends BaseTaskService {
       const hasLoginButton = await page.evaluate(() => document.querySelector('#login-btn'));
       if (hasLoginButton) throw new BadRequestException('账号授权已过期');
 
-      const filter = (task.data as ITaskData)?.filter[0];
+      const filter = (task.data as ITaskDataType)?.filter[0];
 
       await Type({
         page,
@@ -297,7 +297,7 @@ export class RedTaskService extends BaseTaskService {
         selector: '#global > div.header-container > header > div.input-box > div > div.search-icon',
       });
 
-      let noteIds: { id: string; name: string }[] = [];
+      let noteIds: IRedMessagePlatformDataType[] = [];
 
       const usedNoteIds = await this.prisma.messages.findMany({
         where: { task_id },
@@ -307,10 +307,15 @@ export class RedTaskService extends BaseTaskService {
 
       const getUnUsedIds = async () => {
         const newNoteIds = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('section.note-item > div > a')).map((element) => {
-            const id = new URL((element as HTMLAnchorElement).href).pathname.split('/')[2];
-            const name = element.textContent || '';
-            return { id, name };
+          return Array.from(document.querySelectorAll('section.note-item > div')).map((container) => {
+            const anchor = container.querySelector('a.cover') as HTMLAnchorElement;
+            const id = anchor ? new URL(anchor.href).pathname.split('/')[2] : '';
+            const name = container.querySelector('a.title span')?.textContent?.trim() || '';
+            const note_image = container.querySelector('a.cover img')?.getAttribute('src') || '';
+            const authorElement = container.querySelector('.author-wrapper .author');
+            const author_name = authorElement?.querySelector('.name')?.textContent?.trim() || '';
+            const author_image = authorElement?.querySelector('.author-avatar')?.getAttribute('src') || '';
+            return { id, name, note_image, author_name, author_image };
           });
         });
 
@@ -325,7 +330,7 @@ export class RedTaskService extends BaseTaskService {
         return { unUsedIds, noMoreUsers };
       };
 
-      const createMessages = async (usersToSend: { id: string; name: string }[]) => {
+      const createMessages = async (usersToSend: IRedMessagePlatformDataType[]) => {
         const data: Prisma.messagesCreateManyInput[] = usersToSend.map((item) => ({
           platform_unit_id: item.id,
           platform_name: item.name,
@@ -333,7 +338,13 @@ export class RedTaskService extends BaseTaskService {
           account_id,
           connection_id,
           tenant_id: Number(task.tenant_id),
-          platform_data: { note_id: item.id, name: item.name },
+          platform_data: {
+            note_id: item.id,
+            name: item.name,
+            note_image: item.note_image,
+            author_name: item.author_name,
+            author_image: item.author_image,
+          },
         }));
         await this.prisma.messages.createMany({ data });
       };
