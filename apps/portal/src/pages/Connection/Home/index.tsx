@@ -119,7 +119,7 @@ export const Connections = () => {
           textAlign="center"
           marginBottom="8px"
         >
-          Connection List
+          连接列表
         </Typography>
         <Typography
           variant="h5"
@@ -127,7 +127,7 @@ export const Connections = () => {
           textAlign="center"
           marginBottom="40px"
         >
-          Manage your connection list.
+          管理你的连接列表
         </Typography>
         <Card sx={{
           padding: 0,
@@ -141,7 +141,7 @@ export const Connections = () => {
           >
             {
               !connections.length && (
-                <Empty tip="No connections" />
+                <Empty tip="无数据" />
               )
             }
             {
@@ -164,7 +164,7 @@ export const Connections = () => {
                     >
                       <ListItemAvatar>
                         <Avatar
-                          alt="Connection"
+                          alt="连接"
                           src={CONNECTION_INFO[connection.type]?.logo}
                         >
                           <StoreIcon />
@@ -195,7 +195,7 @@ export const Connections = () => {
                 }}
               >
                 {
-                  !connections.length ? 'Create your first connection' : 'Create a new connection'
+                  !connections.length ? '创建你的第一个连接' : '创建一个新连接'
                 }
               </Button>
             </div>

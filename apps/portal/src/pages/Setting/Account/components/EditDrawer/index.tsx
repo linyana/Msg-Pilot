@@ -66,7 +66,7 @@ export const EditDrawer = ({
 
   useEffect(() => {
     if (data?.data) {
-      message?.success('Successfully create.')
+      message?.success('修改成功')
       setOpen(false)
       refreshData()
     }
@@ -89,7 +89,7 @@ export const EditDrawer = ({
   return (
     <>
       <Drawer
-        title="Edit Account"
+        title="修改账号"
         onClose={onClose}
         open={open}
       >
@@ -101,11 +101,11 @@ export const EditDrawer = ({
           initialValues={record}
         >
           <Form.Item
-            label="Name"
+            label="账号名"
             name="name"
             rules={[{
               required: true,
-              message: 'please type your name.',
+              message: '请输入你的账号名',
             }]}
           >
             <Input />
@@ -117,7 +117,7 @@ export const EditDrawer = ({
             <Input />
           </Form.Item>
           <Form.Item
-            label="Description"
+            label="描述"
             name="description"
           >
             <TextArea />
@@ -132,7 +132,7 @@ export const EditDrawer = ({
             onClick={onSubmit}
             loading={loading}
           >
-            OK
+            确认修改
           </Button>
         </Flex>
       </Drawer>

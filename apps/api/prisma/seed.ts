@@ -15,7 +15,7 @@ async function main() {
     update: {},
     create: {
       email: 'test@test.com',
-      name: 'test_merchant',
+      name: '测试',
       phone: '111',
     },
   });
@@ -27,7 +27,7 @@ async function main() {
     },
     create: {
       email: 'test@test.com',
-      name: 'test',
+      name: '测试账号',
       password: passwordTest,
       tenant_id: tenant.id,
     },

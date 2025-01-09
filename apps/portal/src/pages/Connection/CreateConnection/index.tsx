@@ -86,7 +86,7 @@ export const CreateConnection = () => {
   const [formData, setFormData] = useState<ICreateConnectionType>()
   const [activeStep, setActiveStep] = useState(0)
   const [selectedPlatform, setSelectedPlatform] = useState<CONNECTION_TYPE>()
-  const steps = ['Platform', 'Connection Information', 'Settings']
+  const steps = ['平台选择', '连接信息', '账号设置']
 
   const message = useMessage()
   const navigate = useNavigate()
@@ -111,15 +111,15 @@ export const CreateConnection = () => {
   const handleNext = async () => {
     if (activeStep === 0) {
       if (!selectedPlatform) {
-        message.warning('Please select a platform first.')
+        message.warning('请先选择一个平台')
       } else if (selectedPlatform === 'TikTok') {
-        message.warning('TikTok is not available now.')
+        message.warning('TikTok暂不开放')
       } else {
         setActiveStep((prevActiveStep) => prevActiveStep + 1)
       }
     } else if (activeStep === 1) {
       if (!await trigger('name')) {
-        message.warning('Name is required')
+        message.warning('连接名是必填项')
       } else {
         setActiveStep((prevActiveStep) => prevActiveStep + 1)
       }
@@ -153,7 +153,7 @@ export const CreateConnection = () => {
 
   useEffect(() => {
     if (data?.data) {
-      message.success('Successfully created a new connection.')
+      message.success('连接创建成功')
       navigate('/connections')
     }
   }, [data?.data])
@@ -181,7 +181,7 @@ export const CreateConnection = () => {
           textAlign="center"
           marginBottom="8px"
         >
-          Create Connection
+          创建连接
         </Typography>
         <Typography
           variant="h5"
@@ -189,7 +189,7 @@ export const CreateConnection = () => {
           textAlign="center"
           marginBottom="40px"
         >
-          Create a new connection to send message
+          创建一个新连接来发送消息
         </Typography>
         <Card sx={{
           padding: '32px 16px',
@@ -294,7 +294,7 @@ export const CreateConnection = () => {
                           type="submit"
                           loading={loading}
                         >
-                          Submit
+                          提交
                           <KeyboardArrowRight />
                         </LoadingButton>
                       ) : (
@@ -303,7 +303,7 @@ export const CreateConnection = () => {
                           onClick={handleNext}
                           disabled={activeStep === steps.length - 1}
                         >
-                          Next
+                          下一步
                           <KeyboardArrowRight />
                         </Button>
                       )
@@ -321,7 +321,7 @@ export const CreateConnection = () => {
                           disabled={loading}
                         >
                           <KeyboardArrowLeft />
-                          Back
+                          返回
                         </Button>
                       )
                       : (
@@ -332,7 +332,7 @@ export const CreateConnection = () => {
                           }}
                         >
                           <KeyboardArrowLeft />
-                          Return
+                          返回连接列表
                         </Button>
                       )
                   }

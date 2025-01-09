@@ -38,7 +38,7 @@ export class AccountsService {
     });
 
     if (!existTikAccount) {
-      throw new BadRequestException("Don't have this session, please try again.");
+      throw new BadRequestException('该账号不存在，请重试');
     }
 
     return this.prisma.accounts.update({
@@ -63,7 +63,7 @@ export class AccountsService {
     });
 
     if (!existAccount) {
-      throw new BadRequestException("Don't have this session, please try again.");
+      throw new BadRequestException('该账号不存在，请重试');
     }
 
     await this.prisma.accounts.delete({

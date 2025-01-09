@@ -70,14 +70,14 @@ export const routes: Array<IRouteType> = [
   {
     id: 'dashboard',
     element: <Dashboard />,
-    text: 'Dashboard',
+    text: '主页',
     path: '/dashboard',
     icon: <DashboardIcon />,
   },
   {
     id: 'tasks',
     element: <Task />,
-    text: 'Tasks',
+    text: '任务',
     path: '/tasks',
     icon: <AssignmentIcon />,
   },
@@ -88,14 +88,14 @@ export const routes: Array<IRouteType> = [
   },
   {
     id: 'settings',
-    text: 'Settings',
+    text: '设置',
     path: '/settings',
     icon: <SettingsIcon />,
     children: [
       {
         id: 'settings/account',
         element: <Account />,
-        text: 'Account',
+        text: '账号',
         path: '/settings/account',
         icon: <AdminPanelSettingsIcon />,
       },

@@ -55,7 +55,7 @@ export const DeleteModal = ({
 
   useEffect(() => {
     if (data?.data) {
-      message.success('Successfully create.')
+      message.success('删除成功')
       setIsOpen(false)
       refreshData()
     }
@@ -69,7 +69,7 @@ export const DeleteModal = ({
     <>
       <Modal
         open={isOpen}
-        title="Delete account"
+        title="删除账号"
         onCancel={() => {
           setIsOpen(false)
         }}
@@ -95,7 +95,7 @@ export const DeleteModal = ({
           </Flex>
         )}
       >
-        <Text>Are you sure to delete this account?</Text>
+        <Text>确定删除这个账号吗?</Text>
       </Modal>
       <Button
         danger

@@ -48,7 +48,7 @@ export class RedTaskService extends BaseTaskService {
             expired_at: new Date(),
           },
         });
-        throw new BadRequestException("Can't get cookie in this account.");
+        throw new BadRequestException('账号授权已过期');
       }
 
       const cookies = account.cookie.split('; ').map((item) => {
@@ -76,7 +76,7 @@ export class RedTaskService extends BaseTaskService {
       });
 
       if (!response) {
-        throw new BadRequestException(`Failed to create broswer.`);
+        throw new BadRequestException(`创建浏览器失败`);
       }
 
       const data = task.data as ITaskData;
@@ -86,7 +86,7 @@ export class RedTaskService extends BaseTaskService {
       });
 
       if (hasLoginButton) {
-        throw new BadRequestException('Cookie had expired.');
+        throw new BadRequestException('账号授权已过期');
       }
 
       const filter = data.filter[0];
@@ -135,13 +135,13 @@ export class RedTaskService extends BaseTaskService {
       await Type({
         page,
         content: filter,
-        name: 'Dashboard Input',
+        name: '搜索框',
         selector: '#search-input',
       });
 
       await Click({
         page,
-        name: 'Dashboard Button',
+        name: '搜索按钮',
         delay: 3,
         selector: '#global > div.header-container > header > div.input-box > div > div.search-icon',
       });
@@ -154,13 +154,12 @@ export class RedTaskService extends BaseTaskService {
             },
           });
           if (currentTask.expect_count - currentTask.sent_count <= 0) {
-            console.log(1);
             break;
           }
 
           await Click({
             page,
-            name: 'Article',
+            name: '笔记',
             delay: 3,
             selector: 'section:nth-child(1) > div > a.cover.ld.mask',
           });
@@ -264,7 +263,7 @@ export class RedTaskService extends BaseTaskService {
             expired_at: new Date(),
           },
         });
-        throw new BadRequestException("Can't get cookie in this account.");
+        throw new BadRequestException('无法找到Cookie');
       }
 
       const cookies = account.cookie.split('; ').map((item) => {
@@ -292,7 +291,7 @@ export class RedTaskService extends BaseTaskService {
       });
 
       if (!response) {
-        throw new BadRequestException(`Failed to create broswer.`);
+        throw new BadRequestException(`创建浏览器失败`);
       }
 
       const hasLoginButton = await page.evaluate(() => {
@@ -300,7 +299,7 @@ export class RedTaskService extends BaseTaskService {
       });
 
       if (hasLoginButton) {
-        throw new BadRequestException('Cookie had expired.');
+        throw new BadRequestException('账号授权已过期');
       }
 
       let noteIds: string[] = [];
@@ -351,7 +350,7 @@ export class RedTaskService extends BaseTaskService {
     const { page, content } = params;
     await Click({
       page,
-      name: 'Article',
+      name: '笔记',
       delay: 3,
       selector: 'div.inner',
     });
@@ -360,7 +359,7 @@ export class RedTaskService extends BaseTaskService {
 
     await Click({
       page,
-      name: 'Submit comment',
+      name: '提交按钮',
       delay: 3,
       selector: '#noteContainer > div.interaction-container > div.interactions.engage-bar > div > div > div.bottom > div > div.right-btn-area > button.btn.submit',
     });
