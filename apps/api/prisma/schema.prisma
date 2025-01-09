@@ -97,25 +97,25 @@ enum DISTRIBUTION_RULE {
 }
 
 model tasks {
-  id                BigInt            @id @default(autoincrement())
-  created_at        DateTime          @default(now()) @db.Timestamptz(6)
-  updated_at        DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
-  name              String            @db.VarChar(255)
-  description       String?
-  status            TASK_STATUS       @default(NOT_START)
-  failed_reason     Json?
-  data              Json?
-  repeatable        Boolean           @default(false)
-  sent_count        Int               @default(0)
-  expect_count      Int               @default(0)
-  connection_id     BigInt
-  tenant_id         BigInt
-  type              TASK_TYPE         @default(NOTE_COMMENT)
-  destribution_rule DISTRIBUTION_RULE @default(ACCOUNT_UNIQUE)
-  connection        connections       @relation(fields: [connection_id], references: [id])
-  tenant            tenants           @relation(fields: [tenant_id], references: [id])
-  task_accounts     task_accounts[]
-  messages          messages[]
+  id                  BigInt            @id @default(autoincrement())
+  created_at          DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime          @default(now()) @updatedAt @db.Timestamptz(6)
+  name                String            @db.VarChar(255)
+  description         String?
+  status              TASK_STATUS       @default(NOT_START)
+  failed_reason       Json?
+  data                Json?
+  is_search_completed Boolean           @default(false)
+  sent_count          Int               @default(0)
+  expect_count        Int               @default(0)
+  connection_id       BigInt
+  tenant_id           BigInt
+  type                TASK_TYPE         @default(NOTE_COMMENT)
+  destribution_rule   DISTRIBUTION_RULE @default(ACCOUNT_UNIQUE)
+  connection          connections       @relation(fields: [connection_id], references: [id])
+  tenant              tenants           @relation(fields: [tenant_id], references: [id])
+  task_accounts       task_accounts[]
+  messages            messages[]
 }
 
 model task_accounts {
