@@ -18,6 +18,17 @@ export class TaskUtilService {
           failed_reason,
         },
       });
+    } else if (status === 'COMPLETED_SEARCH') {
+      await this.prisma.tasks.update({
+        where: {
+          id: Number(task_id),
+        },
+        data: {
+          status,
+          is_search_completed: true,
+          failed_reason: '',
+        },
+      });
     } else {
       await this.prisma.tasks.update({
         where: {

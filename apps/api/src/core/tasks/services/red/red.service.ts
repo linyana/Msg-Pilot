@@ -6,6 +6,7 @@ import { ITaskData } from '../../types';
 import { TaskUtilService } from '../utils.service';
 import { Page } from 'puppeteer';
 import { sleep } from 'src/utils';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class RedTaskService extends BaseTaskService {
@@ -165,7 +166,7 @@ export class RedTaskService extends BaseTaskService {
             selector: 'section:nth-child(1) > div > a.cover.ld.mask',
           });
 
-          if (!data.type || data.type === 'comment') {
+          if (task.type === 'NOTE_COMMENT') {
             await this.sendComment({
               page,
               content,
@@ -257,62 +258,50 @@ export class RedTaskService extends BaseTaskService {
     try {
       if (!account.cookie) {
         await this.prisma.accounts.update({
-          where: {
-            id: account_id,
-          },
-          data: {
-            is_expired: true,
-            expired_at: new Date(),
-          },
+          where: { id: account_id },
+          data: { is_expired: true, expired_at: new Date() },
         });
         throw new BadRequestException('无法找到Cookie');
       }
 
       const cookies = account.cookie.split('; ').map((item) => {
         const [name, ...rest] = item.split('=');
-
-        return {
-          name,
-          value: rest.join('='),
-          domain: '.xiaohongshu.com',
-          path: '/',
-        };
+        return { name, value: rest.join('='), domain: '.xiaohongshu.com', path: '/' };
       });
 
       for (const cookie of cookies) {
         await page.setCookie(cookie);
       }
 
-      await this.taskUtilService.updateTaskStatus({
-        task_id,
-        status: 'RUNNING',
+      await this.taskUtilService.updateTaskStatus({ task_id, status: 'RUNNING' });
+
+      const response = await page.goto('https://www.xiaohongshu.com', { waitUntil: 'domcontentloaded' });
+      if (!response) throw new BadRequestException('创建浏览器失败');
+
+      const hasLoginButton = await page.evaluate(() => document.querySelector('#login-btn'));
+      if (hasLoginButton) throw new BadRequestException('账号授权已过期');
+
+      const filter = (task.data as ITaskData)?.filter[0];
+
+      await Type({
+        page,
+        content: filter,
+        name: '搜索框',
+        selector: '#search-input',
       });
 
-      const response = await page.goto('https://www.xiaohongshu.com', {
-        waitUntil: 'domcontentloaded',
+      await Click({
+        page,
+        name: '搜索按钮',
+        delay: 3,
+        selector: '#global > div.header-container > header > div.input-box > div > div.search-icon',
       });
-
-      if (!response) {
-        throw new BadRequestException(`创建浏览器失败`);
-      }
-
-      const hasLoginButton = await page.evaluate(() => {
-        return document.querySelector('#login-btn');
-      });
-
-      if (hasLoginButton) {
-        throw new BadRequestException('账号授权已过期');
-      }
 
       let noteIds: { id: string; name: string }[] = [];
 
       const usedNoteIds = await this.prisma.messages.findMany({
-        where: {
-          task_id,
-        },
-        select: {
-          platform_unit_id: true,
-        },
+        where: { task_id },
+        select: { platform_unit_id: true },
       });
       const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
 
@@ -328,9 +317,7 @@ export class RedTaskService extends BaseTaskService {
         let noMoreUsers = false;
         const uniqueNewNoteIds = Array.from(new Map(newNoteIds.map((item) => [item.id, item])).values());
         const newIds = uniqueNewNoteIds.filter((item) => !usedIdsSet.has(item.id));
-        if (!newIds.length) {
-          noMoreUsers = true;
-        }
+        if (!newIds.length) noMoreUsers = true;
 
         noteIds = [...noteIds, ...newIds.filter((item) => !noteIds.some((existing) => existing.id === item.id))];
         const unUsedIds = noteIds.filter((item) => !usedIdsSet.has(item.id));
@@ -339,19 +326,16 @@ export class RedTaskService extends BaseTaskService {
       };
 
       const createMessages = async (usersToSend: { id: string; name: string }[]) => {
-        const data = usersToSend.map((item) => ({
+        const data: Prisma.messagesCreateManyInput[] = usersToSend.map((item) => ({
           platform_unit_id: item.id,
+          platform_name: item.name,
           task_id,
           account_id,
           connection_id,
           tenant_id: Number(task.tenant_id),
-          platform_data: {
-            name: item.name,
-          },
+          platform_data: { note_id: item.id, name: item.name },
         }));
-        await this.prisma.messages.createMany({
-          data,
-        });
+        await this.prisma.messages.createMany({ data });
       };
 
       let foundEnoughUsers = false;
@@ -364,29 +348,15 @@ export class RedTaskService extends BaseTaskService {
 
         if (unUsedIds.length >= need_send_count) {
           foundEnoughUsers = true;
-
-          const usersToSend = unUsedIds.slice(0, need_send_count);
-          await createMessages(usersToSend);
-
-          await this.taskUtilService.updateTaskStatus({
-            task_id,
-            status: 'COMPLETED_SEARCH',
-          });
-        } else if (noMoreUsers || scrollCount < 0) {
+          await createMessages(unUsedIds.slice(0, need_send_count));
+          await this.taskUtilService.updateTaskStatus({ task_id, status: 'COMPLETED_SEARCH' });
+        } else if (noMoreUsers || scrollCount <= 0) {
           await createMessages(unUsedIds);
-
-          await this.taskUtilService.updateTaskStatus({
-            task_id,
-            status: 'PARTIAL_COMPLETED_SEARCH',
-          });
+          await this.taskUtilService.updateTaskStatus({ task_id, status: 'PARTIAL_COMPLETED_SEARCH' });
           break;
         } else {
-          await page.evaluate(() => {
-            window.scrollBy(0, window.innerHeight);
-          });
-
+          await page.evaluate(() => window.scrollBy(0, window.innerHeight));
           await sleep(2000);
-
           scrollCount -= 1;
         }
       }
@@ -396,11 +366,8 @@ export class RedTaskService extends BaseTaskService {
       await browser.close();
 
       const failed_reason = error?.message || '未知错误';
-
       const currentTask = await this.prisma.tasks.findUniqueOrThrow({
-        where: {
-          id: task_id,
-        },
+        where: { id: task_id },
       });
 
       await this.taskUtilService.updateTaskStatus({
