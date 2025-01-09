@@ -7,7 +7,7 @@ export const Type = async (params: { page: Page; content: string; name: string; 
 
   const searchInput = await page.waitForSelector(selector);
   if (!searchInput) {
-    throw new BadRequestException(`Can't find search input:  ${name}`);
+    throw new BadRequestException(`找不到输入框:  ${name}`);
   }
 
   await searchInput?.focus();
@@ -24,7 +24,7 @@ export const Click = async (params: { page: Page; name: string; selector: string
   const searchButton = await page.waitForSelector(selector);
 
   if (!searchButton) {
-    throw new BadRequestException(`Can't find search button: ${name}`);
+    throw new BadRequestException(`找不到按钮: ${name}`);
   }
 
   searchButton.click();

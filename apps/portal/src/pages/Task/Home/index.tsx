@@ -70,7 +70,7 @@ export const Task = React.memo(() => {
 
   const columns: TableProps<IAccountType>['columns'] = [
     {
-      title: 'Name',
+      title: '任务名',
       dataIndex: 'name',
       key: 'name',
       render: (_, record) => (
@@ -125,20 +125,20 @@ export const Task = React.memo(() => {
   return (
     <>
       <Card>
-        <Title level={4}>Manage your tasks</Title>
+        <Title level={4}>任务</Title>
         <Flex
           justifyContent="space-between"
           alignItems="center"
           gap="16px"
         >
-          <Text>Please create a task to send messages.</Text>
+          <Text>管理你的所有任务，创建一个任务来发送消息。</Text>
           <Button
             type="primary"
             onClick={() => {
               navigate('./create-task')
             }}
           >
-            Create task
+            创建任务
           </Button>
         </Flex>
         <Table

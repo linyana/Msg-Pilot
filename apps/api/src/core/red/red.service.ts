@@ -38,17 +38,13 @@ export class RedService {
         await page.setCookie(cookie);
       }
 
-      const response = await page.goto('https://www.xiaohongshu.com', {
+      await page.goto('https://www.xiaohongshu.com', {
         waitUntil: 'domcontentloaded',
       });
 
-      if (!response) {
-        console.log(`create page error`);
-      }
-
       const searchInput = await page.waitForSelector('#search-input');
       if (!searchInput) {
-        throw new BadRequestException("Can't find search input");
+        throw new BadRequestException('找不到筛选输入框');
       }
 
       await searchInput?.focus();
@@ -57,7 +53,7 @@ export class RedService {
       const searchButton = await page.waitForSelector('#global > div.header-container > header > div.input-box > div > div.search-icon');
 
       if (!searchButton) {
-        throw new BadRequestException("Can't find search button");
+        throw new BadRequestException('找不到搜索按钮');
       }
 
       searchButton.click();
@@ -65,7 +61,7 @@ export class RedService {
       const article = await page.waitForSelector('#global > div.main-container > div.with-side-bar.main-content > div > div.feeds-container > section:nth-child(1) > div > a.cover.ld.mask');
 
       if (!article) {
-        throw new BadRequestException("Can't find search button");
+        throw new BadRequestException('找不到笔记');
       }
 
       article.click();
@@ -74,7 +70,7 @@ export class RedService {
       const commentButton = await page.waitForSelector('div.inner');
 
       if (!commentButton) {
-        throw new BadRequestException("Can't find search button");
+        throw new BadRequestException('找不到评论按钮');
       }
 
       commentButton.click();
@@ -84,7 +80,7 @@ export class RedService {
       const submitButton = await page.waitForSelector('#noteContainer > div.interaction-container > div.interactions.engage-bar > div > div > div.bottom > div > div.right-btn-area > button.btn.submit');
 
       if (!submitButton) {
-        throw new BadRequestException("Can't find search button");
+        throw new BadRequestException('找不到发送按钮');
       }
 
       submitButton.click();

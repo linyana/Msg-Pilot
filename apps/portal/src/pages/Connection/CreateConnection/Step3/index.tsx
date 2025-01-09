@@ -24,7 +24,7 @@ export const Step3 = ({
         <TextField
           {...field}
           fullWidth
-          label="Name"
+          label="账号名"
           margin="normal"
           size="small"
           error={!!errors.account_name}
@@ -58,7 +58,7 @@ export const Step3 = ({
         <TextField
           {...field}
           fullWidth
-          label="Description"
+          label="描述"
           margin="normal"
           multiline
           rows={4}

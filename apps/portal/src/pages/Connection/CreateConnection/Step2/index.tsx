@@ -29,7 +29,7 @@ export const Step2 = ({
         <TextField
           {...field}
           fullWidth
-          label="Name"
+          label="连接名"
           margin="normal"
           required
           size="small"
@@ -48,7 +48,7 @@ export const Step2 = ({
         <TextField
           {...field}
           fullWidth
-          label="Description"
+          label="描述"
           margin="normal"
           multiline
           rows={4}

@@ -36,7 +36,7 @@ export class TasksService {
 
       const account = task.task_accounts?.[0]?.account;
       if (!account) {
-        throw new BadRequestException("Can't find account.");
+        throw new BadRequestException('无可用账号');
       }
 
       await taskService.setMessages({
@@ -56,7 +56,7 @@ export class TasksService {
       case 'Red':
         return this.redService;
       default:
-        throw new BadRequestException("Can't find this platform");
+        throw new BadRequestException('找不到该平台');
     }
   };
 
@@ -68,7 +68,7 @@ export class TasksService {
     });
 
     if (!connection) {
-      throw new BadRequestException("Can't find this connection.");
+      throw new BadRequestException('找不到该连接');
     }
 
     const taskService = this.getTaskService(connection.type);
@@ -92,7 +92,7 @@ export class TasksService {
     });
 
     if (!accounts.length) {
-      throw new BadRequestException("Can't find any accounts, please try again");
+      throw new BadRequestException('无可用账号，请重试');
     }
 
     const task = await this.prisma.tasks.create({

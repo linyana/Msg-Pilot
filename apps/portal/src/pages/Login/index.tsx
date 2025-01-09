@@ -136,7 +136,7 @@ export const Login = () => {
               rules={{
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: 'Please enter the corrent email',
+                  message: '请输入正确的邮箱',
                 },
               }}
               render={({
@@ -145,7 +145,7 @@ export const Login = () => {
                 <TextField
                   {...field}
                   fullWidth
-                  label="email"
+                  label="邮箱"
                   margin="normal"
                   required
                   size="small"
@@ -164,7 +164,7 @@ export const Login = () => {
                   {...field}
                   type="password"
                   fullWidth
-                  label="password"
+                  label="密码"
                   margin="normal"
                   required
                   size="small"
@@ -183,7 +183,7 @@ export const Login = () => {
                 marginTop: 16,
               }}
             >
-              Sign In
+              登录
             </LoadingButton>
           </form>
         </CardContent>

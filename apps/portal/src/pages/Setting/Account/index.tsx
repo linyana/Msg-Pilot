@@ -66,7 +66,7 @@ export const Account = React.memo(() => {
 
   const columns: TableProps<IAccountType>['columns'] = [
     {
-      title: 'Name',
+      title: '账号名',
       dataIndex: 'name',
       key: 'name',
       render: (_, record) => (
@@ -100,7 +100,7 @@ export const Account = React.memo(() => {
       key: 'cookie',
     },
     {
-      title: 'Action',
+      title: '操作',
       key: 'action',
       fixed: 'right',
       render: (_, record) => (
@@ -122,14 +122,14 @@ export const Account = React.memo(() => {
     <>
       <Card>
         <Flex alignItems="center">
-          <Title level={4}>Manage your accounts</Title>
+          <Title level={4}>账号</Title>
         </Flex>
         <Flex
           justifyContent="space-between"
           alignItems="center"
           gap="16px"
         >
-          <Text>Please keep your login status when adding the cookie. Once log out your Account, please reset your cookie again.</Text>
+          <Text>请保持您账号的登录状态，如果过期了请更新cookie信息已重新授权。</Text>
           <CreateModal refreshData={refreshData} />
         </Flex>
         <Table

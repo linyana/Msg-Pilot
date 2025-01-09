@@ -48,7 +48,7 @@ export class AuthService {
     });
 
     if (!connection) {
-      throw new BadRequestException("Can't find this connection");
+      throw new BadRequestException('该连接不存在');
     }
 
     const access = this.jwtService.sign({ user_id, connection_id }, { secret: process.env.JWT_SECRET_KEY, expiresIn: '1d' });

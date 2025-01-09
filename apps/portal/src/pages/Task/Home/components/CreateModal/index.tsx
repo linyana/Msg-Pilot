@@ -57,7 +57,7 @@ export const CreateModal = (
 
   useEffect(() => {
     if (data?.data) {
-      message?.success('Successfully create.')
+      message?.success('创建成功')
       setIsOpen(false)
       refreshData()
     }
@@ -81,7 +81,7 @@ export const CreateModal = (
     <>
       <Modal
         open={isOpen}
-        title="Create a new account"
+        title="创建新账号"
         onCancel={() => {
           setIsOpen(false)
         }}
@@ -118,7 +118,7 @@ export const CreateModal = (
             name="name"
             rules={[{
               required: true,
-              message: 'please type your name.',
+              message: '请输入你的账号名',
             }]}
           >
             <Input />
@@ -130,7 +130,7 @@ export const CreateModal = (
             <Input />
           </Form.Item>
           <Form.Item
-            label="Description"
+            label="描述"
             name="desription"
           >
             <TextArea />
