@@ -1,0 +1,92 @@
+name: Deploy to Another Repository
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  dev:
+    if: github.ref_name == 'dev'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Cache Yarn Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Build Project
+        run: |
+          yarn
+          yarn build
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "Rik"
+          git config --global user.email "1439713475@qq.com"
+
+          git clone -b dev https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Msg-Pilot-Deploy.git target-repo
+          cd target-repo
+
+          cp -r ../dist/* ./
+          cp -r ../node_modules/* ./
+
+          git add .
+          git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
+          git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git dev
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
+  main:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Cache Yarn Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Build Project
+        run: |
+          yarn
+          yarn build
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "Rik"
+          git config --global user.email "1439713475@qq.com"
+
+       
+          git clone -b main https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git target-repo
+          cd target-repo
+
+          cp -r ../dist/* ./
+          cp -r ../node_modules/* ./
+
+          git add .
+          git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
+          git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git main
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
