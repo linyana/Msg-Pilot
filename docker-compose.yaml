@@ -13,13 +13,13 @@ services:
     volumes:
       - 'postgres_data:/var/lib/postgresql/data/pgdata'
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   redis_msg_pilot_dev:
     restart: always
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - "6809:6379"
 
   nest_api_dev:
     build:
@@ -32,7 +32,7 @@ services:
     - REDIS_HOST=redis_msg-pilot_dev
     - REDIS_PORT=6379
     ports:
-      - 3000:3000
+      - 3002:3000
 
 volumes:
   postgres_data:
