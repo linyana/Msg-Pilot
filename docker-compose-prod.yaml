@@ -1,0 +1,38 @@
+# docker-compose.yml
+
+version: "3"
+services:
+  nest_postgres_msg_pilot_prod:
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - TZ=Asia/Shanghai
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data/pgdata'
+    ports:
+      - "5432:5432"
+
+  redis_msg_pilot_prod:
+    restart: always
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  nest_api_prod:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file: ./apps/api/.env
+    restart: always
+    environment:
+    - DATABASE_URL=postgres://postgres:password@nest_postgres_msg-pilot_prod:5432/msg-pilot-api
+    - REDIS_HOST=redis_msg-pilot_prod
+    - REDIS_PORT=6379
+    ports:
+      - 3000:3000
+
+volumes:
+  postgres_data:
