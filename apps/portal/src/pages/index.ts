@@ -1,5 +1,5 @@
 export * from './Dashboard'
-export * from './Login'
+export * from './Login2'
 export * from './Registration'
 export * from './Task'
 export * from './Setting'
