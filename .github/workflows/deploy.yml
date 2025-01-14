@@ -39,8 +39,8 @@ jobs:
           git clone -b dev https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Msg-Pilot-Deploy.git target-repo
           cd target-repo
 
-          cp -r ../dist/* ./dist
-          cp -r ../node_modules/* ./node_modules
+          cp -r ../dist ./
+          cp -r ../node_modules ./
 
           git add .
           git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
@@ -81,8 +81,8 @@ jobs:
           git clone -b main https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git target-repo
           cd target-repo
 
-          cp -r ../dist/* ./dist
-          cp -r ../node_modules/* ./node_modules
+          cp -r ../dist ./
+          cp -r ../node_modules ./
 
           git add .
           git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
