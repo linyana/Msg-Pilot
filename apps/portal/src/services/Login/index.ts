@@ -4,7 +4,7 @@ import {
 import {
   ILoginType,
   ILoginResponseType,
-} from '@/pages/Login2/types'
+} from '@/pages/Login/types'
 import {
   IMetaType,
 } from '../types'
