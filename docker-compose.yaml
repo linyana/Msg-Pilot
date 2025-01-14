@@ -2,7 +2,7 @@
 
 version: "3"
 services:
-  nest_postgres_msg-pilot_dev:
+  nest_postgres_msg_pilot_dev:
     image: postgres:13.5
     restart: always
     environment:
@@ -15,7 +15,7 @@ services:
     ports:
       - "5432:5432"
 
-  redis_msg-pilot_dev:
+  redis_msg_pilot_dev:
     restart: always
     image: redis:alpine
     ports:
