@@ -41,6 +41,7 @@ jobs:
 
           cp -r ../dist ./
           cp -r ../node_modules ./
+          cp -r ../apps ./
 
           git add .
           git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
@@ -83,6 +84,7 @@ jobs:
 
           cp -r ../dist ./
           cp -r ../node_modules ./
+          cp -r ../apps ./
 
           git add .
           git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
