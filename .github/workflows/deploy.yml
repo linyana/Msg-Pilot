@@ -21,8 +21,8 @@ jobs:
           git config --global user.email "1439713475@qq.com"
 
           git clone -b dist_dev https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot.git target-repo
-          if [ -d "./node_modules" ]; then
-            cp -r ./node_modules ./
+          if [ -d "./target-repo/node_modules" ]; then
+            cp -r ./target-repo/node_modules ./
           fi
 
       - name: Build Project
@@ -61,8 +61,8 @@ jobs:
           git config --global user.email "1439713475@qq.com"
 
           git clone -b dist_main https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot.git target-repo
-          if [ -d "./node_modules" ]; then
-            cp -r ./node_modules ./
+          if [ -d "./target-repo/node_modules" ]; then
+            cp -r ./target-repo/node_modules ./
           fi
 
       - name: Build Project
