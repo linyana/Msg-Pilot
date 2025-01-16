@@ -28,7 +28,7 @@ services:
     env_file: ./apps/api/.env
     restart: always
     environment:
-    - DATABASE_URL=postgres://postgres:password@nest_postgres_msg-pilot_dev:5432/msg-pilot-api
+    - DATABASE_URL=postgres://postgres:password@nest_postgres_msg_pilot_dev:5432/msg-pilot
     - REDIS_HOST=redis_msg-pilot_dev
     - REDIS_PORT=6379
     ports:
