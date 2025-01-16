@@ -15,16 +15,13 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v3
 
-      - name: Cache Yarn Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+      - name: Clone Deploy Branch
+        run: | 
+          git config --global user.name "Rik"
+          git config --global user.email "1439713475@qq.com"
 
-      - name: Checkout Source Code
-        uses: actions/checkout@v3
+          git clone -b dev_deploy https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Msg-Pilot-Deploy.git target-repo
+          cp -r ./node_modules ./
 
       - name: Build Project
         run: |
@@ -33,10 +30,6 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          git config --global user.name "Rik"
-          git config --global user.email "1439713475@qq.com"
-
-          git clone -b dev https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Msg-Pilot-Deploy.git target-repo
           cd target-repo
 
           cp -r ../dist ./
@@ -48,7 +41,7 @@ jobs:
 
           git add .
           git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
-          git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git dev
+          git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git dev_deploy
 
         env:
           GITHUB_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
@@ -60,16 +53,13 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v3
 
-      - name: Cache Yarn Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+      - name: Clone Deploy Branch
+        run: | 
+          git config --global user.name "Rik"
+          git config --global user.email "1439713475@qq.com"
 
-      - name: Checkout Source Code
-        uses: actions/checkout@v3
+          git clone -b main_deploy https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Msg-Pilot-Deploy.git target-repo
+          cp -r ./node_modules ./
 
       - name: Build Project
         run: |
@@ -78,11 +68,6 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          git config --global user.name "Rik"
-          git config --global user.email "1439713475@qq.com"
-
-       
-          git clone -b main https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git target-repo
           cd target-repo
 
           cp -r ../dist ./
@@ -94,7 +79,7 @@ jobs:
 
           git add .
           git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
-          git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git main
+          git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git main_deploy
 
         env:
           GITHUB_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
