@@ -42,6 +42,9 @@ jobs:
           cp -r ../dist ./
           cp -r ../node_modules ./
           cp -r ../apps ./
+          cp ../docker-compose.yaml ./ 
+          cp ../docker-compose-prod.yaml ./ 
+          cp ../Dockerfile ./ 
 
           git add .
           git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
@@ -85,6 +88,9 @@ jobs:
           cp -r ../dist ./
           cp -r ../node_modules ./
           cp -r ../apps ./
+          cp ../docker-compose.yaml ./ 
+          cp ../docker-compose-prod.yaml ./ 
+          cp ../Dockerfile ./ 
 
           git add .
           git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
