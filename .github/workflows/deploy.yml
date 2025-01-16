@@ -71,6 +71,8 @@ jobs:
             cp -r ./target-repo/node_modules ./ || echo "No node_modules found"
           else
             echo "Node_modules not found in target-repo"
+          fi
+          ls -l
 
       - name: Build Project
         run: |
