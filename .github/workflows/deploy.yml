@@ -21,9 +21,11 @@ jobs:
           git config --global user.email "1439713475@qq.com"
 
           git clone -b dev https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git target-repo
+          
           if [ -d "./target-repo/node_modules" ]; then
-            cp -r ./target-repo/node_modules ./
-          fi
+            cp -r ./target-repo/node_modules ./ || echo "No node_modules found"
+          else
+            echo "Node_modules not found in target-repo"
 
       - name: Build Project
         run: |
