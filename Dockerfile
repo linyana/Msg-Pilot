@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN yarn global add cross-env
+ENV NODE_ENV=production
 
 WORKDIR /app/apps/api
 
