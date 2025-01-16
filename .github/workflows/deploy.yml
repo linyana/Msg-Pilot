@@ -72,6 +72,7 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
+          ls -l
           cd target-repo
 
           cp -r ../dist ./
@@ -81,6 +82,7 @@ jobs:
           cp ../docker-compose-prod.yaml ./ 
           cp ../Dockerfile ./ 
 
+          ls -l
           git add .
           git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
           git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot.git dist_main
