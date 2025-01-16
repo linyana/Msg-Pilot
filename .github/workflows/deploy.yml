@@ -63,6 +63,10 @@ jobs:
           git config --global user.email "1439713475@qq.com"
 
           git clone -b main https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git target-repo
+          ls -l
+          cd target-repo
+          ls -l
+          cd ..
           if [ -d "./target-repo/node_modules" ]; then
             cp -r ./target-repo/node_modules ./ || echo "No node_modules found"
           else
@@ -75,7 +79,6 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          ls -l
           cd target-repo
 
           cp -r ../dist ./
@@ -85,8 +88,6 @@ jobs:
           cp ../docker-compose-prod.yaml ./ 
           cp ../Dockerfile ./ 
 
-          ls -l
-          git status
           git add -f -A
           git commit --allow-empty -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
           git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git main
