@@ -20,7 +20,7 @@ jobs:
           git config --global user.name "Rik"
           git config --global user.email "1439713475@qq.com"
 
-          git clone -b dev_deploy https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Msg-Pilot-Deploy.git target-repo
+          git clone -b deploy_dev https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Msg-Pilot.git target-repo
           cp -r ./node_modules ./
 
       - name: Build Project
@@ -41,7 +41,7 @@ jobs:
 
           git add .
           git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
-          git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git dev_deploy
+          git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot.git deploy_dev
 
         env:
           GITHUB_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
@@ -58,7 +58,7 @@ jobs:
           git config --global user.name "Rik"
           git config --global user.email "1439713475@qq.com"
 
-          git clone -b main_deploy https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Msg-Pilot-Deploy.git target-repo
+          git clone -b deploy_main https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Msg-Pilot.git target-repo
           cp -r ./node_modules ./
 
       - name: Build Project
@@ -79,7 +79,7 @@ jobs:
 
           git add .
           git commit -m "Automated deployment $(date +'%Y-%m-%d %H:%M:%S')"
-          git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot-Deploy.git main_deploy
+          git push https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot.git deploy_main
 
         env:
           GITHUB_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
