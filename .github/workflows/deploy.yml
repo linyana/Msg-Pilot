@@ -20,7 +20,7 @@ jobs:
           git config --global user.name "Rik"
           git config --global user.email "1439713475@qq.com"
 
-          git clone -b deploy_dev https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Msg-Pilot.git target-repo
+          git clone -b deploy_dev https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot.git target-repo
           cp -r ./node_modules ./
 
       - name: Build Project
@@ -58,7 +58,7 @@ jobs:
           git config --global user.name "Rik"
           git config --global user.email "1439713475@qq.com"
 
-          git clone -b deploy_main https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Msg-Pilot.git target-repo
+          git clone -b deploy_main https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/linyana/Msg-Pilot.git target-repo
           cp -r ./node_modules ./
 
       - name: Build Project
