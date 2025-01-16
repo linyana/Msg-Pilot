@@ -29,7 +29,7 @@ services:
     restart: always
     environment:
     - DATABASE_URL=postgres://postgres:password@nest_postgres_msg_pilot_prod:5432/msg-pilot
-    - REDIS_HOST=redis_msg-pilot_prod
+    - REDIS_HOST=redis_msg_pilot_prod
     - REDIS_PORT=6379
     ports:
       - 3000:3000
