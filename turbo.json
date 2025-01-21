@@ -12,7 +12,13 @@
     },
     "build:staging": {
       "dependsOn": ["^build:staging"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**"],
+      "cache": false
+    },
+     "build:main": {
+      "dependsOn": ["^build:main"],
+      "outputs": ["dist/**", ".next/**"],
+      "cache": false
     },
     "lint": {
       "outputs": []
