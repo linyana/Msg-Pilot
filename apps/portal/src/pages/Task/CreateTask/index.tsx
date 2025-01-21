@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Form,
+  FormProps,
   Input,
   InputNumber,
   Typography,
@@ -10,20 +11,70 @@ import {
   useNavigate,
 } from 'react-router-dom'
 import {
+  useEffect,
+  useState,
+} from 'react'
+import {
   Flex,
   Loading,
   AccountSelector,
   DestributionRuleSelector,
   TaskTypeSelector,
 } from '@/components'
+import {
+  useMessage,
+} from '@/hooks'
+import {
+  ITaskType,
+} from '@/types'
+import {
+  useCreateTask,
+} from '@/services'
 
 const {
   Text,
 } = Typography
 
 export const CreateTask = () => {
+  const [formData, setFormData] = useState<ITaskType>()
+
   const [form] = Form.useForm()
   const navigate = useNavigate()
+  const message = useMessage()
+
+  const {
+    data,
+    fetchData,
+    loading,
+    error,
+  } = useCreateTask(formData)
+
+  useEffect(() => {
+    if (error) {
+      message?.error(error)
+    }
+  }, [error])
+
+  useEffect(() => {
+    if (data?.data) {
+      message?.success('创建成功')
+    }
+  }, [data?.data])
+
+  const onSubmit = () => {
+    form.submit()
+  }
+
+  const onFinish: FormProps<ITaskType>['onFinish'] = (values) => {
+    setFormData(values)
+  }
+
+  useEffect(() => {
+    if (formData) {
+      fetchData?.()
+    }
+  }, [formData])
+
   return (
     <Flex
       justifyContent="center"
@@ -65,6 +116,7 @@ export const CreateTask = () => {
             <Form
               layout="vertical"
               form={form}
+              onFinish={onFinish}
             >
               <Form.Item
                 label="任务名"
@@ -160,6 +212,8 @@ export const CreateTask = () => {
                 }}
                 >
                   <Button
+                    onClick={onSubmit}
+                    loading={loading}
                     type="primary"
                     style={{
                       width: '100%',

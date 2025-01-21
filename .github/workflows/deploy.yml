@@ -28,6 +28,10 @@ jobs:
             echo "Node_modules not found in target-repo"
           fi
 
+      - name: Add Environment Variables
+        run: |
+          echo "VITE_API_BASE_URL=${{ secrets.API_BASE_URL }}" >> apps/portal/.env.dev.local
+
       - name: Build Project
         run: |
           yarn
@@ -71,6 +75,10 @@ jobs:
             echo "Node_modules not found in target-repo"
           fi
 
+      - name: Add Environment Variables
+        run: |
+          echo "VITE_API_BASE_URL=${{ secrets.API_BASE_URL }}" >> apps/portal/.env.dev.local
+  
       - name: Build Project
         run: |
           yarn

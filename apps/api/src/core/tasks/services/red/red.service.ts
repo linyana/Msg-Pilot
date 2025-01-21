@@ -14,6 +14,8 @@ export class RedTaskService extends BaseTaskService {
     super();
   }
 
+  url = 'https://www.xiaohongshu.com';
+
   async handleTask(params: { account_id: number; task_id: number }) {
     const { account_id, task_id } = params;
     const { browser, page } = await creatBrowser();
@@ -30,7 +32,7 @@ export class RedTaskService extends BaseTaskService {
       },
     });
 
-    let count = task.expect_count - task.sent_count;
+    const count = task.expect_count - task.sent_count;
 
     if (!count) {
       await this.taskUtilService.updateTaskStatus({
@@ -73,7 +75,7 @@ export class RedTaskService extends BaseTaskService {
         status: 'RUNNING',
       });
 
-      const response = await page.goto('https://www.xiaohongshu.com', {
+      const response = await page.goto(this.url, {
         waitUntil: 'domcontentloaded',
       });
 
@@ -91,97 +93,29 @@ export class RedTaskService extends BaseTaskService {
         throw new BadRequestException('账号授权已过期');
       }
 
-      const filter = data.filter[0];
       const content = data.content[0] || '';
 
-      let noteIds: string[] = [];
-      let unUsedNoteIndex = -1;
-
-      const getUsefulNoteIndex = async () => {
-        noteIds = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('section.note-item > div > a')).map((element) => new URL((element as HTMLAnchorElement).href).pathname.split('/')[2]);
-        });
-
-        const usedNoteIds = await this.prisma.messages.findMany({
-          where: {
-            task_id,
+      const messages = await this.prisma.messages.findMany({
+        where: {
+          task_id,
+          status: {
+            in: ['FAILED', 'NOT_START'],
           },
-          select: {
-            platform_unit_id: true,
-          },
-        });
-
-        const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
-        const unUsedNoteIndex = noteIds.findIndex((id) => !usedIdsSet.has(id));
-        return unUsedNoteIndex;
-      };
-
-      unUsedNoteIndex = await getUsefulNoteIndex();
-
-      if (unUsedNoteIndex < 0) {
-        console.log('No more note to send');
-        return;
-      } else {
-        await this.prisma.messages.create({
-          data: {
-            task_id,
-            platform_unit_id: noteIds[unUsedNoteIndex],
-            tenant_id: Number(task.tenant_id),
-            connection_id: Number(task.connection_id),
-          },
-        });
-      }
-      console.log(unUsedNoteIndex);
-
-      // search filter
-      await Type({
-        page,
-        content: filter,
-        name: '搜索框',
-        selector: '#search-input',
+        },
       });
 
-      await Click({
-        page,
-        name: '搜索按钮',
-        delay: 3,
-        selector: '#global > div.header-container > header > div.input-box > div > div.search-icon',
-      });
-
-      while (count > 0) {
+      for (const message of messages) {
         try {
-          const currentTask = await this.prisma.tasks.findUniqueOrThrow({
-            where: {
-              id: task_id,
-            },
-          });
-          if (currentTask.expect_count - currentTask.sent_count <= 0) {
-            break;
-          }
-
-          await Click({
+          await this.handleMessage({
             page,
-            name: '笔记',
-            delay: 3,
-            selector: 'section:nth-child(1) > div > a.cover.ld.mask',
-          });
-
-          if (task.type === 'NOTE_COMMENT') {
-            await this.sendComment({
-              page,
-              content,
-            });
-          }
-
-          count -= 1;
-
-          await this.taskUtilService.updateTaskStatus({
-            task_id,
-            status: 'RUNNING',
-            send_count: 1,
+            content,
+            message_id: Number(message.id),
           });
         } catch (error) {
-          count -= 1;
+          await this.sendComment({
+            page,
+            content,
+          });
         }
       }
 
@@ -275,7 +209,7 @@ export class RedTaskService extends BaseTaskService {
 
       await this.taskUtilService.updateTaskStatus({ task_id, status: 'RUNNING' });
 
-      const response = await page.goto('https://www.xiaohongshu.com', { waitUntil: 'domcontentloaded' });
+      const response = await page.goto(this.url, { waitUntil: 'domcontentloaded' });
       if (!response) throw new BadRequestException('创建浏览器失败');
 
       const hasLoginButton = await page.evaluate(() => document.querySelector('#login-btn'));
@@ -315,7 +249,8 @@ export class RedTaskService extends BaseTaskService {
             const authorElement = container.querySelector('.author-wrapper .author');
             const author_name = authorElement?.querySelector('.name')?.textContent?.trim() || '';
             const author_image = authorElement?.querySelector('.author-avatar')?.getAttribute('src') || '';
-            return { id, name, note_image, author_name, author_image };
+            const href = new URL(anchor.href).pathname;
+            return { id, name, note_image, author_name, author_image, href };
           });
         });
 
@@ -344,6 +279,7 @@ export class RedTaskService extends BaseTaskService {
             note_image: item.note_image,
             author_name: item.author_name,
             author_image: item.author_image,
+            href: item.href,
           },
         }));
         await this.prisma.messages.createMany({ data });
@@ -387,6 +323,11 @@ export class RedTaskService extends BaseTaskService {
         failed_reason,
       });
     }
+
+    await this.handleTask({
+      task_id,
+      account_id,
+    });
   }
 
   async sendComment(params: { page: Page; content: string }) {
@@ -407,4 +348,42 @@ export class RedTaskService extends BaseTaskService {
       selector: '#noteContainer > div.interaction-container > div.interactions.engage-bar > div > div > div.bottom > div > div.right-btn-area > button.btn.submit',
     });
   }
+
+  handleMessage = async (params: { page: Page; content: string; message_id: number }) => {
+    const { page, content, message_id } = params;
+    const message = await this.prisma.messages.findUnique({
+      where: {
+        id: message_id,
+      },
+    });
+
+    if (!message) {
+      throw new BadRequestException("Can't find this message");
+    }
+    if (message.status === 'COMPLETED') {
+      return;
+    }
+
+    await this.prisma.messages.update({
+      where: {
+        id: message_id,
+      },
+      data: {
+        status: 'RUNNING',
+      },
+    });
+
+    const response = await page.goto(this.url, {
+      waitUntil: 'domcontentloaded',
+    });
+
+    if (!response) {
+      throw new BadRequestException(`创建浏览器失败`);
+    }
+
+    await this.sendComment({
+      page,
+      content,
+    });
+  };
 }
