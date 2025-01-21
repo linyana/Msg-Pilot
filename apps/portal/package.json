@@ -12,6 +12,7 @@
     "build": "tsc && node --max_old_space_size=8192 ../../node_modules/vite/bin/vite.js build --emptyOutDir",
     "build:dev": "tsc && node --max_old_space_size=8192 ../../node_modules/vite/bin/vite.js build --mode dev --emptyOutDir",
     "build:staging": "tsc && node --max_old_space_size=8192 ../../node_modules/vite/bin/vite.js build --mode staging --emptyOutDir",
+    "build:main": "tsc && node --max_old_space_size=8192 ../../node_modules/vite/bin/vite.js build --mode main --emptyOutDir",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "preview": "vite preview"
   },

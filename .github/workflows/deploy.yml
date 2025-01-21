@@ -35,7 +35,7 @@ jobs:
       - name: Build Project
         run: |
           yarn
-          yarn build
+          yarn build:dev
 
       - name: Commit and Push Changes
         run: |
@@ -77,12 +77,12 @@ jobs:
 
       - name: Add Environment Variables
         run: |
-          echo "VITE_API_BASE_URL=${{ secrets.API_BASE_URL }}" >> apps/portal/.env.dev.local
+          echo "VITE_API_BASE_URL=${{ secrets.API_BASE_URL }}" >> apps/portal/.env.main.local
   
       - name: Build Project
         run: |
           yarn
-          yarn build
+          yarn build:main
 
       - name: Commit and Push Changes
         run: |
