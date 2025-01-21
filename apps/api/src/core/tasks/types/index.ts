@@ -9,4 +9,5 @@ export type IRedMessagePlatformDataType = {
   note_image: string;
   author_name: string;
   author_image: string;
+  href: string;
 };

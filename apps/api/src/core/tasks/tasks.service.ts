@@ -156,6 +156,13 @@ export class TasksService {
       });
     }
 
+    const { taskService } = await this.getConnector(connection_id);
+
+    taskService.setMessages({
+      task_id: Number(task.id),
+      account_id: Number(accounts[0].id),
+    });
+
     return 'Successfully created';
   }
 

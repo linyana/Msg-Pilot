@@ -15,3 +15,12 @@ export const useGetTasks = () => useHttp<{
   url: '/tasks',
   method: 'get',
 })
+
+export const useCreateTask = (data?: ITaskType) => useHttp<{
+  data: any,
+  meta: IMetaType
+}>({
+  url: '/tasks',
+  method: 'post',
+  data,
+})
