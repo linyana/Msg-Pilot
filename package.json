@@ -11,6 +11,7 @@
     "build:api": "turbo run build --filter=@msg-pilot/api",
     "build:dev": "turbo run build:dev",
     "build:staging": "turbo run build:staging",
+    "build:main": "turbo run build:main",
     "start": "turbo run start --parallel",
     "start:dev": "turbo run start:dev --parallel",
     "dev": "turbo run dev --parallel",
