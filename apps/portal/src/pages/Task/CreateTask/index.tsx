@@ -18,26 +18,25 @@ import {
   Flex,
   Loading,
   AccountSelector,
-  DestributionRuleSelector,
   TaskTypeSelector,
+  DestributionRuleSelector,
 } from '@/components'
 import {
   useMessage,
 } from '@/hooks'
 import {
-  ITaskType,
-} from '@/types'
-import {
   useCreateTask,
 } from '@/services'
+import {
+  ICreateTaskType,
+} from '@/types'
 
 const {
   Text,
 } = Typography
 
 export const CreateTask = () => {
-  const [formData, setFormData] = useState<ITaskType>()
-
+  const [formData, setFormData] = useState<ICreateTaskType>()
   const [form] = Form.useForm()
   const navigate = useNavigate()
   const message = useMessage()
@@ -65,8 +64,19 @@ export const CreateTask = () => {
     form.submit()
   }
 
-  const onFinish: FormProps<ITaskType>['onFinish'] = (values) => {
-    setFormData(values)
+  const onFinish: FormProps<any>['onFinish'] = (value) => {
+    setFormData({
+      name: value.name,
+      description: value.description,
+      type: value.type,
+      destribution_rule: value.destribution_rule,
+      account_ids: [Number(value.account_id)],
+      data: {
+        content: [value.content || ''],
+        filter: [value.content || ''],
+      },
+      expect_count: value.expect_count,
+    })
   }
 
   useEffect(() => {
@@ -120,6 +130,7 @@ export const CreateTask = () => {
             >
               <Form.Item
                 label="任务名"
+                name="name"
                 required
               >
                 <Input placeholder="输入该任务的名字" />
@@ -127,11 +138,13 @@ export const CreateTask = () => {
               <Form.Item
                 label="筛选"
                 required
+                name="filter"
               >
                 <Input placeholder="输入你要查找的内容" />
               </Form.Item>
               <Form.Item
                 label="内容"
+                name="content"
                 required
               >
                 <Input placeholder="输入你要发送的消息" />
@@ -143,47 +156,27 @@ export const CreateTask = () => {
                     width: '48%',
                   }}
                   required
+                  initialValue={1}
+                  name="expect_count"
                 >
                   <InputNumber
                     min={1}
                     max={100}
-                    defaultValue={1}
                     style={{
                       width: '100%',
                     }}
                   />
                 </Form.Item>
-                <Form.Item
-                  label="账号"
-                  required
-                  style={{
-                    width: '48%',
-                  }}
-                >
-                  <AccountSelector />
-                </Form.Item>
+                <AccountSelector />
               </Flex>
               <Flex justifyContent="space-between">
-                <Form.Item
-                  label="发送类型"
-                  style={{
-                    width: '48%',
-                  }}
-                  required
-                >
-                  <TaskTypeSelector />
-                </Form.Item>
-                <Form.Item
-                  label="分发规则"
-                  style={{
-                    width: '48%',
-                  }}
-                  required
-                >
-                  <DestributionRuleSelector />
-                </Form.Item>
+                <TaskTypeSelector />
+                <DestributionRuleSelector />
               </Flex>
-              <Form.Item label="描述">
+              <Form.Item
+                label="描述"
+                name="description"
+              >
                 <Input.TextArea placeholder="输入你的描述" />
               </Form.Item>
               <Flex

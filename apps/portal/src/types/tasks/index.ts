@@ -20,7 +20,19 @@ export type ITaskType = {
   expect_count: number
   sent_count: string
   data: any
+  account_ids?: number[]
   type: TASK_TYPE
   destribution_rule: DISTRIBUTION_RULE
   status: TASK_STATUS
+}
+
+export type ICreateTaskType = {
+  name?: string
+  description?: string
+  faild_reason?: string
+  expect_count: number
+  data: any
+  account_ids?: number[]
+  type: TASK_TYPE
+  destribution_rule: DISTRIBUTION_RULE
 }

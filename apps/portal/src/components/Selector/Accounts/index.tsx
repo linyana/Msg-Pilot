@@ -3,6 +3,7 @@ import {
   useState,
 } from 'react'
 import {
+  Form,
   Select,
 } from 'antd'
 import {
@@ -49,10 +50,20 @@ export const AccountSelector = () => {
   }, [error])
 
   return (
-    <Select
-      placeholder="选择你要使用的账号"
-      loading={loading}
-      options={accounts}
-    />
+    <Form.Item
+      label="账号"
+      required
+      style={{
+        width: '48%',
+      }}
+      shouldUpdate
+      name="account_id"
+    >
+      <Select
+        placeholder="选择你要使用的账号"
+        loading={loading}
+        options={accounts}
+      />
+    </Form.Item>
   )
 }
