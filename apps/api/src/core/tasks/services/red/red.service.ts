@@ -112,22 +112,12 @@ export class RedTaskService extends BaseTaskService {
             message_id: Number(message.id),
           });
         } catch (error) {
-          await this.sendComment({
-            page,
-            content,
-          });
+          console.log(error);
         }
       }
 
-      const currentTask = await this.prisma.tasks.findUniqueOrThrow({
-        where: {
-          id: task_id,
-        },
-      });
-
       await this.taskUtilService.updateTaskStatus({
         task_id,
-        status: currentTask.expect_count - currentTask.sent_count > 0 ? 'PARTIAL_COMPLETED' : 'COMPLETED',
       });
 
       await browser.close();
@@ -240,6 +230,8 @@ export class RedTaskService extends BaseTaskService {
       const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
 
       const getUnUsedIds = async () => {
+        await sleep(3000);
+
         const newNoteIds = await page.evaluate(() => {
           return Array.from(document.querySelectorAll('section.note-item > div')).map((container) => {
             const anchor = container.querySelector('a.cover') as HTMLAnchorElement;
@@ -282,7 +274,11 @@ export class RedTaskService extends BaseTaskService {
             href: item.href,
           },
         }));
+
         await this.prisma.messages.createMany({ data });
+        await this.updateMessagesCount({
+          task_id,
+        });
       };
 
       let foundEnoughUsers = false;
@@ -327,6 +323,23 @@ export class RedTaskService extends BaseTaskService {
     await this.handleTask({
       task_id,
       account_id,
+    });
+  }
+
+  async updateMessagesCount(params: { task_id: number }) {
+    const { task_id } = params;
+    const messageCount = await this.prisma.messages.count({
+      where: {
+        task_id,
+      },
+    });
+    await this.prisma.tasks.update({
+      where: {
+        id: task_id,
+      },
+      data: {
+        found_count: messageCount,
+      },
     });
   }
 

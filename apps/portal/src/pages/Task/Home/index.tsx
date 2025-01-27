@@ -7,15 +7,12 @@ import {
   Typography,
   Table,
   TableProps,
-  Tooltip,
   Button,
 } from 'antd'
 import {
-  ExclamationCircleFilled,
-} from '@ant-design/icons'
-import {
   useNavigate,
 } from 'react-router-dom'
+import dayjs from 'dayjs'
 import {
   useGetTasks,
 } from '@/services'
@@ -23,11 +20,10 @@ import {
   Flex,
 } from '@/components'
 import {
-  DeleteModal,
-  EditDrawer,
+  TaskAction,
 } from './components'
 import {
-  IAccountType,
+  ITaskType,
 } from '@/types'
 import {
   useMessage,
@@ -39,7 +35,7 @@ const {
 } = Typography
 
 export const Task = React.memo(() => {
-  const [data, setData] = useState<any>([])
+  const [data, setData] = useState<ITaskType[]>([])
   const message = useMessage()
   const navigate = useNavigate()
 
@@ -68,55 +64,56 @@ export const Task = React.memo(() => {
     setData(getData?.data || [])
   }, [getData?.data])
 
-  const columns: TableProps<IAccountType>['columns'] = [
+  const columns: TableProps<ITaskType>['columns'] = [
     {
       title: '任务名',
       dataIndex: 'name',
       key: 'name',
+      align: 'center',
       render: (_, record) => (
-        <Flex gap="8px">
+        <Flex
+          gap="8px"
+          justifyContent="center"
+        >
           {record?.name || record?.name || ''}
-          {
-            record?.is_expired && (
-              <Tooltip
-                placement="right"
-                title={(
-                  <>
-                    The cookie may have expired, please check it.
-                  </>
-                )}
-              >
-                <div style={{
-                  color: '#ECB424',
-                }}
-                >
-                  <ExclamationCircleFilled />
-                </div>
-              </Tooltip>
-            )
-          }
         </Flex>
       ),
     },
     {
-      title: 'Cookie',
-      dataIndex: 'cookie',
-      key: 'cookie',
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      align: 'center',
     },
     {
-      title: 'Action',
+      title: '已发送数量',
+      dataIndex: 'sent_count',
+      key: 'sent_count',
+      align: 'center',
+    },
+    {
+      title: '预期发送数量',
+      dataIndex: 'expect_count',
+      key: 'expect_count',
+      align: 'center',
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'expect_count',
+      key: 'expect_count',
+      align: 'center',
+      render: (_, record) => (
+        <>{(record.created_at ? dayjs(record.created_at).format('YYYY-MM-DD HH:mm:ss') : '-')}</>
+      ),
+    },
+    {
+      title: '操作',
       key: 'action',
       fixed: 'right',
+      align: 'center',
       render: (_, record) => (
-        <Flex>
-          <EditDrawer
-            refreshData={refreshData}
-            record={record}
-          />
-          <DeleteModal
-            refreshData={refreshData}
-            record={record}
-          />
+        <Flex justifyContent="center">
+          <TaskAction record={record} />
         </Flex>
       ),
     },

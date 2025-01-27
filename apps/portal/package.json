@@ -44,6 +44,7 @@
     "styled-components": "^6.1.13"
   },
   "devDependencies": {
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@msg-pilot/tsconfig": "*",
     "@types/mime": "3.0.4",
     "@types/mocha": "^10.0.1",

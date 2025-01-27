@@ -6,9 +6,31 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class TaskUtilService {
   constructor(private prisma: PrismaService) {}
 
-  async updateTaskStatus(params: { task_id: number; status: TASK_STATUS; failed_reason?: string; send_count?: number }) {
+  async updateTaskStatus(params: { task_id: number; status?: TASK_STATUS; failed_reason?: string; send_count?: number }) {
     const { status, failed_reason, task_id, send_count } = params;
-    if (status === 'FAILED' || status === 'PARTIAL_COMPLETED') {
+    if (!status) {
+      const task = await this.prisma.tasks.findUniqueOrThrow({
+        where: {
+          id: Number(task_id),
+        },
+      });
+
+      let status: TASK_STATUS = 'COMPLETED';
+      if (!task.sent_count) {
+        status = 'FAILED';
+      } else if (task.expect_count > task.sent_count) {
+        status = 'PARTIAL_COMPLETED';
+      }
+
+      await this.prisma.tasks.update({
+        where: {
+          id: Number(task_id),
+        },
+        data: {
+          status,
+        },
+      });
+    } else if (status === 'FAILED' || status === 'PARTIAL_COMPLETED') {
       await this.prisma.tasks.update({
         where: {
           id: Number(task_id),

@@ -21,7 +21,9 @@ export class TasksService {
         connection_id,
         id: task_id,
         NOT: {
-          status: 'COMPLETED',
+          status: {
+            in: ['COMPLETED', 'RUNNING'],
+          },
         },
       },
       include: {

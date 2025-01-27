@@ -25,3 +25,14 @@ export const useCreateTask = (data?: ICreateTaskType) => useHttp<{
   method: 'post',
   data,
 })
+
+export const useRetryTask = (data: {
+  task_id: number
+}) => useHttp<{
+  data: any,
+  meta: IMetaType
+}>({
+  url: `/tasks/${data.task_id}`,
+  method: 'post',
+  data,
+})

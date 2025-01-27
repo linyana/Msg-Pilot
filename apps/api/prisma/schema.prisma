@@ -107,6 +107,7 @@ model tasks {
   data                Json?
   is_search_completed Boolean           @default(false)
   sent_count          Int               @default(0)
+  found_count         Int               @default(0)
   expect_count        Int               @default(0)
   connection_id       BigInt
   tenant_id           BigInt
