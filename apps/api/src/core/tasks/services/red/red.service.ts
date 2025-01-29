@@ -174,6 +174,10 @@ export class RedTaskService extends BaseTaskService {
         task_id,
         status: 'COMPLETED_SEARCH',
       });
+      await this.handleTask({
+        task_id,
+        account_id,
+      });
       return;
     }
 
@@ -233,17 +237,23 @@ export class RedTaskService extends BaseTaskService {
         await sleep(3000);
 
         const newNoteIds = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('section.note-item > div')).map((container) => {
-            const anchor = container.querySelector('a.cover') as HTMLAnchorElement;
-            const id = anchor ? new URL(anchor.href).pathname.split('/')[2] : '';
-            const name = container.querySelector('a.title span')?.textContent?.trim() || '';
-            const note_image = container.querySelector('a.cover img')?.getAttribute('src') || '';
-            const authorElement = container.querySelector('.author-wrapper .author');
-            const author_name = authorElement?.querySelector('.name')?.textContent?.trim() || '';
-            const author_image = authorElement?.querySelector('.author-avatar')?.getAttribute('src') || '';
-            const href = new URL(anchor.href).pathname;
-            return { id, name, note_image, author_name, author_image, href };
-          });
+          return Array.from(document.querySelectorAll('section.note-item > div'))
+            .map((container) => {
+              try {
+                const anchor = container.querySelector('a.cover') as HTMLAnchorElement;
+                const id = anchor ? new URL(anchor.href).pathname.split('/')[2] : '';
+                const name = container.querySelector('a.title span')?.textContent?.trim() || '';
+                const note_image = container.querySelector('a.cover img')?.getAttribute('src') || '';
+                const authorElement = container.querySelector('.author-wrapper .author');
+                const author_name = authorElement?.querySelector('.name')?.textContent?.trim() || '';
+                const author_image = authorElement?.querySelector('.author-avatar')?.getAttribute('src') || '';
+                const href = new URL(anchor.href)?.pathname || '';
+                return { id, name, note_image, author_name, author_image, href };
+              } catch (error) {
+                return { id: '', name: '', note_image: '', author_name: '', author_image: '', href: '' };
+              }
+            })
+            ?.filter((item) => item.id);
         });
 
         let noMoreUsers = false;
@@ -328,6 +338,7 @@ export class RedTaskService extends BaseTaskService {
 
   async updateMessagesCount(params: { task_id: number }) {
     const { task_id } = params;
+
     const messageCount = await this.prisma.messages.count({
       where: {
         task_id,
@@ -345,6 +356,8 @@ export class RedTaskService extends BaseTaskService {
 
   async sendComment(params: { page: Page; content: string }) {
     const { page, content } = params;
+
+    await sleep(3000);
     await Click({
       page,
       name: '笔记',
@@ -353,7 +366,7 @@ export class RedTaskService extends BaseTaskService {
     });
 
     await page.keyboard.type(content);
-
+    await sleep(3000);
     await Click({
       page,
       name: '提交按钮',
@@ -386,17 +399,29 @@ export class RedTaskService extends BaseTaskService {
       },
     });
 
-    const response = await page.goto(this.url, {
-      waitUntil: 'domcontentloaded',
-    });
+    try {
+      const response = await page.goto(this.url + (message.platform_data as any)?.href, {
+        waitUntil: 'domcontentloaded',
+      });
 
-    if (!response) {
-      throw new BadRequestException(`创建浏览器失败`);
+      if (!response) {
+        throw new BadRequestException(`创建浏览器失败`);
+      }
+
+      await this.sendComment({
+        page,
+        content,
+      });
+    } catch (error: any) {
+      await this.prisma.messages.update({
+        where: {
+          id: message_id,
+        },
+        data: {
+          status: 'FAILED',
+          failed_reason: error?.message || 'Unknown Error',
+        },
+      });
     }
-
-    await this.sendComment({
-      page,
-      content,
-    });
   };
 }
