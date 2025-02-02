@@ -47,7 +47,7 @@ export const TaskAction = ({
   return (
     <>
       {
-        ['FAILED', 'PARTIAL_COMPLETED'].includes(record.status) && (
+        ['FAILED', 'PARTIAL_COMPLETED', 'NOT_START'].includes(record.status) && (
           <Button
             loading={loading}
             onClick={() => {

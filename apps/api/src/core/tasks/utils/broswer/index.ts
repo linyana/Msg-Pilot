@@ -5,6 +5,7 @@ export const creatBrowser = async () => {
     process.env.NODE_ENV === 'production'
       ? {
           headless: 'new',
+          executablePath: '/snap/bin/chromium',
           args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled', '--as-browser'],
           ignoreDefaultArgs: ['--enable-automation'],
         }
