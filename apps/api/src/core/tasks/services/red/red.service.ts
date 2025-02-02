@@ -112,22 +112,12 @@ export class RedTaskService extends BaseTaskService {
             message_id: Number(message.id),
           });
         } catch (error) {
-          await this.sendComment({
-            page,
-            content,
-          });
+          console.log(error);
         }
       }
 
-      const currentTask = await this.prisma.tasks.findUniqueOrThrow({
-        where: {
-          id: task_id,
-        },
-      });
-
-      await this.taskUtilService.updateTaskStatus({
+      await this.taskUtilService.handleCompleteTask({
         task_id,
-        status: currentTask.expect_count - currentTask.sent_count > 0 ? 'PARTIAL_COMPLETED' : 'COMPLETED',
       });
 
       await browser.close();
@@ -166,23 +156,18 @@ export class RedTaskService extends BaseTaskService {
     });
     const connection_id = Number(task.connection_id);
 
-    await this.taskUtilService.updateTaskStatus({
-      task_id,
-      status: 'SEARCHING',
-    });
-
     const messages = await this.prisma.messages.findMany({
       where: {
-        connection_id,
+        task_id,
       },
     });
 
     const need_send_count = task.expect_count - messages.length;
 
     if (!need_send_count) {
-      await this.taskUtilService.updateTaskStatus({
+      await this.handleTask({
         task_id,
-        status: 'COMPLETED_SEARCH',
+        account_id,
       });
       return;
     }
@@ -240,18 +225,26 @@ export class RedTaskService extends BaseTaskService {
       const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
 
       const getUnUsedIds = async () => {
+        await sleep(3000);
+
         const newNoteIds = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('section.note-item > div')).map((container) => {
-            const anchor = container.querySelector('a.cover') as HTMLAnchorElement;
-            const id = anchor ? new URL(anchor.href).pathname.split('/')[2] : '';
-            const name = container.querySelector('a.title span')?.textContent?.trim() || '';
-            const note_image = container.querySelector('a.cover img')?.getAttribute('src') || '';
-            const authorElement = container.querySelector('.author-wrapper .author');
-            const author_name = authorElement?.querySelector('.name')?.textContent?.trim() || '';
-            const author_image = authorElement?.querySelector('.author-avatar')?.getAttribute('src') || '';
-            const href = new URL(anchor.href).pathname;
-            return { id, name, note_image, author_name, author_image, href };
-          });
+          return Array.from(document.querySelectorAll('section.note-item > div'))
+            .map((container) => {
+              try {
+                const anchor = container.querySelector('a.cover') as HTMLAnchorElement;
+                const id = anchor ? new URL(anchor.href).pathname.split('/')[2] : '';
+                const name = container.querySelector('a.title span')?.textContent?.trim() || '';
+                const note_image = container.querySelector('a.cover img')?.getAttribute('src') || '';
+                const authorElement = container.querySelector('.author-wrapper .author');
+                const author_name = authorElement?.querySelector('.name')?.textContent?.trim() || '';
+                const author_image = authorElement?.querySelector('.author-avatar')?.getAttribute('src') || '';
+                const href = anchor.href;
+                return { id, name, note_image, author_name, author_image, href };
+              } catch (error) {
+                return { id: '', name: '', note_image: '', author_name: '', author_image: '', href: '' };
+              }
+            })
+            ?.filter((item) => item.id);
         });
 
         let noMoreUsers = false;
@@ -282,7 +275,11 @@ export class RedTaskService extends BaseTaskService {
             href: item.href,
           },
         }));
+
         await this.prisma.messages.createMany({ data });
+        await this.updateMessagesCount({
+          task_id,
+        });
       };
 
       let foundEnoughUsers = false;
@@ -296,10 +293,8 @@ export class RedTaskService extends BaseTaskService {
         if (unUsedIds.length >= need_send_count) {
           foundEnoughUsers = true;
           await createMessages(unUsedIds.slice(0, need_send_count));
-          await this.taskUtilService.updateTaskStatus({ task_id, status: 'COMPLETED_SEARCH' });
         } else if (noMoreUsers || scrollCount <= 0) {
           await createMessages(unUsedIds);
-          await this.taskUtilService.updateTaskStatus({ task_id, status: 'PARTIAL_COMPLETED_SEARCH' });
           break;
         } else {
           await page.evaluate(() => window.scrollBy(0, window.innerHeight));
@@ -310,6 +305,7 @@ export class RedTaskService extends BaseTaskService {
 
       await browser.close();
     } catch (error: any) {
+      console.log(error);
       await browser.close();
 
       const failed_reason = error?.message || '未知错误';
@@ -330,8 +326,28 @@ export class RedTaskService extends BaseTaskService {
     });
   }
 
+  async updateMessagesCount(params: { task_id: number }) {
+    const { task_id } = params;
+
+    const messageCount = await this.prisma.messages.count({
+      where: {
+        task_id,
+      },
+    });
+    await this.prisma.tasks.update({
+      where: {
+        id: task_id,
+      },
+      data: {
+        found_count: messageCount,
+      },
+    });
+  }
+
   async sendComment(params: { page: Page; content: string }) {
     const { page, content } = params;
+
+    await sleep(3000);
     await Click({
       page,
       name: '笔记',
@@ -340,7 +356,7 @@ export class RedTaskService extends BaseTaskService {
     });
 
     await page.keyboard.type(content);
-
+    await sleep(60 * 1000);
     await Click({
       page,
       name: '提交按钮',
@@ -373,17 +389,44 @@ export class RedTaskService extends BaseTaskService {
       },
     });
 
-    const response = await page.goto(this.url, {
-      waitUntil: 'domcontentloaded',
-    });
+    try {
+      const response = await page.goto((message.platform_data as any)?.href, {
+        waitUntil: 'domcontentloaded',
+      });
 
-    if (!response) {
-      throw new BadRequestException(`创建浏览器失败`);
+      if (!response) {
+        throw new BadRequestException(`创建浏览器失败`);
+      }
+
+      await this.sendComment({
+        page,
+        content,
+      });
+
+      await this.prisma.messages.update({
+        where: {
+          id: message_id,
+        },
+        data: {
+          status: 'COMPLETED',
+          failed_reason: '',
+        },
+      });
+
+      await this.taskUtilService.updateTaskStatus({
+        task_id: Number(message.task_id),
+        sent_count: 1,
+      });
+    } catch (error: any) {
+      await this.prisma.messages.update({
+        where: {
+          id: message_id,
+        },
+        data: {
+          status: 'FAILED',
+          failed_reason: error?.message || 'Unknown Error',
+        },
+      });
     }
-
-    await this.sendComment({
-      page,
-      content,
-    });
   };
 }

@@ -3,8 +3,8 @@ import {
 } from '@/constants/types'
 
 export const getSelectOptions = (options: Record<string, string>) => Object.keys(options).map((key) => ({
-  content: key,
-  value: options[key],
+  label: options[key],
+  value: key,
 }))
 
 export const getDisplayNameByCode = (

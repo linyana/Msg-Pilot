@@ -1,4 +1,5 @@
 import {
+  Form,
   Select,
 } from 'antd'
 import {
@@ -9,8 +10,17 @@ import {
 } from '@/utils'
 
 export const DestributionRuleSelector = () => (
-  <Select
-    placeholder="选择你要使用的分发规则"
-    options={getSelectOptions(DESTRIBUTION_RULE_MAPPING)}
-  />
+  <Form.Item
+    label="分发规则"
+    style={{
+      width: '48%',
+    }}
+    required
+    name="destribution_rule"
+  >
+    <Select
+      placeholder="选择你要使用的分发规则"
+      options={getSelectOptions(DESTRIBUTION_RULE_MAPPING)}
+    />
+  </Form.Item>
 )

@@ -21,7 +21,7 @@ export class TasksController {
     return this.tasksService.findAllTasks(connection_id);
   }
 
-  @Post('retry/:id')
+  @Post(':id')
   retry(@Req('connection_id') connection_id: number, @Param() { id }: { id: number }) {
     return this.tasksService.retry(connection_id, Number(id));
   }
