@@ -57,6 +57,7 @@ export const CreateTask = () => {
   useEffect(() => {
     if (data?.data) {
       message?.success('创建成功')
+      navigate('/tasks')
     }
   }, [data?.data])
 
@@ -73,7 +74,7 @@ export const CreateTask = () => {
       account_ids: [Number(value.account_id)],
       data: {
         content: [value.content || ''],
-        filter: [value.content || ''],
+        filter: [value.filter || ''],
       },
       expect_count: value.expect_count,
     })

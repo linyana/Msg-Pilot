@@ -18,6 +18,7 @@ import {
 } from '@/services'
 import {
   Flex,
+  Status,
 } from '@/components'
 import {
   TaskAction,
@@ -84,6 +85,12 @@ export const Task = React.memo(() => {
       dataIndex: 'status',
       key: 'status',
       align: 'center',
+      render: (_, record) => (
+        <Status
+          status={record?.status}
+          failed_reason={record?.status}
+        />
+      ),
     },
     {
       title: '已发送数量',

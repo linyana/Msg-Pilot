@@ -11,4 +11,7 @@ export const TASK_STATUS_MAPPING: {[key in TASK_STATUS] : string} = {
   FAILED: '失败',
   COMPLETED: '已完成',
   PARTIAL_COMPLETED: '部分完成',
+  SEARCHING: '搜索中',
+  COMPLETED_SEARCH: '已完成搜索',
+  PARTIAL_COMPLETED_SEARCH: '已完成部分搜索',
 }

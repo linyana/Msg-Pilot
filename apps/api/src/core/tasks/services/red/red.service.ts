@@ -116,7 +116,7 @@ export class RedTaskService extends BaseTaskService {
         }
       }
 
-      await this.taskUtilService.updateTaskStatus({
+      await this.taskUtilService.handleCompleteTask({
         task_id,
       });
 
@@ -156,24 +156,15 @@ export class RedTaskService extends BaseTaskService {
     });
     const connection_id = Number(task.connection_id);
 
-    await this.taskUtilService.updateTaskStatus({
-      task_id,
-      status: 'SEARCHING',
-    });
-
     const messages = await this.prisma.messages.findMany({
       where: {
-        connection_id,
+        task_id,
       },
     });
 
     const need_send_count = task.expect_count - messages.length;
 
     if (!need_send_count) {
-      await this.taskUtilService.updateTaskStatus({
-        task_id,
-        status: 'COMPLETED_SEARCH',
-      });
       await this.handleTask({
         task_id,
         account_id,
@@ -247,7 +238,7 @@ export class RedTaskService extends BaseTaskService {
                 const authorElement = container.querySelector('.author-wrapper .author');
                 const author_name = authorElement?.querySelector('.name')?.textContent?.trim() || '';
                 const author_image = authorElement?.querySelector('.author-avatar')?.getAttribute('src') || '';
-                const href = new URL(anchor.href)?.pathname || '';
+                const href = anchor.href;
                 return { id, name, note_image, author_name, author_image, href };
               } catch (error) {
                 return { id: '', name: '', note_image: '', author_name: '', author_image: '', href: '' };
@@ -302,10 +293,8 @@ export class RedTaskService extends BaseTaskService {
         if (unUsedIds.length >= need_send_count) {
           foundEnoughUsers = true;
           await createMessages(unUsedIds.slice(0, need_send_count));
-          await this.taskUtilService.updateTaskStatus({ task_id, status: 'COMPLETED_SEARCH' });
         } else if (noMoreUsers || scrollCount <= 0) {
           await createMessages(unUsedIds);
-          await this.taskUtilService.updateTaskStatus({ task_id, status: 'PARTIAL_COMPLETED_SEARCH' });
           break;
         } else {
           await page.evaluate(() => window.scrollBy(0, window.innerHeight));
@@ -316,6 +305,7 @@ export class RedTaskService extends BaseTaskService {
 
       await browser.close();
     } catch (error: any) {
+      console.log(error);
       await browser.close();
 
       const failed_reason = error?.message || '未知错误';
@@ -366,7 +356,7 @@ export class RedTaskService extends BaseTaskService {
     });
 
     await page.keyboard.type(content);
-    await sleep(3000);
+    await sleep(60 * 1000);
     await Click({
       page,
       name: '提交按钮',
@@ -400,7 +390,7 @@ export class RedTaskService extends BaseTaskService {
     });
 
     try {
-      const response = await page.goto(this.url + (message.platform_data as any)?.href, {
+      const response = await page.goto((message.platform_data as any)?.href, {
         waitUntil: 'domcontentloaded',
       });
 
@@ -411,6 +401,21 @@ export class RedTaskService extends BaseTaskService {
       await this.sendComment({
         page,
         content,
+      });
+
+      await this.prisma.messages.update({
+        where: {
+          id: message_id,
+        },
+        data: {
+          status: 'COMPLETED',
+          failed_reason: '',
+        },
+      });
+
+      await this.taskUtilService.updateTaskStatus({
+        task_id: Number(message.task_id),
+        sent_count: 1,
       });
     } catch (error: any) {
       await this.prisma.messages.update({
