@@ -1,6 +1,8 @@
 import puppeteer from 'puppeteer';
 
 export const creatBrowser = async () => {
+  console.log(process.env.NODE_ENV === 'production');
+
   const browser = await puppeteer.launch(
     process.env.NODE_ENV === 'production'
       ? {
