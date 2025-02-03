@@ -2,7 +2,7 @@ FROM ghcr.io/puppeteer/puppeteer:21.3.8
 
 USER root
 
-RUN apt-get update && apt-get install -y fonts-noto-color-emoji
+RUN apt-get update 
 
 WORKDIR /app
 
