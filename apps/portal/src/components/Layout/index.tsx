@@ -75,17 +75,21 @@ export const Layout = ({
     navigate(target)
   }
 
-  const getItem = (route: IRouteType): any => ({
-    key: route.id,
-    icon: route.icon,
-    label: route.text,
-    children: route.children?.map((child) => getItem(child)),
-    onClick: ({
-      keyPath,
-    }: any) => {
-      handleLinkTo(`/${keyPath[0]}` || route.path || '')
-    },
-  })
+  const getItem = (route: IRouteType): any => {
+    const filteredChildren = (route.children || [])?.filter((child) => child.text)
+
+    return {
+      key: route.id,
+      icon: route.icon,
+      label: route.text,
+      children: filteredChildren.length ? filteredChildren.map((child) => getItem(child)) : undefined,
+      onClick: ({
+        keyPath,
+      }: any) => {
+        handleLinkTo(`/${keyPath[0]}` || route.path || '')
+      },
+    }
+  }
 
   useEffect(() => {
     const routeIds = routes.filter((route) => route.text).map((route) => route.id)
@@ -122,6 +126,28 @@ export const Layout = ({
     },
   ]
 
+  const findNearestTextRoute = (routes: IRouteType[], path: string): string | null => {
+    let selectedId = null
+
+    const findRoute = (routes: IRouteType[]) => {
+      routes.forEach((route) => {
+        if (route.path && path.startsWith(route.path)) {
+          if (route.text) {
+            selectedId = route.id
+          }
+          if (route.children) {
+            findRoute(route.children)
+          }
+        }
+      })
+    }
+
+    findRoute(routes)
+    return selectedId
+  }
+
+  const selectedKey = useMemo(() => findNearestTextRoute(routes, location.pathname) || '', [routes, location.pathname])
+
   return (
     <>
       {
@@ -142,7 +168,7 @@ export const Layout = ({
                   <Menu
                     theme="light"
                     mode="inline"
-                    selectedKeys={[currentRoute?.id || '']}
+                    selectedKeys={[selectedKey]}
                     items={items}
                   />
                 </Sider>

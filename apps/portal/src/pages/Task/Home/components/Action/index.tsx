@@ -5,6 +5,9 @@ import {
   useEffect,
 } from 'react'
 import {
+  useNavigate,
+} from 'react-router-dom'
+import {
   ITaskType,
 } from '@/types'
 import {
@@ -13,6 +16,9 @@ import {
 import {
   useMessage,
 } from '@/hooks'
+import {
+  Flex,
+} from '@/components'
 
 type IPropsType = {
   record: ITaskType
@@ -22,6 +28,7 @@ export const TaskAction = ({
   record,
 }: IPropsType) => {
   const message = useMessage()
+  const navigate = useNavigate()
 
   const {
     data,
@@ -45,19 +52,29 @@ export const TaskAction = ({
   }, [error])
 
   return (
-    <>
-      {
-        ['FAILED', 'PARTIAL_COMPLETED', 'NOT_START'].includes(record.status) && (
-          <Button
-            loading={loading}
-            onClick={() => {
-              fetchData?.()
-            }}
-          >
-            重试
-          </Button>
-        )
-      }
-    </>
+    <Flex>
+      <>
+        <Button
+          loading={loading}
+          onClick={() => {
+            navigate(`/tasks/${record.id}`)
+          }}
+        >
+          查看详情
+        </Button>
+        {
+          ['FAILED', 'PARTIAL_COMPLETED', 'NOT_START'].includes(record.status) && (
+            <Button
+              loading={loading}
+              onClick={() => {
+                fetchData?.()
+              }}
+            >
+              重试
+            </Button>
+          )
+        }
+      </>
+    </Flex>
   )
 }

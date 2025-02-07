@@ -162,7 +162,7 @@ export const CreateTask = () => {
                 >
                   <InputNumber
                     min={1}
-                    max={100}
+                    max={10000}
                     style={{
                       width: '100%',
                     }}
