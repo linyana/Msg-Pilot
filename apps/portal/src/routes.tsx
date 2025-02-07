@@ -17,6 +17,7 @@ import {
   Login,
   Registration,
   Task,
+  TaskDetails,
 } from './pages'
 
 export interface IRouteType {
@@ -80,11 +81,18 @@ export const routes: Array<IRouteType> = [
     text: '任务',
     path: '/tasks',
     icon: <AssignmentIcon />,
-  },
-  {
-    id: 'tasks/create-task',
-    element: <CreateTask />,
-    path: '/tasks/create-task',
+    children: [
+      {
+        id: 'tasks/create-task',
+        element: <CreateTask />,
+        path: '/tasks/create-task',
+      },
+      {
+        id: 'tasks/:id',
+        element: <TaskDetails />,
+        path: '/tasks/:id',
+      },
+    ],
   },
   {
     id: 'settings',

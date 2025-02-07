@@ -390,6 +390,15 @@ export class RedTaskService extends BaseTaskService {
     });
 
     try {
+      await this.prisma.messages.update({
+        where: {
+          id: message_id,
+        },
+        data: {
+          status: 'RUNNING',
+        },
+      });
+
       const response = await page.goto((message.platform_data as any)?.href, {
         waitUntil: 'domcontentloaded',
       });
