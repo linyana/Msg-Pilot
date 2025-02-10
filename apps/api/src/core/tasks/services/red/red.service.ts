@@ -216,12 +216,37 @@ export class RedTaskService extends BaseTaskService {
         selector: '#global > div.header-container > header > div.input-box > div > div.search-icon',
       });
 
+      const createMessages = async (usersToSend: IRedMessagePlatformDataType[]) => {
+        const data: Prisma.messagesCreateManyInput[] = usersToSend.map((item) => ({
+          platform_unit_id: item.id,
+          platform_name: item.name,
+          task_id,
+          account_id,
+          connection_id,
+          tenant_id: Number(task.tenant_id),
+          platform_data: {
+            note_id: item.id,
+            name: item.name,
+            note_image: item.note_image,
+            author_name: item.author_name,
+            author_image: item.author_image,
+            href: item.href,
+          },
+        }));
+
+        await this.prisma.messages.createMany({ data });
+        await this.updateMessagesCount({
+          task_id,
+        });
+      };
+
       let noteIds: IRedMessagePlatformDataType[] = [];
 
       const usedNoteIds = await this.prisma.messages.findMany({
-        where: { task_id },
+        where: { account_id },
         select: { platform_unit_id: true },
       });
+
       const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
 
       const getUnUsedIds = async () => {
@@ -258,49 +283,46 @@ export class RedTaskService extends BaseTaskService {
         return { unUsedIds, noMoreUsers };
       };
 
-      const createMessages = async (usersToSend: IRedMessagePlatformDataType[]) => {
-        const data: Prisma.messagesCreateManyInput[] = usersToSend.map((item) => ({
-          platform_unit_id: item.id,
-          platform_name: item.name,
-          task_id,
-          account_id,
-          connection_id,
-          tenant_id: Number(task.tenant_id),
-          platform_data: {
-            note_id: item.id,
-            name: item.name,
-            note_image: item.note_image,
-            author_name: item.author_name,
-            author_image: item.author_image,
-            href: item.href,
-          },
-        }));
-
-        await this.prisma.messages.createMany({ data });
-        await this.updateMessagesCount({
-          task_id,
-        });
-      };
-
       let foundEnoughUsers = false;
       let noMoreUsers = false;
-      let scrollCount = 100;
+      let scrollCount = 0; // 记录滑动次数，连续五次无新note才刷新页面
+      let refreshCount = 0; // 记录刷新次数
 
       while (!foundEnoughUsers && !noMoreUsers) {
         const { unUsedIds, noMoreUsers: isNoMoreUsers } = await getUnUsedIds();
         noMoreUsers = isNoMoreUsers;
 
+        // 如果找到了足够的用户，发送消息
         if (unUsedIds.length >= need_send_count) {
           foundEnoughUsers = true;
           await createMessages(unUsedIds.slice(0, need_send_count));
-        } else if (noMoreUsers || scrollCount <= 0) {
-          await createMessages(unUsedIds);
-          break;
-        } else {
-          await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-          await sleep(2000);
-          scrollCount -= 1;
         }
+
+        if (!noMoreUsers) {
+          scrollCount = 0;
+          refreshCount = 0;
+          continue;
+        }
+
+        if (scrollCount >= 5) {
+          if (refreshCount >= 2) {
+            console.log('连续两次刷新页面无新note，停止搜索');
+            foundEnoughUsers = true;
+            await createMessages(unUsedIds.slice(0, need_send_count));
+            break;
+          } else {
+            console.log('连续五次滑动页面没有新 note，刷新页面');
+            await page.reload();
+            refreshCount += 1; // 刷新次数增加
+            scrollCount = 0; // 重置滑动次数
+          }
+        }
+
+        scrollCount += 1;
+
+        // 执行滑动页面
+        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+        await sleep(2000);
       }
 
       await browser.close();
@@ -356,7 +378,7 @@ export class RedTaskService extends BaseTaskService {
     });
 
     await page.keyboard.type(content);
-    await sleep(60 * 1000);
+    await sleep(5 * 1000);
     await Click({
       page,
       name: '提交按钮',

@@ -95,9 +95,9 @@ export const Account = React.memo(() => {
       ),
     },
     {
-      title: 'Cookie',
-      dataIndex: 'cookie',
-      key: 'cookie',
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
     },
     {
       title: '操作',

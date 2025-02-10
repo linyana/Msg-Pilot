@@ -100,6 +100,12 @@ export const Task = React.memo(() => {
     },
     {
       title: '预期发送数量',
+      dataIndex: 'found_count',
+      key: 'found_count',
+      align: 'center',
+    },
+    {
+      title: '最大发送数量',
       dataIndex: 'expect_count',
       key: 'expect_count',
       align: 'center',
