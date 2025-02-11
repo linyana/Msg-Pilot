@@ -144,6 +144,7 @@ export class TasksService {
         data,
         type,
         destribution_rule,
+        status: 'RUNNING',
       },
     });
 
@@ -163,6 +164,15 @@ export class TasksService {
     taskService.setMessages({
       task_id: Number(task.id),
       account_id: Number(accounts[0].id),
+    });
+
+    await this.prisma.tasks.update({
+      where: {
+        id: Number(task.id),
+      },
+      data: {
+        status: 'RUNNING',
+      },
     });
 
     return 'Successfully created';

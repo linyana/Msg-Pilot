@@ -22,6 +22,8 @@ export class TaskUtilService {
             : undefined,
         },
       });
+
+      return;
     }
 
     if (!status) {

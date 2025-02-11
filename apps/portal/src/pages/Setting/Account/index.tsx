@@ -78,7 +78,7 @@ export const Account = React.memo(() => {
                 placement="right"
                 title={(
                   <>
-                    The cookie may have expired, please check it.
+                    账号登录信息已过期, 请重新连接
                   </>
                 )}
               >
@@ -95,9 +95,9 @@ export const Account = React.memo(() => {
       ),
     },
     {
-      title: 'Cookie',
-      dataIndex: 'cookie',
-      key: 'cookie',
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
     },
     {
       title: '操作',

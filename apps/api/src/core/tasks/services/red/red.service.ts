@@ -198,7 +198,13 @@ export class RedTaskService extends BaseTaskService {
       if (!response) throw new BadRequestException('创建浏览器失败');
 
       const hasLoginButton = await page.evaluate(() => document.querySelector('#login-btn'));
-      if (hasLoginButton) throw new BadRequestException('账号授权已过期');
+      if (hasLoginButton) {
+        await this.prisma.accounts.update({
+          where: { id: account_id },
+          data: { is_expired: true, expired_at: new Date() },
+        });
+        throw new BadRequestException('账号授权已过期');
+      }
 
       const filter = (task.data as ITaskDataType)?.filter[0];
 
@@ -215,48 +221,6 @@ export class RedTaskService extends BaseTaskService {
         delay: 3,
         selector: '#global > div.header-container > header > div.input-box > div > div.search-icon',
       });
-
-      let noteIds: IRedMessagePlatformDataType[] = [];
-
-      const usedNoteIds = await this.prisma.messages.findMany({
-        where: { task_id },
-        select: { platform_unit_id: true },
-      });
-      const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
-
-      const getUnUsedIds = async () => {
-        await sleep(3000);
-
-        const newNoteIds = await page.evaluate(() => {
-          return Array.from(document.querySelectorAll('section.note-item > div'))
-            .map((container) => {
-              try {
-                const anchor = container.querySelector('a.cover') as HTMLAnchorElement;
-                const id = anchor ? new URL(anchor.href).pathname.split('/')[2] : '';
-                const name = container.querySelector('a.title span')?.textContent?.trim() || '';
-                const note_image = container.querySelector('a.cover img')?.getAttribute('src') || '';
-                const authorElement = container.querySelector('.author-wrapper .author');
-                const author_name = authorElement?.querySelector('.name')?.textContent?.trim() || '';
-                const author_image = authorElement?.querySelector('.author-avatar')?.getAttribute('src') || '';
-                const href = anchor.href;
-                return { id, name, note_image, author_name, author_image, href };
-              } catch (error) {
-                return { id: '', name: '', note_image: '', author_name: '', author_image: '', href: '' };
-              }
-            })
-            ?.filter((item) => item.id);
-        });
-
-        let noMoreUsers = false;
-        const uniqueNewNoteIds = Array.from(new Map(newNoteIds.map((item) => [item.id, item])).values());
-        const newIds = uniqueNewNoteIds.filter((item) => !usedIdsSet.has(item.id));
-        if (!newIds.length) noMoreUsers = true;
-
-        noteIds = [...noteIds, ...newIds.filter((item) => !noteIds.some((existing) => existing.id === item.id))];
-        const unUsedIds = noteIds.filter((item) => !usedIdsSet.has(item.id));
-
-        return { unUsedIds, noMoreUsers };
-      };
 
       const createMessages = async (usersToSend: IRedMessagePlatformDataType[]) => {
         const data: Prisma.messagesCreateManyInput[] = usersToSend.map((item) => ({
@@ -282,25 +246,76 @@ export class RedTaskService extends BaseTaskService {
         });
       };
 
-      let foundEnoughUsers = false;
-      let noMoreUsers = false;
-      let scrollCount = 100;
+      let noteIds: IRedMessagePlatformDataType[] = [];
 
-      while (!foundEnoughUsers && !noMoreUsers) {
-        const { unUsedIds, noMoreUsers: isNoMoreUsers } = await getUnUsedIds();
-        noMoreUsers = isNoMoreUsers;
+      const usedNoteIds = await this.prisma.messages.findMany({
+        where: { account_id },
+        select: { platform_unit_id: true },
+      });
+
+      const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
+
+      const getUnUsedIds = async () => {
+        await sleep(3000);
+
+        const newNoteIds = await page.evaluate(() => {
+          return Array.from(document.querySelectorAll('section.note-item > div'))
+            .map((container) => {
+              try {
+                const anchor = container.querySelector('a.cover') as HTMLAnchorElement;
+                const id = anchor ? new URL(anchor.href).pathname.split('/')[2] : '';
+                const name = container.querySelector('a.title span')?.textContent?.trim() || '';
+                const note_image = container.querySelector('a.cover img')?.getAttribute('src') || '';
+                const authorElement = container.querySelector('.author-wrapper .author');
+                const author_name = authorElement?.querySelector('.name')?.textContent?.trim() || '';
+                const author_image = authorElement?.querySelector('.author-avatar')?.getAttribute('src') || '';
+                const href = anchor.href;
+                return { id, name, note_image, author_name, author_image, href };
+              } catch (error) {
+                return { id: '', name: '', note_image: '', author_name: '', author_image: '', href: '' };
+              }
+            })
+            ?.filter((item) => item.id);
+        });
+
+        const uniqueNewNoteIds = Array.from(new Map(newNoteIds.map((item) => [item.id, item])).values());
+        const newUsefulIds = uniqueNewNoteIds.filter((item) => !usedIdsSet.has(item.id));
+        const hasNewUsefulNotes = Boolean(newUsefulIds.length);
+        const hasNewFoundNotes = Boolean(uniqueNewNoteIds.length);
+        noteIds = [...noteIds, ...newUsefulIds.filter((item) => !noteIds.some((existing) => existing.id === item.id))];
+        const unUsedIds = noteIds.filter((item) => !usedIdsSet.has(item.id));
+
+        return { unUsedIds, hasNewUsefulNotes, hasNewFoundNotes };
+      };
+
+      let scrollCount = 0;
+      let refreshCount = 0;
+
+      while (true) {
+        const { unUsedIds, hasNewUsefulNotes, hasNewFoundNotes } = await getUnUsedIds();
 
         if (unUsedIds.length >= need_send_count) {
-          foundEnoughUsers = true;
           await createMessages(unUsedIds.slice(0, need_send_count));
-        } else if (noMoreUsers || scrollCount <= 0) {
-          await createMessages(unUsedIds);
           break;
-        } else {
-          await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-          await sleep(2000);
-          scrollCount -= 1;
         }
+
+        if (hasNewFoundNotes) scrollCount = 0;
+        if (hasNewUsefulNotes) refreshCount = 0;
+
+        if (scrollCount >= 5) {
+          if (refreshCount >= 2) {
+            await createMessages(unUsedIds.slice(0, need_send_count));
+            break;
+          } else {
+            await page.reload();
+            refreshCount += 1;
+            scrollCount = 0;
+            continue;
+          }
+        }
+
+        scrollCount += 1;
+        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
       }
 
       await browser.close();
@@ -356,7 +371,7 @@ export class RedTaskService extends BaseTaskService {
     });
 
     await page.keyboard.type(content);
-    await sleep(60 * 1000);
+    await sleep(5 * 1000);
     await Click({
       page,
       name: '提交按钮',
