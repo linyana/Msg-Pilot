@@ -6,18 +6,13 @@ import {
   useNavigate,
 } from 'react-router-dom'
 import {
+  Button,
   Card,
-  CardContent,
-  TextField,
+  Form,
+  FormProps,
+  Input,
   Typography,
-} from '@mui/material'
-import {
-  Controller,
-  useForm,
-} from 'react-hook-form'
-import {
-  LoadingButton,
-} from '@mui/lab'
+} from 'antd'
 import {
   updateToken,
   useAppDispatch,
@@ -38,19 +33,17 @@ import {
   useMessage,
 } from '@/hooks/useMessage'
 
+const {
+  Title,
+} = Typography
+
 export const Login = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const {
     token,
   } = useAppSelector((state) => state.global)
-  const {
-    control,
-    handleSubmit,
-    formState: {
-      errors,
-    },
-  } = useForm<ILoginType>()
+  const [form] = Form.useForm()
   const message = useMessage()
 
   const [formData, setFormData] = useState<ILoginType>()
@@ -79,114 +72,110 @@ export const Login = () => {
     }
   }, [data?.data, token])
 
+  const onSubmit = () => {
+    form.submit()
+  }
+
   useEffect(() => {
     if (error) {
       message.error(error)
     }
   }, [error])
 
-  const onSubmit = (data: ILoginType) => {
-    setFormData(data)
+  const onFinish: FormProps<ILoginType>['onFinish'] = (values) => {
+    setFormData(values)
   }
 
   return (
     <Center>
       <Card
-        variant="outlined"
+        style={{
+          width: '460px',
+        }}
       >
-        <CardContent>
-          <Flex
+        <Flex
+          style={{
+            marginBottom: 16,
+          }}
+          justifyContent="center"
+          gap="8px"
+          alignItems="center"
+        >
+          <img
+            src={logo}
             style={{
-              marginBottom: 16,
+              width: 32,
+              height: 32,
             }}
-            justifyContent="center"
-          >
-            <img
-              src={logo}
-              style={{
-                width: 32,
-                height: 32,
-              }}
-              alt=""
-            />
-          </Flex>
-          <Typography
-            variant="h5"
-            gutterBottom
-            align="center"
+            alt=""
+          />
+          <Title
+            level={3}
             style={{
-              fontWeight: 500,
+              textAlign: 'center',
+              marginBottom: 4,
+              color: 'var(--main-bg-color)',
             }}
           >
-            Sign in
-          </Typography>
-          <Typography
-            variant="body2"
-            gutterBottom
-            align="center"
-            marginBottom="16px"
-            color="#8C8C8C"
+            Msg Pilot
+          </Title>
+        </Flex>
+        <Typography
+          style={{
+            color: '#8c8c8c',
+            textAlign: 'center',
+          }}
+        >
+          欢迎回来，请登录
+        </Typography>
+        <Form
+          layout="vertical"
+          form={form}
+          autoComplete="off"
+          onFinish={onFinish}
+        >
+          <Form.Item
+            label="邮箱"
+            name="email"
+            rules={[{
+              required: true,
+              message: '请输入正确的邮箱',
+              pattern: /^[a-zA-Z0-9.%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            }]}
           >
-            Welcome, please sign in to continue
-          </Typography>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Controller
-              name="email"
-              control={control}
-              rules={{
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: '请输入正确的邮箱',
-                },
-              }}
-              render={({
-                field,
-              }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label="邮箱"
-                  margin="normal"
-                  required
-                  size="small"
-                  error={!!errors.email}
-                  helperText={errors.email ? errors.email.message as string : ''}
-                />
-              )}
+            <Input
+              onPressEnter={onSubmit}
+              placeholder="输入你的邮箱"
             />
-            <Controller
-              name="password"
-              control={control}
-              render={({
-                field,
-              }) => (
-                <TextField
-                  {...field}
-                  type="password"
-                  fullWidth
-                  label="密码"
-                  margin="normal"
-                  required
-                  size="small"
-                  error={!!errors.password}
-                  helperText={errors.password ? errors.password.message as string : ''}
-                />
-              )}
+          </Form.Item>
+          <Form.Item
+            label="密码"
+            name="password"
+            rules={[{
+              required: true,
+              message: '密码需要在6到16位',
+              max: 16,
+              min: 6,
+            }]}
+          >
+            <Input
+              type="password"
+              onPressEnter={onSubmit}
+              placeholder="输入你的密码"
             />
-            <LoadingButton
-              type="submit"
-              loading={loading}
-              variant="contained"
-              color="primary"
-              fullWidth
-              style={{
-                marginTop: 16,
-              }}
-            >
-              登录
-            </LoadingButton>
-          </form>
-        </CardContent>
+          </Form.Item>
+          <Button
+            block
+            type="primary"
+            style={{
+              marginTop: 12,
+            }}
+            onClick={onSubmit}
+            loading={loading}
+          >
+            登录
+          </Button>
+        </Form>
       </Card>
     </Center>
   )
