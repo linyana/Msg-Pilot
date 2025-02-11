@@ -88,7 +88,7 @@ export const Task = React.memo(() => {
       render: (_, record) => (
         <Status
           status={record?.status}
-          failed_reason={record?.status}
+          failed_reason={record?.failed_reason}
         />
       ),
     },

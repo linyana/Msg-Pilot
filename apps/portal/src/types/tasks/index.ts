@@ -18,7 +18,7 @@ export type ITaskType = {
   updated_at: number
   name?: string
   description?: string
-  faild_reason?: string
+  failed_reason?: string
   expect_count: number
   sent_count: string
   data: any
@@ -31,7 +31,7 @@ export type ITaskType = {
 export type ICreateTaskType = {
   name?: string
   description?: string
-  faild_reason?: string
+  failed_reason?: string
   expect_count: number
   data: any
   account_ids?: number[]

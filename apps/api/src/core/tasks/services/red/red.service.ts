@@ -198,7 +198,13 @@ export class RedTaskService extends BaseTaskService {
       if (!response) throw new BadRequestException('创建浏览器失败');
 
       const hasLoginButton = await page.evaluate(() => document.querySelector('#login-btn'));
-      if (hasLoginButton) throw new BadRequestException('账号授权已过期');
+      if (hasLoginButton) {
+        await this.prisma.accounts.update({
+          where: { id: account_id },
+          data: { is_expired: true, expired_at: new Date() },
+        });
+        throw new BadRequestException('账号授权已过期');
+      }
 
       const filter = (task.data as ITaskDataType)?.filter[0];
 
