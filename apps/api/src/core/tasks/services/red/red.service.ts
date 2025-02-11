@@ -272,57 +272,44 @@ export class RedTaskService extends BaseTaskService {
             ?.filter((item) => item.id);
         });
 
-        let noMoreUsers = false;
         const uniqueNewNoteIds = Array.from(new Map(newNoteIds.map((item) => [item.id, item])).values());
-        const newIds = uniqueNewNoteIds.filter((item) => !usedIdsSet.has(item.id));
-        if (!newIds.length) noMoreUsers = true;
-
-        noteIds = [...noteIds, ...newIds.filter((item) => !noteIds.some((existing) => existing.id === item.id))];
+        const newUsefulIds = uniqueNewNoteIds.filter((item) => !usedIdsSet.has(item.id));
+        const hasNewUsefulNotes = Boolean(newUsefulIds.length);
+        const hasNewFoundNotes = Boolean(uniqueNewNoteIds.length);
+        noteIds = [...noteIds, ...newUsefulIds.filter((item) => !noteIds.some((existing) => existing.id === item.id))];
         const unUsedIds = noteIds.filter((item) => !usedIdsSet.has(item.id));
 
-        return { unUsedIds, noMoreUsers };
+        return { unUsedIds, hasNewUsefulNotes, hasNewFoundNotes };
       };
 
-      let foundEnoughUsers = false;
-      let noMoreUsers = false;
-      let scrollCount = 0; // 记录滑动次数，连续五次无新note才刷新页面
-      let refreshCount = 0; // 记录刷新次数
+      let scrollCount = 0;
+      let refreshCount = 0;
 
-      while (!foundEnoughUsers && !noMoreUsers) {
-        const { unUsedIds, noMoreUsers: isNoMoreUsers } = await getUnUsedIds();
-        noMoreUsers = isNoMoreUsers;
+      while (true) {
+        const { unUsedIds, hasNewUsefulNotes, hasNewFoundNotes } = await getUnUsedIds();
 
-        // 如果找到了足够的用户，发送消息
         if (unUsedIds.length >= need_send_count) {
-          foundEnoughUsers = true;
           await createMessages(unUsedIds.slice(0, need_send_count));
+          break;
         }
 
-        if (!noMoreUsers) {
-          scrollCount = 0;
-          refreshCount = 0;
-          continue;
-        }
+        if (hasNewFoundNotes) scrollCount = 0;
+        if (hasNewUsefulNotes) refreshCount = 0;
 
         if (scrollCount >= 5) {
           if (refreshCount >= 2) {
-            console.log('连续两次刷新页面无新note，停止搜索');
-            foundEnoughUsers = true;
             await createMessages(unUsedIds.slice(0, need_send_count));
             break;
           } else {
-            console.log('连续五次滑动页面没有新 note，刷新页面');
             await page.reload();
-            refreshCount += 1; // 刷新次数增加
-            scrollCount = 0; // 重置滑动次数
+            refreshCount += 1;
+            scrollCount = 0;
+            continue;
           }
         }
 
         scrollCount += 1;
-
-        // 执行滑动页面
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-        await sleep(2000);
       }
 
       await browser.close();
