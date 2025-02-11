@@ -4,14 +4,11 @@ import {
 } from 'react'
 import {
   Avatar,
-  Button,
-  Card,
   Divider,
   ListItem,
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-  Typography,
 } from '@mui/material'
 import StoreIcon from '@mui/icons-material/Store'
 import {
@@ -21,6 +18,13 @@ import {
   useDispatch,
 } from 'react-redux'
 import {
+  Button,
+  Card,
+  Empty,
+  List,
+  Typography,
+} from 'antd'
+import {
   useChooseConnection,
   useGetConnections,
 } from '@/services'
@@ -28,7 +32,6 @@ import {
   IConnectionType,
 } from '@/types'
 import {
-  Empty,
   Flex,
   Loading,
 } from '@/components'
@@ -42,6 +45,10 @@ import {
   updateToken,
   useAppSelector,
 } from '@/store'
+
+const {
+  Title,
+} = Typography
 
 export const Connections = () => {
   const [connections, setConnections] = useState<IConnectionType[]>([])
@@ -113,23 +120,24 @@ export const Connections = () => {
   return (
     <Flex justifyContent="center">
       <div>
-        <Typography
-          variant="h3"
-          gutterBottom
-          textAlign="center"
-          marginBottom="8px"
+        <Title
+          level={3}
+          style={{
+            textAlign: 'center',
+            marginBottom: 16,
+          }}
         >
           连接列表
-        </Typography>
+        </Title>
         <Typography
-          variant="h5"
-          gutterBottom
-          textAlign="center"
-          marginBottom="40px"
+          style={{
+            textAlign: 'center',
+            marginBottom: '40px',
+          }}
         >
-          管理你的连接列表
+          管理你的所有连接器
         </Typography>
-        <Card sx={{
+        <Card style={{
           padding: 0,
           width: '40vw',
           minWidth: 600,
@@ -141,55 +149,34 @@ export const Connections = () => {
           >
             {
               !connections.length && (
-                <Empty tip="无数据" />
+                <Empty />
               )
             }
-            {
-              connections.map((connection, index) => (
-                <div key={connection.id}>
-                  {
-                    index ? <Divider /> : <></>
-                  }
-                  <ListItem
-                    component="div"
-                    disablePadding
-                    onClick={() => {
-                      setSelectedConnection(Number(connection.id))
-                    }}
-                  >
-                    <ListItemButton
-                      style={{
-                        padding: '16px',
-                      }}
-                    >
-                      <ListItemAvatar>
-                        <Avatar
-                          alt="连接"
-                          src={CONNECTION_INFO[connection.type]?.logo}
-                        >
-                          <StoreIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={connection.name}
-                        secondary={connection.description ? (
-                          <>
-                            {connection.description}
-                          </>
-                        ) : undefined}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                </div>
-              ))
-            }
+            <List
+              itemLayout="horizontal"
+              dataSource={connections}
+              renderItem={(connection) => (
+                <List.Item onClick={() => {
+                  setSelectedConnection(Number(connection.id))
+                }}
+                >
+                  <List.Item.Meta
+                    avatar={<Avatar src={CONNECTION_INFO[connection.type]?.logo} />}
+                    title={<a href="https://ant.design">{connection.name}</a>}
+                    description={connection.description || '暂时没有描述'}
+                  />
+                </List.Item>
+              )}
+            />
             <div style={{
-              padding: 16,
+              marginTop: 32,
             }}
             >
               <Button
-                fullWidth
-                variant="contained"
+                style={{
+                  width: '100%',
+                }}
+                type="primary"
                 onClick={() => {
                   navigate('/create-connection')
                 }}

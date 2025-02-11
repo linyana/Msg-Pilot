@@ -254,6 +254,7 @@ export class RedTaskService extends BaseTaskService {
       });
 
       const usedIdsSet = new Set(usedNoteIds.map((item) => item.platform_unit_id));
+      let lastNoteId: string | null = null;
 
       const getUnUsedIds = async () => {
         await sleep(3000);
@@ -280,19 +281,26 @@ export class RedTaskService extends BaseTaskService {
 
         const uniqueNewNoteIds = Array.from(new Map(newNoteIds.map((item) => [item.id, item])).values());
         const newUsefulIds = uniqueNewNoteIds.filter((item) => !usedIdsSet.has(item.id));
-        const hasNewUsefulNotes = Boolean(newUsefulIds.length);
-        const hasNewFoundNotes = Boolean(uniqueNewNoteIds.length);
+        const newLastNoteId = newNoteIds[newNoteIds.length - 1]?.id;
+        let hasNewFoundNotes = true;
+        if (lastNoteId === newLastNoteId) {
+          hasNewFoundNotes = false;
+        } else {
+          lastNoteId = newLastNoteId;
+        }
+
         noteIds = [...noteIds, ...newUsefulIds.filter((item) => !noteIds.some((existing) => existing.id === item.id))];
         const unUsedIds = noteIds.filter((item) => !usedIdsSet.has(item.id));
 
-        return { unUsedIds, hasNewUsefulNotes, hasNewFoundNotes };
+        return { unUsedIds, hasNewFoundNotes };
       };
 
       let scrollCount = 0;
       let refreshCount = 0;
+      let preNoteIds = 0;
 
       while (true) {
-        const { unUsedIds, hasNewUsefulNotes, hasNewFoundNotes } = await getUnUsedIds();
+        const { unUsedIds, hasNewFoundNotes } = await getUnUsedIds();
 
         if (unUsedIds.length >= need_send_count) {
           await createMessages(unUsedIds.slice(0, need_send_count));
@@ -300,7 +308,9 @@ export class RedTaskService extends BaseTaskService {
         }
 
         if (hasNewFoundNotes) scrollCount = 0;
-        if (hasNewUsefulNotes) refreshCount = 0;
+        if (preNoteIds !== unUsedIds.length) refreshCount = 0;
+
+        preNoteIds = unUsedIds.length;
 
         if (scrollCount >= 5) {
           if (refreshCount >= 2) {
