@@ -1,19 +1,11 @@
 import {
   Button,
-  Card,
   FormControl,
   MobileStepper,
-  Step,
-  StepIconProps,
-  StepLabel,
-  Stepper,
-  Typography,
 } from '@mui/material'
-import StoreIcon from '@mui/icons-material/Store'
-import BadgeIcon from '@mui/icons-material/Badge'
-import SettingsIcon from '@mui/icons-material/Settings'
 import {
   useEffect,
+  useMemo,
   useState,
 } from 'react'
 import {
@@ -30,9 +22,10 @@ import {
   useNavigate,
 } from 'react-router-dom'
 import {
-  ColorlibConnector,
-  ColorlibStepIconRoot,
-} from './styled'
+  Card,
+  Steps,
+  Typography,
+} from 'antd'
 import {
   Flex,
 } from '@/components'
@@ -57,30 +50,9 @@ import {
   useCreateConnection,
 } from '@/services'
 
-const stepIcon = (props: StepIconProps) => {
-  const {
-    active,
-    completed,
-    className,
-  } = props
-
-  const icons: { [index: string]: React.ReactElement<unknown> } = {
-    1: <StoreIcon />,
-    2: <BadgeIcon />,
-    3: <SettingsIcon />,
-  }
-
-  return (
-    <ColorlibStepIconRoot
-      ownerState={{
-        completed, active,
-      }}
-      className={className}
-    >
-      {icons[String(props.icon)]}
-    </ColorlibStepIconRoot>
-  )
-}
+const {
+  Title,
+} = Typography
 
 export const CreateConnection = () => {
   const [formData, setFormData] = useState<ICreateConnectionType>()
@@ -172,48 +144,53 @@ export const CreateConnection = () => {
     await trigger(fieldName)
   }
 
+  const stepTitles = ['Finished', 'In Progress', 'Waiting']
+
+  const items = useMemo(() => [
+    {
+      description: '选择平台',
+    },
+    {
+      description: '创建连接',
+    },
+    {
+      description: '创建账号',
+    },
+  ].map((item, index) => ({
+    ...item,
+    title: stepTitles[Math.min(index, activeStep)],
+  })), [activeStep])
+
   return (
     <Flex justifyContent="center">
       <div>
-        <Typography
-          variant="h3"
-          gutterBottom
-          textAlign="center"
-          marginBottom="8px"
+        <Title
+          level={3}
+          style={{
+            textAlign: 'center',
+            marginBottom: 16,
+          }}
         >
           创建连接
-        </Typography>
+        </Title>
         <Typography
-          variant="h5"
-          gutterBottom
-          textAlign="center"
-          marginBottom="40px"
+          style={{
+            textAlign: 'center',
+            marginBottom: '40px',
+          }}
         >
           创建一个新连接来发送消息
         </Typography>
-        <Card sx={{
-          padding: '32px 16px',
+        <Card style={{
           width: '40vw',
           minWidth: 600,
         }}
         >
-          <Stepper
-            alternativeLabel
-            activeStep={activeStep}
-            connector={<ColorlibConnector />}
-          >
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel
-                  slots={{
-                    stepIcon,
-                  }}
-                >
-                  {label}
-                </StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+          <Steps
+            current={1}
+            percent={60}
+            items={items}
+          />
           <Flex
             justifyContent="center"
             style={{
@@ -222,15 +199,15 @@ export const CreateConnection = () => {
             }}
           >
             <div>
-              <Typography
-                textAlign="center"
-                variant="h4"
+              <Title
+                level={4}
                 style={{
+                  textAlign: 'center',
                   padding: 16,
                 }}
               >
                 {steps[activeStep]}
-              </Typography>
+              </Title>
               {
                 activeStep === 0 && (
                   <Step1
