@@ -73,7 +73,7 @@ export const Account = React.memo(() => {
         <Flex gap="8px">
           {record?.name || record?.name || ''}
           {
-            record?.is_expired && (
+            record?.status === 'EXPIRED' && (
               <Tooltip
                 placement="right"
                 title={(

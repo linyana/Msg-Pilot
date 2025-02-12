@@ -1,8 +1,8 @@
 .hover-item {
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.1s;
 }
 
 .hover-item:hover {
-  background-color: #f5f5f5;
+  background-color: #ecebeb;
 }

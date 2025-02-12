@@ -1,8 +1,8 @@
 export type IAccountType = {
+  status: string
   id: string
   name?: string
   description?: string
   cookie?: string
-  is_expired?: boolean
   expired_at?: string
 }

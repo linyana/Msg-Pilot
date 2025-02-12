@@ -48,8 +48,8 @@ export class RedTaskService extends BaseTaskService {
             id: account_id,
           },
           data: {
-            is_expired: true,
-            expired_at: new Date(),
+            last_expired_at: new Date(),
+            status: 'EXPIRED',
           },
         });
         throw new BadRequestException('账号授权已过期');
@@ -178,7 +178,10 @@ export class RedTaskService extends BaseTaskService {
       if (!account.cookie) {
         await this.prisma.accounts.update({
           where: { id: account_id },
-          data: { is_expired: true, expired_at: new Date() },
+          data: {
+            last_expired_at: new Date(),
+            status: 'EXPIRED',
+          },
         });
         throw new BadRequestException('无法找到Cookie');
       }
@@ -192,8 +195,6 @@ export class RedTaskService extends BaseTaskService {
         await page.setCookie(cookie);
       }
 
-      await this.taskUtilService.updateTaskStatus({ task_id, status: 'RUNNING' });
-
       const response = await page.goto(this.url, { waitUntil: 'domcontentloaded' });
       if (!response) throw new BadRequestException('创建浏览器失败');
 
@@ -201,12 +202,20 @@ export class RedTaskService extends BaseTaskService {
       if (hasLoginButton) {
         await this.prisma.accounts.update({
           where: { id: account_id },
-          data: { is_expired: true, expired_at: new Date() },
+          data: {
+            last_expired_at: new Date(),
+            status: 'EXPIRED',
+          },
         });
         throw new BadRequestException('账号授权已过期');
       }
 
       const filter = (task.data as ITaskDataType)?.filter[0];
+
+      await this.prisma.accounts.update({
+        where: { id: account_id },
+        data: { status: 'ACTIVE' },
+      });
 
       await Type({
         page,
