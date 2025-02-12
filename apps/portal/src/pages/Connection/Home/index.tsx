@@ -3,21 +3,13 @@ import {
   useState,
 } from 'react'
 import {
-  Avatar,
-  Divider,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
-} from '@mui/material'
-import StoreIcon from '@mui/icons-material/Store'
-import {
   useNavigate,
 } from 'react-router-dom'
 import {
   useDispatch,
 } from 'react-redux'
 import {
+  Avatar,
   Button,
   Card,
   Empty,
@@ -45,6 +37,7 @@ import {
   updateToken,
   useAppSelector,
 } from '@/store'
+import './index.css'
 
 const {
   Title,
@@ -137,11 +130,16 @@ export const Connections = () => {
         >
           管理你的所有连接器
         </Typography>
-        <Card style={{
-          padding: 0,
-          width: '40vw',
-          minWidth: 600,
-        }}
+        <Card
+          style={{
+            width: '40vw',
+            minWidth: 600,
+          }}
+          styles={{
+            body: {
+              padding: 0,
+            },
+          }}
         >
           <Loading
             loading={loading || chooseLoading}
@@ -156,36 +154,36 @@ export const Connections = () => {
               itemLayout="horizontal"
               dataSource={connections}
               renderItem={(connection) => (
-                <List.Item onClick={() => {
-                  setSelectedConnection(Number(connection.id))
-                }}
+                <List.Item
+                  className="hover-item"
+                  style={{
+                    padding: '16px 24px',
+                  }}
+                  onClick={() => {
+                    setSelectedConnection(Number(connection.id))
+                  }}
                 >
                   <List.Item.Meta
                     avatar={<Avatar src={CONNECTION_INFO[connection.type]?.logo} />}
-                    title={<a href="https://ant.design">{connection.name}</a>}
+                    title={connection.name}
                     description={connection.description || '暂时没有描述'}
                   />
                 </List.Item>
               )}
             />
-            <div style={{
-              marginTop: 32,
-            }}
+            <Button
+              style={{
+                width: '100%',
+              }}
+              type="primary"
+              onClick={() => {
+                navigate('/create-connection')
+              }}
             >
-              <Button
-                style={{
-                  width: '100%',
-                }}
-                type="primary"
-                onClick={() => {
-                  navigate('/create-connection')
-                }}
-              >
-                {
-                  !connections.length ? '创建你的第一个连接' : '创建一个新连接'
-                }
-              </Button>
-            </div>
+              {
+                !connections.length ? '创建你的第一个连接' : '创建一个新连接'
+              }
+            </Button>
           </Loading>
         </Card>
       </div>
