@@ -41,6 +41,6 @@ export const theme: ThemeConfig = {
     },
   },
   token: {
-    colorPrimary: 'var(--main-bg-color)',
+    colorPrimary: '#3cb96c',
   },
 }

@@ -1,62 +1,35 @@
 import {
-  TextField,
-} from '@mui/material'
-import {
-  Controller,
-} from 'react-hook-form'
+  Form,
+  Input,
+} from 'antd'
 
-type IPropsType = {
-  control: any
-  errors: any
-  handleChange: any
-}
+const {
+  TextArea,
+} = Input
 
-export const Step2 = ({
-  control,
-  errors,
-  handleChange,
-}: IPropsType) => (
+export const Step2 = () => (
   <>
-    <Controller
-      name="name"
-      control={control}
-      rules={{
-        required: 'Name is required',
-      }}
-      render={({
-        field,
-      }) => (
-        <TextField
-          {...field}
-          fullWidth
-          label="连接名"
-          margin="normal"
-          required
-          size="small"
-          error={!!errors.name}
-          onChange={(e) => handleChange(e, 'name')}
-          helperText={errors.name ? errors.name.message as string : ''}
-        />
-      )}
-    />
-    <Controller
-      name="description"
-      control={control}
-      render={({
-        field,
-      }) => (
-        <TextField
-          {...field}
-          fullWidth
-          label="描述"
-          margin="normal"
-          multiline
-          rows={4}
-          size="small"
-          error={!!errors.description}
-          helperText={errors.description ? errors.description.message as string : ''}
-        />
-      )}
-    />
+    <Form.Item
+      label="连接名"
+      name="connection_name"
+      rules={[{
+        required: true,
+        message: '连接名不能为空, 且需要在1到100位之间',
+        max: 100,
+        min: 1,
+      }]}
+    >
+      <Input
+        placeholder="输入你的连接名"
+      />
+    </Form.Item>
+    <Form.Item
+      label="描述"
+      name="connection_description"
+    >
+      <TextArea
+        placeholder="输入描述"
+      />
+    </Form.Item>
   </>
 )
