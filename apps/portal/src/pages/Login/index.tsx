@@ -68,9 +68,22 @@ export const Login = () => {
     }
 
     if (token && response) {
+      message.success({
+        key: 'login',
+        content: '欢迎回来',
+      })
       navigate('/connections')
     }
   }, [data?.data, token])
+
+  useEffect(() => {
+    if (loading) {
+      message.loading({
+        key: 'login',
+        content: '登录中...',
+      })
+    }
+  }, [loading])
 
   const onSubmit = () => {
     form.submit()
@@ -78,7 +91,10 @@ export const Login = () => {
 
   useEffect(() => {
     if (error) {
-      message.error(error)
+      message.error({
+        key: 'login',
+        content: error,
+      })
     }
   }, [error])
 

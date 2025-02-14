@@ -25,7 +25,7 @@ export type ICreateConnectionType = {
 }
 
 export type ICreateConnectionFormType = {
-  name: string;
+  connection_name: string;
   description: string;
   account_name: string;
   account_cookie: string;

@@ -1,38 +1,28 @@
 import {
-  Button,
-  Card,
-  FormControl,
-  MobileStepper,
-  Step,
-  StepIconProps,
-  StepLabel,
-  Stepper,
-  Typography,
-} from '@mui/material'
-import StoreIcon from '@mui/icons-material/Store'
-import BadgeIcon from '@mui/icons-material/Badge'
-import SettingsIcon from '@mui/icons-material/Settings'
-import {
   useEffect,
+  useMemo,
   useState,
 } from 'react'
-import {
-  KeyboardArrowLeft,
-  KeyboardArrowRight,
-} from '@mui/icons-material'
-import {
-  useForm,
-} from 'react-hook-form'
-import {
-  LoadingButton,
-} from '@mui/lab'
 import {
   useNavigate,
 } from 'react-router-dom'
 import {
-  ColorlibConnector,
-  ColorlibStepIconRoot,
-} from './styled'
+  Card,
+  Steps,
+  Typography,
+  Button,
+  Progress,
+  Form,
+  FormProps,
+} from 'antd'
+import {
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
+  LoadingOutlined,
+  ShopOutlined,
+  ApiOutlined,
+  TeamOutlined,
+} from '@ant-design/icons'
 import {
   Flex,
 } from '@/components'
@@ -57,49 +47,33 @@ import {
   useCreateConnection,
 } from '@/services'
 
-const stepIcon = (props: StepIconProps) => {
-  const {
-    active,
-    completed,
-    className,
-  } = props
-
-  const icons: { [index: string]: React.ReactElement<unknown> } = {
-    1: <StoreIcon />,
-    2: <BadgeIcon />,
-    3: <SettingsIcon />,
-  }
-
-  return (
-    <ColorlibStepIconRoot
-      ownerState={{
-        completed, active,
-      }}
-      className={className}
-    >
-      {icons[String(props.icon)]}
-    </ColorlibStepIconRoot>
-  )
-}
+const {
+  Title,
+} = Typography
 
 export const CreateConnection = () => {
   const [formData, setFormData] = useState<ICreateConnectionType>()
   const [activeStep, setActiveStep] = useState(0)
   const [selectedPlatform, setSelectedPlatform] = useState<CONNECTION_TYPE>()
-  const steps = ['平台选择', '连接信息', '账号设置']
+  const steps = [
+    {
+      description: '平台选择',
+      icon: <ShopOutlined />,
+    },
+    {
+      description: '连接信息',
+      icon: <ApiOutlined />,
+    },
+    {
+      description: '账号设置',
+      icon: <TeamOutlined />,
+    },
+  ]
+
+  const [form] = Form.useForm()
 
   const message = useMessage()
   const navigate = useNavigate()
-
-  const {
-    control,
-    handleSubmit,
-    trigger,
-    setValue,
-    formState: {
-      errors,
-    },
-  } = useForm<ICreateConnectionFormType>()
 
   const {
     data,
@@ -111,18 +85,18 @@ export const CreateConnection = () => {
   const handleNext = async () => {
     if (activeStep === 0) {
       if (!selectedPlatform) {
-        message.warning('请先选择一个平台')
+        message.warning({
+          content: '请先选择一个平台',
+        })
       } else if (selectedPlatform === 'TikTok') {
-        message.warning('TikTok暂不开放')
+        message.warning({
+          content: 'TikTok暂不开放',
+        })
       } else {
         setActiveStep((prevActiveStep) => prevActiveStep + 1)
       }
-    } else if (activeStep === 1) {
-      if (!await trigger('name')) {
-        message.warning('连接名是必填项')
-      } else {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1)
-      }
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1)
     }
   }
 
@@ -130,10 +104,14 @@ export const CreateConnection = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
 
-  const onSubmit = (data: ICreateConnectionFormType) => {
+  const onSubmit = () => {
+    form.submit()
+  }
+
+  const onFinish: FormProps<ICreateConnectionFormType>['onFinish'] = (data) => {
     setFormData({
       connection: {
-        name: data.name,
+        name: data.connection_name,
         description: data.description,
       },
       account: {
@@ -145,6 +123,10 @@ export const CreateConnection = () => {
     })
   }
 
+  const onFinishFailed = (error: any) => {
+    message.error(error.errorFields.map((item: any) => item.errors[0]).join(','))
+  }
+
   useEffect(() => {
     if (formData) {
       fetchData?.()
@@ -153,7 +135,9 @@ export const CreateConnection = () => {
 
   useEffect(() => {
     if (data?.data) {
-      message.success('连接创建成功')
+      message.success({
+        content: '连接创建成功',
+      })
       navigate('/connections')
     }
   }, [data?.data])
@@ -164,56 +148,41 @@ export const CreateConnection = () => {
     }
   }, [error])
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: any) => {
-    const {
-      value,
-    } = e.target
-    setValue(fieldName, value)
-    await trigger(fieldName)
-  }
+  const items = useMemo(() =>
+    steps.map((item, index) => ({
+      title: item.description,
+      icon: index === activeStep ? <LoadingOutlined /> : item.icon,
+    })), [activeStep, steps])
 
   return (
     <Flex justifyContent="center">
       <div>
-        <Typography
-          variant="h3"
-          gutterBottom
-          textAlign="center"
-          marginBottom="8px"
+        <Title
+          level={3}
+          style={{
+            textAlign: 'center',
+            marginBottom: 16,
+          }}
         >
           创建连接
-        </Typography>
+        </Title>
         <Typography
-          variant="h5"
-          gutterBottom
-          textAlign="center"
-          marginBottom="40px"
+          style={{
+            textAlign: 'center',
+            marginBottom: '40px',
+          }}
         >
           创建一个新连接来发送消息
         </Typography>
-        <Card sx={{
-          padding: '32px 16px',
+        <Card style={{
           width: '40vw',
           minWidth: 600,
         }}
         >
-          <Stepper
-            alternativeLabel
-            activeStep={activeStep}
-            connector={<ColorlibConnector />}
-          >
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel
-                  slots={{
-                    stepIcon,
-                  }}
-                >
-                  {label}
-                </StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+          <Steps
+            current={activeStep}
+            items={items}
+          />
           <Flex
             justifyContent="center"
             style={{
@@ -221,16 +190,19 @@ export const CreateConnection = () => {
               width: '100%',
             }}
           >
-            <div>
-              <Typography
-                textAlign="center"
-                variant="h4"
+            <div style={{
+              width: '80%',
+            }}
+            >
+              <Title
+                level={4}
                 style={{
+                  textAlign: 'center',
                   padding: 16,
                 }}
               >
-                {steps[activeStep]}
-              </Typography>
+                {steps[activeStep].description}
+              </Title>
               {
                 activeStep === 0 && (
                   <Step1
@@ -239,106 +211,94 @@ export const CreateConnection = () => {
                   />
                 )
               }
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                style={{
-                  width: '400px',
-                }}
+              <Form
+                layout="vertical"
+                form={form}
+                autoComplete="off"
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
               >
-                <FormControl fullWidth>
-                  {
-                    activeStep === 1 && (
-                      <Step2
-                        control={control}
-                        errors={errors}
-                        handleChange={handleChange}
-                      />
-                    )
-                  }
-                  {
-                    activeStep === 2 && (
-                      <Step3
-                        control={control}
-                        errors={errors}
-                      />
-                    )
-                  }
-                </FormControl>
-              </form>
+                <div style={{
+                  display: activeStep === 1 ? 'block' : 'none',
+                }}
+                >
+                  <Step2 />
+                </div>
+                <div style={{
+                  display: activeStep === 2 ? 'block' : 'none',
+                }}
+                >
+                  <Step3 />
+                </div>
+              </Form>
             </div>
           </Flex>
           <Flex
             justifyContent="center"
+            alignItems="center"
             style={{
               marginTop: 32,
             }}
+            gap="16px"
           >
-            <MobileStepper
-              variant="progress"
-              steps={steps.length}
-              position="static"
-              activeStep={activeStep}
-              sx={{
-                maxWidth: '70%',
-                flexGrow: 1,
-                padding: 0,
-              }}
-              nextButton={(
-                <>
-                  {
-                    activeStep === steps.length - 1
-                      ? (
-                        <LoadingButton
-                          size="small"
-                          onClick={handleSubmit(onSubmit)}
-                          type="submit"
-                          loading={loading}
-                        >
-                          提交
-                          <KeyboardArrowRight />
-                        </LoadingButton>
-                      ) : (
-                        <Button
-                          size="small"
-                          onClick={handleNext}
-                          disabled={activeStep === steps.length - 1}
-                        >
-                          下一步
-                          <KeyboardArrowRight />
-                        </Button>
-                      )
-                  }
-                </>
-              )}
-              backButton={(
-                <>
-                  {
-                    activeStep
-                      ? (
-                        <Button
-                          size="small"
-                          onClick={handleBack}
-                          disabled={loading}
-                        >
-                          <KeyboardArrowLeft />
-                          返回
-                        </Button>
-                      )
-                      : (
-                        <Button
-                          size="small"
-                          onClick={() => {
-                            navigate('/connections')
-                          }}
-                        >
-                          <KeyboardArrowLeft />
-                          返回连接列表
-                        </Button>
-                      )
-                  }
-                </>
-              )}
+            <div>
+              {
+                activeStep
+                  ? (
+                    <Button
+                      icon={<ArrowLeftOutlined />}
+                      onClick={handleBack}
+                      disabled={loading}
+                      type="text"
+                    >
+                      返回
+                    </Button>
+                  )
+                  : (
+                    <Button
+                      onClick={() => {
+                        navigate('/connections')
+                      }}
+                      icon={<ArrowLeftOutlined />}
+                      type="text"
+                    >
+                      返回连接列表
+                    </Button>
+                  )
+              }
+            </div>
+            <Progress
+              percent={(activeStep / (steps.length - 1)) * 100}
+              size="small"
+              showInfo={false}
+              strokeColor="var(--main-bg-color)"
             />
+            <div>
+              {
+                activeStep === steps.length - 1
+                  ? (
+                    <Button
+                      onClick={onSubmit}
+                      loading={loading}
+                      icon={<ArrowRightOutlined />}
+                      type="text"
+                      iconPosition="end"
+                    >
+                      提交
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleNext}
+                      disabled={activeStep === steps.length - 1}
+                      icon={<ArrowRightOutlined />}
+                      iconPosition="end"
+                      type="text"
+                    >
+                      下一步
+                    </Button>
+                  )
+              }
+            </div>
           </Flex>
         </Card>
       </div>

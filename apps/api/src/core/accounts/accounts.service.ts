@@ -49,7 +49,7 @@ export class AccountsService {
         name,
         cookie,
         description,
-        is_expired: false,
+        status: existTikAccount.status === 'UNUSED' ? 'UNUSED' : 'UPDATED',
       },
     });
   }

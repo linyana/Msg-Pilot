@@ -47,8 +47,8 @@ enum CONNECTION_TYPE {
 }
 
 model connections {
-  id      BigInt @id @default(autoincrement())
-  unit_id String @unique @default(cuid())
+  id            BigInt          @id @default(autoincrement())
+  unit_id       String          @unique @default(cuid())
   created_at    DateTime        @default(now()) @db.Timestamptz(6)
   updated_at    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
   name          String          @db.VarChar(255)
@@ -64,6 +64,7 @@ model connections {
 
 enum ACCOUNT_STATUS {
   UNUSED
+  UPDATED
   ACTIVE
   EXPIRED
   DISABLED
@@ -71,22 +72,21 @@ enum ACCOUNT_STATUS {
 }
 
 model accounts {
-  id            BigInt          @id @default(autoincrement())
-  unit_id       String          @unique @default(cuid())
-  created_at    DateTime        @default(now()) @db.Timestamptz(6)
-  updated_at    DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
-  name          String          @db.VarChar(255)
-  cookie        String?
-  description   String?
-  status        ACCOUNT_STATUS  @default(UNUSED)
-  is_expired    Boolean         @default(false)
-  expired_at    DateTime?
-  connection_id BigInt
-  tenant_id     BigInt
-  connection    connections     @relation(fields: [connection_id], references: [id])
-  tenant        tenants         @relation(fields: [tenant_id], references: [id])
-  task_accounts task_accounts[]
-  messages      messages[]
+  id              BigInt          @id @default(autoincrement())
+  unit_id         String          @unique @default(cuid())
+  created_at      DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  name            String          @db.VarChar(255)
+  cookie          String?
+  description     String?
+  status          ACCOUNT_STATUS  @default(UNUSED)
+  last_expired_at DateTime?
+  connection_id   BigInt
+  tenant_id       BigInt
+  connection      connections     @relation(fields: [connection_id], references: [id])
+  tenant          tenants         @relation(fields: [tenant_id], references: [id])
+  task_accounts   task_accounts[]
+  messages        messages[]
 }
 
 enum TASK_STATUS {

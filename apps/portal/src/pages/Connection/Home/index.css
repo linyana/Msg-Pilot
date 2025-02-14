@@ -1,0 +1,8 @@
+.hover-item {
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+
+.hover-item:hover {
+  background-color: #ecebeb;
+}

@@ -45,7 +45,9 @@ export const AccountSelector = () => {
 
   useEffect(() => {
     if (error) {
-      message.error(error)
+      message.error({
+        content: error,
+      })
     }
   }, [error])
 

@@ -1,72 +1,42 @@
 import {
-  TextField,
-} from '@mui/material'
-import {
-  Controller,
-} from 'react-hook-form'
+  Form,
+  Input,
+} from 'antd'
 
-type IPropsType = {
-  control: any
-  errors: any
-}
+const {
+  TextArea,
+} = Input
 
-export const Step3 = ({
-  control,
-  errors,
-}: IPropsType) => (
+export const Step3 = () => (
   <>
-    <Controller
+    <Form.Item
+      label="账号名"
       name="account_name"
-      control={control}
-      render={({
-        field,
-      }) => (
-        <TextField
-          {...field}
-          fullWidth
-          label="账号名"
-          margin="normal"
-          size="small"
-          error={!!errors.account_name}
-          helperText={errors.account_name ? errors.account_name.message as string : ''}
-        />
-      )}
-    />
-    <Controller
+      rules={[{
+        message: '连接名需要在1到16位',
+        max: 100,
+        min: 1,
+      }]}
+    >
+      <Input
+        placeholder="输入你的账号名"
+      />
+    </Form.Item>
+    <Form.Item
+      label="Cookie"
       name="account_cookie"
-      control={control}
-      render={({
-        field,
-      }) => (
-        <TextField
-          {...field}
-          fullWidth
-          label="Cookie"
-          margin="normal"
-          size="small"
-          error={!!errors.account_cookie}
-          helperText={errors.account_cookie ? errors.account_cookie.message as string : ''}
-        />
-      )}
-    />
-    <Controller
-      name="account_description"
-      control={control}
-      render={({
-        field,
-      }) => (
-        <TextField
-          {...field}
-          fullWidth
-          label="描述"
-          margin="normal"
-          multiline
-          rows={4}
-          size="small"
-          error={!!errors.account_description}
-          helperText={errors.account_description ? errors.account_description.message as string : ''}
-        />
-      )}
-    />
+    >
+      <Input
+        placeholder="输入你账号的Cookie"
+      />
+    </Form.Item>
+    <Form.Item
+      label="描述"
+      name="connection_description"
+    >
+      <TextArea
+        placeholder="输入描述"
+      />
+    </Form.Item>
   </>
 )

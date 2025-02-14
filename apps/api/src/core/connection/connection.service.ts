@@ -37,6 +37,7 @@ export class ConnectionService {
         data: {
           name: account.name?.trim(),
           description: account.description,
+          cookie: account.cookie,
           tenant_id,
           connection_id: Number(newConnection.id),
         },

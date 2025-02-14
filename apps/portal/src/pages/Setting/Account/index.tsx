@@ -56,7 +56,9 @@ export const Account = React.memo(() => {
 
   useEffect(() => {
     if (error) {
-      message.error(error)
+      message.error({
+        content: error,
+      })
     }
   }, [error])
 
@@ -73,7 +75,7 @@ export const Account = React.memo(() => {
         <Flex gap="8px">
           {record?.name || record?.name || ''}
           {
-            record?.is_expired && (
+            record?.status === 'EXPIRED' && (
               <Tooltip
                 placement="right"
                 title={(
