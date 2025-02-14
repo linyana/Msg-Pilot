@@ -78,7 +78,9 @@ export const Connections = () => {
 
   useEffect(() => {
     if (chooseError) {
-      message.error(chooseError)
+      message.error({
+        content: chooseError,
+      })
       setSelectedConnection(0)
     }
   }, [chooseError])
@@ -106,7 +108,9 @@ export const Connections = () => {
 
   useEffect(() => {
     if (error) {
-      message.error(error)
+      message.error({
+        content: error,
+      })
     }
   }, [error])
 

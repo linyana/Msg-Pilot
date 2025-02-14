@@ -56,7 +56,9 @@ export const Account = React.memo(() => {
 
   useEffect(() => {
     if (error) {
-      message.error(error)
+      message.error({
+        content: error,
+      })
     }
   }, [error])
 

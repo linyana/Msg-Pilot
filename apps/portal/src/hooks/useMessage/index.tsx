@@ -7,14 +7,18 @@ import {
   message,
 } from 'antd'
 
-type MessageType = 'success' | 'error' | 'info' | 'warning';
+type MESSAGE_TYPE = 'success' | 'error' | 'info' | 'warning' | 'loading';
+type IMessageType = {
+  content: React.ReactNode
+  key?: string
+} | string
 
 interface MessageApiContextType {
-  showMessage: (type: MessageType, content: React.ReactNode) => void;
-  success: (content: React.ReactNode) => void;
-  error: (content: React.ReactNode) => void;
-  info: (content: React.ReactNode) => void;
-  warning: (content: React.ReactNode) => void;
+  success: (params: IMessageType) => void;
+  error: (params: IMessageType) => void;
+  info: (params: IMessageType) => void;
+  warning: (params: IMessageType) => void;
+  loading: (params: IMessageType) => void;
 }
 
 const MessageApiContext = createContext<MessageApiContextType | null>(null)
@@ -22,37 +26,35 @@ const MessageApiContext = createContext<MessageApiContextType | null>(null)
 export const MessageApiProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const showMessage = (type: MessageType, content: React.ReactNode) => {
-    switch (type) {
-      case 'success':
-        message.success(content)
-        break
-      case 'error':
-        message.error(content)
-        break
-      case 'info':
-        message.info(content)
-        break
-      case 'warning':
-        message.warning(content)
-        break
-      default:
-        break
-    }
+  const [messageApi, contextHolder] = message.useMessage()
+
+  const showMessage = (type: MESSAGE_TYPE, params: IMessageType) => {
+    messageApi.open(typeof params === 'string' ? {
+      content: params,
+    } : {
+      type,
+      duration: type === 'loading' ? 0 : 3,
+      ...params,
+    })
   }
 
   const api = useMemo(
     () => ({
-      showMessage,
-      success: (content: React.ReactNode) => showMessage('success', content),
-      error: (content: React.ReactNode) => showMessage('error', content),
-      info: (content: React.ReactNode) => showMessage('info', content),
-      warning: (content: React.ReactNode) => showMessage('warning', content),
+      success: (params: IMessageType) => showMessage('success', params),
+      error: (params: IMessageType) => showMessage('error', params),
+      info: (params: IMessageType) => showMessage('info', params),
+      warning: (params: IMessageType) => showMessage('warning', params),
+      loading: (params: IMessageType) => showMessage('loading', params),
     }),
-    [],
+    [messageApi],
   )
 
-  return <MessageApiContext.Provider value={api}>{children}</MessageApiContext.Provider>
+  return (
+    <MessageApiContext.Provider value={api}>
+      {contextHolder}
+      {children}
+    </MessageApiContext.Provider>
+  )
 }
 
 export const useMessage = () => {

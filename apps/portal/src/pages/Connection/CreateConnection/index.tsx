@@ -85,9 +85,13 @@ export const CreateConnection = () => {
   const handleNext = async () => {
     if (activeStep === 0) {
       if (!selectedPlatform) {
-        message.warning('请先选择一个平台')
+        message.warning({
+          content: '请先选择一个平台',
+        })
       } else if (selectedPlatform === 'TikTok') {
-        message.warning('TikTok暂不开放')
+        message.warning({
+          content: 'TikTok暂不开放',
+        })
       } else {
         setActiveStep((prevActiveStep) => prevActiveStep + 1)
       }
@@ -131,7 +135,9 @@ export const CreateConnection = () => {
 
   useEffect(() => {
     if (data?.data) {
-      message.success('连接创建成功')
+      message.success({
+        content: '连接创建成功',
+      })
       navigate('/connections')
     }
   }, [data?.data])
