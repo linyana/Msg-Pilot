@@ -68,6 +68,7 @@ export const Login = () => {
     }
 
     if (token && response) {
+      message.success('欢迎回来')
       navigate('/connections')
     }
   }, [data?.data, token])

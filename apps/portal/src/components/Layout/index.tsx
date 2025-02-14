@@ -157,7 +157,7 @@ export const Layout = ({
           }}
           >
             {
-              currentRoute?.isNoConnection ? null : (
+              !currentRoute?.isNoConnection && (
                 <Sider
                   trigger={null}
                   collapsible
@@ -187,16 +187,18 @@ export const Layout = ({
                   justifyContent="space-between"
                   alignItems="center"
                 >
-                  <Button
-                    type="text"
-                    icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                    onClick={() => setCollapsed(!collapsed)}
-                    style={{
-                      fontSize: '16px',
-                      width: 64,
-                      height: 64,
-                    }}
-                  />
+                  {!currentRoute?.isNoConnection && (
+                    <Button
+                      type="text"
+                      icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                      onClick={() => setCollapsed(!collapsed)}
+                      style={{
+                        fontSize: '16px',
+                        width: 64,
+                        height: 64,
+                      }}
+                    />
+                  )}
                   <Space size="large">
                     <Dropdown
                       menu={{
