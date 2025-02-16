@@ -57,7 +57,7 @@ export const TaskAction = ({
         <Button
           loading={loading}
           onClick={() => {
-            navigate(`/tasks/${record.id}`)
+            navigate(`/tasks/${record.unit_id}`)
           }}
         >
           查看详情

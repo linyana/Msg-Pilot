@@ -14,6 +14,7 @@ export * from './destribution_rule'
 
 export type ITaskType = {
   id: string
+  unit_id: string
   created_at: number
   updated_at: number
   name?: string

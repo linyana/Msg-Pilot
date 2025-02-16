@@ -22,7 +22,7 @@ export interface UseHttpState<T> {
   error: string | null
   data: T | null
   code: number | null
-  fetchData?: () => void
+  fetchData: () => void
 }
 
 export const useHttp = <T, >({
