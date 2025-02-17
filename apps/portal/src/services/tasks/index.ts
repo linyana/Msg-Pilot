@@ -1,6 +1,6 @@
 import {
   useHttp,
-} from '@msg-pilot/hooks'
+} from '@/hooks'
 import {
   ICreateTaskType,
   ITaskType,
@@ -14,6 +14,14 @@ export const useGetTasks = () => useHttp<{
   meta: IMetaType
 }>({
   url: '/tasks',
+  method: 'get',
+})
+
+export const useGetTask = (id: string) => useHttp<{
+  data: ITaskType,
+  meta: IMetaType
+}>({
+  url: `/tasks/${id}`,
   method: 'get',
 })
 

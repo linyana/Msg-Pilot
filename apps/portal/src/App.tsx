@@ -14,7 +14,7 @@ import {
 } from 'react-i18next'
 import {
   ConfigProvider,
-} from '@msg-pilot/hooks'
+} from '@/hooks'
 import {
   IRouteType,
   routes,
@@ -29,7 +29,6 @@ import i18n from './lang'
 import {
   AntdThemeProvider,
   AuthProvider,
-  MUIThemeProvider,
 } from './provider'
 import {
   MessageApiProvider,
@@ -83,26 +82,24 @@ export default () => {
     <I18nextProvider i18n={i18n}>
       <ConfigProvider config={config}>
         <MessageApiProvider>
-          <MUIThemeProvider>
-            <AntdThemeProvider>
-              <AuthProvider currentRoute={currentRoute}>
-                <Layout
-                  routes={routes}
-                  currentRoute={currentRoute}
-                >
-                  <Routes>
-                    {flattenedRoutes.map((route) => (
-                      <Route
-                        key={route.id}
-                        path={route.path}
-                        element={token || route.isPublic ? route.element : <Navigate to="/login" />}
-                      />
-                    ))}
-                  </Routes>
-                </Layout>
-              </AuthProvider>
-            </AntdThemeProvider>
-          </MUIThemeProvider>
+          <AntdThemeProvider>
+            <AuthProvider currentRoute={currentRoute}>
+              <Layout
+                routes={routes}
+                currentRoute={currentRoute}
+              >
+                <Routes>
+                  {flattenedRoutes.map((route) => (
+                    <Route
+                      key={route.id}
+                      path={route.path}
+                      element={token || route.isPublic ? route.element : <Navigate to="/login" />}
+                    />
+                  ))}
+                </Routes>
+              </Layout>
+            </AuthProvider>
+          </AntdThemeProvider>
         </MessageApiProvider>
       </ConfigProvider>
     </I18nextProvider>

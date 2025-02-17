@@ -25,4 +25,9 @@ export class TasksController {
   retry(@Req('connection_id') connection_id: number, @Param() { id }: { id: number }) {
     return this.tasksService.retry(connection_id, Number(id));
   }
+
+  @Get(':id')
+  getOneTask(@Req('connection_id') connection_id: number, @Param() { id }: { id: string }) {
+    return this.tasksService.getOneTask(connection_id, id);
+  }
 }
