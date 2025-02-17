@@ -25,6 +25,10 @@ export interface UseHttpState<T> {
   fetchData: () => void
 }
 
+const initFetchData = () => {
+  window.console.log('Fetch data Failed')
+}
+
 export const useHttp = <T, >({
   url,
   method = 'get',
@@ -42,6 +46,7 @@ export const useHttp = <T, >({
     error: null,
     data: null,
     code: null,
+    fetchData: initFetchData,
   })
 
   const fetchData = async () => {
@@ -71,6 +76,7 @@ export const useHttp = <T, >({
         error: null,
         code: 200,
         data: response.data,
+        fetchData: initFetchData,
       })
     } catch (error: any) {
       let errorMessage = ''
@@ -91,6 +97,7 @@ export const useHttp = <T, >({
         error: errorMessage || 'Unknown error',
         code: error?.response?.status,
         data: null,
+        fetchData: initFetchData,
       })
       httpStrategy[error?.response?.status]?.()
     }

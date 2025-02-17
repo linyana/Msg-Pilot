@@ -3,15 +3,15 @@ import {
   useState,
 } from 'react'
 import {
-  Button,
-  Typography,
-} from '@mui/material'
-import {
   useNavigate,
 } from 'react-router-dom'
 import {
   useDispatch,
 } from 'react-redux'
+import {
+  Button,
+  Typography,
+} from 'antd'
 import {
   useGetInfo,
 } from '@/services'
@@ -33,6 +33,10 @@ type IPropsType = {
   children: React.ReactNode
   currentRoute?: IRouteType
 }
+
+const {
+  Title,
+} = Typography
 
 export const AuthProvider = ({
   children,
@@ -94,22 +98,20 @@ export const AuthProvider = ({
               }}
               alt="error"
             />
-            <Typography
-              variant="h3"
+            <Title
+              level={3}
               style={{
-                marginTop: 32,
+                textAlign: 'center',
+                marginBottom: 16,
               }}
-              textAlign="center"
-              color="error"
             >
               Error
-            </Typography>
+            </Title>
             <Typography
-              variant="h5"
               style={{
-                marginTop: 16,
+                textAlign: 'center',
+                marginBottom: '40px',
               }}
-              textAlign="center"
             >
               {error || token ? 'Please choose a connection first' : 'Please login first'}
             </Typography>
@@ -122,7 +124,7 @@ export const AuthProvider = ({
               {
                 error ? (
                   <Button
-                    variant="contained"
+                    type="primary"
                     onClick={() => {
                       fetchData?.()
                     }}
@@ -131,7 +133,7 @@ export const AuthProvider = ({
                   </Button>
                 ) : (
                   <Button
-                    variant="contained"
+                    type="primary"
                     onClick={() => {
                       navigate(token ? '/connections' : '/login')
                     }}

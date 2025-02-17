@@ -1,6 +1,6 @@
 import {
   Typography,
-} from '@mui/material'
+} from 'antd'
 import {
   Flex,
 } from '..'
@@ -37,8 +37,10 @@ export const Empty = ({
     {
       tip && (
       <Typography
-        textAlign="center"
-        marginTop="16px"
+        style={{
+          textAlign: 'center',
+          marginTop: '16px',
+        }}
       >
         {tip}
       </Typography>
