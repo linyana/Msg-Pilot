@@ -52,16 +52,19 @@ export const TaskAction = ({
   }, [error])
 
   return (
-    <Flex>
-      <>
-        <Button
-          loading={loading}
-          onClick={() => {
-            navigate(`/tasks/${record.id}`)
-          }}
-        >
-          查看详情
-        </Button>
+    <Flex
+      justifyContent="center"
+      gap="16px"
+    >
+      <Button
+        loading={loading}
+        onClick={() => {
+          navigate(`/tasks/${record.unit_id}`)
+        }}
+      >
+        查看详情
+      </Button>
+      <div>
         {
           ['FAILED', 'PARTIAL_COMPLETED', 'NOT_START'].includes(record.status) && (
             <Button
@@ -74,7 +77,7 @@ export const TaskAction = ({
             </Button>
           )
         }
-      </>
+      </div>
     </Flex>
   )
 }
