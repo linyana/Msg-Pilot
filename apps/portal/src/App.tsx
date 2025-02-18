@@ -4,6 +4,7 @@ import {
   useNavigate,
   Navigate,
   useLocation,
+  matchPath,
 } from 'react-router-dom'
 import {
   createContext,
@@ -77,7 +78,9 @@ export default () => {
     return flattenRoutes
   }, [routes])
 
-  const currentRoute = flattenedRoutes?.find((route) => route.path === pathname)
+  const currentRoute = flattenedRoutes?.find(
+    (route) => route.path !== '*' && matchPath(route.path || '', pathname),
+  ) || flattenedRoutes?.find((route) => route.path === '*')
 
   return (
     <I18nextProvider i18n={i18n}>

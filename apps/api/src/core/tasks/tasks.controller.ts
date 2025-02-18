@@ -17,8 +17,13 @@ export class TasksController {
   }
 
   @Get()
-  findAllTasks(@Req('connection_id') connection_id: number) {
-    return this.tasksService.findAllTasks(connection_id);
+  getAllTasks(@Req('connection_id') connection_id: number) {
+    return this.tasksService.getAllTasks(connection_id);
+  }
+
+  @Get(':unit_id')
+  async getOneTask(@Req('connection_id') connection_id: number, @Param() { unit_id }: { unit_id: string }) {
+    return this.tasksService.getOneTask(connection_id, unit_id);
   }
 
   @Post(':id')

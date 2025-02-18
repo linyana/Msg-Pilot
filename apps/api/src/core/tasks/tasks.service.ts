@@ -178,11 +178,34 @@ export class TasksService {
     return 'Successfully created';
   }
 
-  findAllTasks(connection_id: number) {
+  getAllTasks(connection_id: number) {
     return this.prisma.tasks.findMany({
       where: {
         connection_id,
       },
     });
+  }
+
+  async getOneTask(connectionId: number, id: string) {
+    const task = await this.prisma.tasks.findUnique({
+      where: {
+        unit_id: id,
+      },
+      select: {
+        task_accounts: {
+          include: {
+            account: true,
+          },
+        },
+        connection_id: true,
+        data: true,
+      },
+    });
+
+    if (!task || Number(task.connection_id) !== connectionId) {
+      throw new BadRequestException('找不到该任务');
+    }
+
+    return task;
   }
 }

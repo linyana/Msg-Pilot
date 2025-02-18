@@ -217,19 +217,21 @@ export class RedTaskService extends BaseTaskService {
         data: { status: 'ACTIVE' },
       });
 
-      await Type({
-        page,
-        content: filter,
-        name: '搜索框',
-        selector: '#search-input',
-      });
+      if (filter !== '') {
+        await Type({
+          page,
+          content: filter,
+          name: '搜索框',
+          selector: '#search-input',
+        });
 
-      await Click({
-        page,
-        name: '搜索按钮',
-        delay: 3,
-        selector: '#global > div.header-container > header > div.input-box > div > div.search-icon',
-      });
+        await Click({
+          page,
+          name: '搜索按钮',
+          delay: 3,
+          selector: '#global > div.header-container > header > div.input-box > div > div.search-icon',
+        });
+      }
 
       const createMessages = async (usersToSend: IRedMessagePlatformDataType[]) => {
         const data: Prisma.messagesCreateManyInput[] = usersToSend.map((item) => ({

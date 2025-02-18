@@ -10,7 +10,7 @@ export class TransformInterceptor implements NestInterceptor {
         (data) =>
           data?.render || {
             status: 200,
-            data: data?.data || data,
+            data: Array.isArray(data?.data) ? data?.data : data,
             meta: {
               message: 'success',
               ...(data?.data && data?.meta),

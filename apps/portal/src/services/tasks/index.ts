@@ -17,6 +17,14 @@ export const useGetTasks = () => useHttp<{
   method: 'get',
 })
 
+export const useGetTask = (unit: string) => useHttp<{
+  data: ITaskType,
+  meta: IMetaType
+}>({
+  url: `/tasks/${unit}`,
+  method: 'get',
+})
+
 export const useCreateTask = (data?: ICreateTaskType) => useHttp<{
   data: any,
   meta: IMetaType
