@@ -1,34 +1,12 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Full Configuration",
+  "exclude": ["node_modules"],
+  "extends": "@msg-pilot/tsconfig/vite.json",
   "compilerOptions": {
-    "composite": false,
-    "declaration": true,
-    "declarationMap": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "inlineSources": false,
-    "isolatedModules": true,
-    "moduleResolution": "node",
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "preserveWatchOutput": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "allowSyntheticDefaultImports": true,
-    "lib": ["ES2015", "DOM", "DOM.Iterable", "ES2020"],
-    "module": "ESNext",
-    "target": "ESNext",
-    "jsx": "react-jsx",
-    "types": ["vite/client"],
-    "resolveJsonModule": true,
-    "noEmit": true,
     "baseUrl": "./",
     "outDir": "dist",
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "exclude": ["node_modules"],
   "include": ["src"]
 }

@@ -1,6 +1,6 @@
 import {
   useHttp,
-} from '@/hooks'
+} from '@msg-pilot/hooks'
 import {
   ILoginType,
   ILoginResponseType,

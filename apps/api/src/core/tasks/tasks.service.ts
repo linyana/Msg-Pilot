@@ -185,18 +185,4 @@ export class TasksService {
       },
     });
   }
-
-  async getOneTask(connectionId: number, id: string) {
-    const task = await this.prisma.tasks.findUnique({
-      where: {
-        unit_id: id,
-      },
-    });
-
-    if (!task || Number(task.connection_id) !== connectionId) {
-      throw new BadRequestException('找不到该任务');
-    }
-
-    return task;
-  }
 }

@@ -65,6 +65,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@msg-pilot/tsconfig": "*",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
