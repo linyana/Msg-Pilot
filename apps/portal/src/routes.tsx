@@ -4,12 +4,10 @@ import {
 import {
   Navigate,
 } from 'react-router-dom'
-import {
-  IdcardOutlined,
-  SettingOutlined,
-  CalendarOutlined,
-  ProductOutlined,
-} from '@ant-design/icons'
+import DashboardIcon from '@mui/icons-material/Dashboard'
+import AssignmentIcon from '@mui/icons-material/Assignment'
+import SettingsIcon from '@mui/icons-material/Settings'
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import {
   Account,
   Connections,
@@ -75,14 +73,14 @@ export const routes: Array<IRouteType> = [
     element: <Dashboard />,
     text: '主页',
     path: '/dashboard',
-    icon: <ProductOutlined />,
+    icon: <DashboardIcon />,
   },
   {
     id: 'tasks',
     element: <Task />,
     text: '任务',
     path: '/tasks',
-    icon: <CalendarOutlined />,
+    icon: <AssignmentIcon />,
     children: [
       {
         id: 'tasks/create-task',
@@ -100,14 +98,14 @@ export const routes: Array<IRouteType> = [
     id: 'settings',
     text: '设置',
     path: '/settings',
-    icon: <SettingOutlined />,
+    icon: <SettingsIcon />,
     children: [
       {
         id: 'settings/account',
         element: <Account />,
         text: '账号',
         path: '/settings/account',
-        icon: <IdcardOutlined />,
+        icon: <AdminPanelSettingsIcon />,
       },
     ],
   },

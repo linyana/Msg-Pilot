@@ -1,6 +1,9 @@
-import styled from 'styled-components'
+import {
+  Box,
+  styled,
+} from '@mui/material'
 
-export const PlatformCard = styled('div')(() => ({
+export const PlatformCard = styled(Box)(() => ({
   width: '160px',
   height: '220px',
   borderRadius: '16px',

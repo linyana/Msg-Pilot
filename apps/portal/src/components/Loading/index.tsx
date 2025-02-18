@@ -1,13 +1,10 @@
 import React from 'react'
 import {
+  CircularProgress,
+} from '@mui/material'
+import {
   createPortal,
 } from 'react-dom'
-import {
-  Spin,
-} from 'antd'
-import {
-  LoadingOutlined,
-} from '@ant-design/icons'
 import {
   Flex,
 } from '../Flex'
@@ -42,12 +39,7 @@ export const Loading = ({
           alignItems="center"
           padding="40px"
         >
-          <Spin
-            indicator={<LoadingOutlined spin />}
-            style={{
-              fontSize: size,
-            }}
-          />
+          <CircularProgress size={size} />
         </Flex>
       </Center>,
       document.body,
@@ -81,12 +73,7 @@ export const Loading = ({
                     }}
                   >
                     {content || (
-                    <Spin
-                      indicator={<LoadingOutlined spin />}
-                      style={{
-                        fontSize: size,
-                      }}
-                    />
+                      <CircularProgress size={size} />
                     )}
                   </div>
                   {children}
@@ -97,12 +84,7 @@ export const Loading = ({
                   alignItems="center"
                   padding="40px"
                 >
-                  <Spin
-                    indicator={<LoadingOutlined spin />}
-                    style={{
-                      fontSize: size,
-                    }}
-                  />
+                  <CircularProgress size={size} />
                 </Flex>
               )
             }

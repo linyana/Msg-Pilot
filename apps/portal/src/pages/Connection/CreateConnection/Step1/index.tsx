@@ -1,7 +1,7 @@
 import {
-  Avatar,
+  Box,
   Typography,
-} from 'antd'
+} from '@mui/material'
 import {
   PlatformCard,
 } from './styled'
@@ -11,9 +11,6 @@ import {
 import {
   CONNECTION_INFO,
 } from '@/constants'
-import {
-  Flex,
-} from '@/components'
 
 type IPropsType = {
   selectedPlatform: CONNECTION_TYPE | undefined,
@@ -62,10 +59,14 @@ export const Step1 = ({
     setSelectedPlatform(platform)
   }
   return (
-    <Flex
-      justifyContent="center"
-      flexWrap="wrap"
-      gap="32px"
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '32px',
+        flexWrap: 'wrap',
+        mt: 4,
+      }}
     >
       {platforms.map((platform) => (
         <PlatformCard
@@ -74,16 +75,18 @@ export const Step1 = ({
           onClick={() => {
             handleSelect(platform.type)
           }}
-          style={{
+          sx={{
             ...(selectedPlatform === platform.type && platform.style),
           }}
         >
-          <Avatar
+          <Box
+            component="img"
             src={platform.logo}
             alt={platform.name}
-            style={{
+            sx={{
               width: '32px',
               height: '32px',
+              mb: 2,
               transition: 'transform 0.3s ease',
               ...(selectedPlatform === platform.type && {
                 transform: 'scale(1.2)',
@@ -91,7 +94,7 @@ export const Step1 = ({
             }}
           />
           <Typography
-            style={{
+            sx={{
               fontWeight: 'bold',
               fontSize: '16px',
               transition: 'color 0.3s ease',
@@ -104,6 +107,6 @@ export const Step1 = ({
           </Typography>
         </PlatformCard>
       ))}
-    </Flex>
+    </Box>
   )
 }
