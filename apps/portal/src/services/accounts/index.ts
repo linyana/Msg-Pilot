@@ -1,6 +1,6 @@
 import {
   useHttp,
-} from '@msg-pilot/hooks'
+} from '@/hooks'
 import {
   IMetaType,
 } from '../types'

@@ -14,7 +14,7 @@ import {
 } from 'react-i18next'
 import {
   ConfigProvider,
-} from '@msg-pilot/hooks'
+} from '@/hooks'
 import {
   IRouteType,
   routes,
