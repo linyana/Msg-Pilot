@@ -26,7 +26,6 @@
     "console": "yarn start -- --watch --entryFile repl"
   },
   "dependencies": {
-    "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/bull": "^10.0.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.3",
