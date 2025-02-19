@@ -104,6 +104,20 @@ export class RedTaskService extends BaseTaskService {
         },
       });
 
+      const captcha = await page.evaluate(() => {
+        return document.querySelector('#red-captcha');
+      });
+
+      if (!captcha) {
+        await this.taskUtilService.updateTaskStatus({
+          task_id,
+          status: 'FAILED',
+          failed_reason: '发送频繁，需要验证',
+        });
+        await browser.close();
+        return;
+      }
+
       for (const message of messages) {
         try {
           await this.handleMessage({
