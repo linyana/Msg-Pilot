@@ -30,7 +30,6 @@ import i18n from './lang'
 import {
   AntdThemeProvider,
   AuthProvider,
-  MUIThemeProvider,
 } from './provider'
 import {
   MessageApiProvider,
@@ -86,7 +85,6 @@ export default () => {
     <I18nextProvider i18n={i18n}>
       <ConfigProvider config={config}>
         <MessageApiProvider>
-          <MUIThemeProvider>
             <AntdThemeProvider>
               <AuthProvider currentRoute={currentRoute}>
                 <Layout
@@ -105,7 +103,6 @@ export default () => {
                 </Layout>
               </AuthProvider>
             </AntdThemeProvider>
-          </MUIThemeProvider>
         </MessageApiProvider>
       </ConfigProvider>
     </I18nextProvider>
