@@ -90,9 +90,10 @@ export class TaskUtilService {
       },
     });
 
-    const messagesCount = await this.prisma.messages.findMany({
+    const messagesCount = await this.prisma.messages.count({
       where: {
         task_id,
+        status: 'COMPLETED',
       },
     });
 
@@ -100,6 +101,9 @@ export class TaskUtilService {
 
     if (Number(messagesCount) < Number(task.expect_count)) {
       status = 'PARTIAL_COMPLETED';
+    }
+    if (!messagesCount) {
+      status = 'FAILED';
     }
 
     await this.prisma.tasks.update({

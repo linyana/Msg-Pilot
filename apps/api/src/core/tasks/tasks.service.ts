@@ -12,7 +12,7 @@ export class TasksService {
     private prisma: PrismaService,
     private redService: RedTaskService,
   ) {
-    // this.init();
+    this.init();
   }
 
   async retry(connection_id: number, task_id: number) {
@@ -20,10 +20,8 @@ export class TasksService {
       where: {
         connection_id,
         id: task_id,
-        NOT: {
-          status: {
-            in: ['COMPLETED', 'RUNNING'],
-          },
+        status: {
+          in: ['RUNNING'],
         },
       },
       include: {
