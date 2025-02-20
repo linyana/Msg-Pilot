@@ -20,8 +20,10 @@ export class TasksService {
       where: {
         connection_id,
         id: task_id,
-        status: {
-          in: ['RUNNING'],
+        NOT: {
+          status: {
+            in: ['COMPLETED', 'RUNNING'],
+          },
         },
       },
       include: {
