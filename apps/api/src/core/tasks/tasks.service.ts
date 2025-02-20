@@ -82,11 +82,11 @@ export class TasksService {
         task_id: Number(task.id),
         account_id: Number(account.id),
       });
-      console.log('end');
-      // await taskService.handleTask({
-      //   task_id: Number(task.id),
-      //   account_id: Number(account.id),
-      // });
+
+      await taskService.handleTask({
+        task_id: Number(task.id),
+        account_id: Number(account.id),
+      });
     }
   }
 
