@@ -104,21 +104,6 @@ export class RedTaskService extends BaseTaskService {
         },
       });
 
-      const captcha = await page.evaluate(() => {
-        return document.querySelector('#red-captcha');
-      });
-
-      if (captcha) {
-        await sleep(10000);
-        await this.taskUtilService.updateTaskStatus({
-          task_id,
-          status: 'FAILED',
-          failed_reason: '发送频繁，需要验证',
-        });
-        await browser.close();
-        return;
-      }
-
       for (const message of messages) {
         try {
           await this.handleMessage({
@@ -398,7 +383,6 @@ export class RedTaskService extends BaseTaskService {
   async sendComment(params: { page: Page; content: string }) {
     const { page, content } = params;
 
-    await sleep(3000);
     await Click({
       page,
       name: '笔记',
@@ -456,6 +440,17 @@ export class RedTaskService extends BaseTaskService {
 
       if (!response) {
         throw new BadRequestException(`创建浏览器失败`);
+      }
+
+      await sleep(3000);
+
+      const captcha = await page.evaluate(() => {
+        return document.querySelector('#red-captcha');
+      });
+      // FIXME
+      if (captcha) {
+        await sleep(10000);
+        throw new BadRequestException('发送频繁，需要验证');
       }
 
       await this.sendComment({
