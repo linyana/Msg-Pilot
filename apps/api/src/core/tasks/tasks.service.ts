@@ -70,24 +70,26 @@ export class TasksService {
       },
     });
 
-    for (const task of tasks) {
-      const { taskService } = await this.getConnector(Number(task.connection_id));
+    Promise.all(
+      tasks.map(async (task) => {
+        const { taskService } = await this.getConnector(Number(task.connection_id));
 
-      const account = task.task_accounts?.[0]?.account;
-      if (!account) {
-        throw new BadRequestException('无可用账号');
-      }
+        const account = task.task_accounts?.[0]?.account;
+        if (!account) {
+          throw new BadRequestException('无可用账号');
+        }
 
-      await taskService.setMessages({
-        task_id: Number(task.id),
-        account_id: Number(account.id),
-      });
+        await taskService.setMessages({
+          task_id: Number(task.id),
+          account_id: Number(account.id),
+        });
 
-      await taskService.handleTask({
-        task_id: Number(task.id),
-        account_id: Number(account.id),
-      });
-    }
+        await taskService.handleTask({
+          task_id: Number(task.id),
+          account_id: Number(account.id),
+        });
+      }),
+    );
   }
 
   private getTaskService = (type: CONNECTION_TYPE): BaseTaskService => {
