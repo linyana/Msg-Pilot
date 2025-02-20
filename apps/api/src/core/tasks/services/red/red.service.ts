@@ -108,7 +108,8 @@ export class RedTaskService extends BaseTaskService {
         return document.querySelector('#red-captcha');
       });
 
-      if (!captcha) {
+      if (captcha) {
+        await sleep(10000);
         await this.taskUtilService.updateTaskStatus({
           task_id,
           status: 'FAILED',
