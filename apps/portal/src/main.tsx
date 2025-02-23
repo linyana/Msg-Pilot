@@ -6,7 +6,6 @@ import {
   BrowserRouter,
 } from 'react-router-dom'
 import App from './App'
-import '@ant-design/v5-patch-for-react-19'
 import './main.css'
 import {
   store,

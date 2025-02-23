@@ -2,6 +2,8 @@ type IPropsType = {
   width?: string
   height?: string
   margin?: string
+  marginBottom?: string
+  marginTop?: string
   padding?: string
   className?: string
   flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse'
@@ -17,6 +19,8 @@ export const Flex = ({
   width = 'auto',
   height = 'auto',
   margin = 'none',
+  marginBottom = 'none',
+  marginTop = 'none',
   padding = 'none',
   flexWrap = 'nowrap',
   justifyContent = 'normal',
@@ -38,6 +42,8 @@ export const Flex = ({
       flexWrap,
       gap,
       flexDirection,
+      marginTop,
+      marginBottom,
       display: 'flex',
       ...style,
     }}

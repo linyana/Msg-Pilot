@@ -2,6 +2,7 @@ import {
   useHttp,
 } from '@/hooks'
 import {
+  IAccountType,
   ICreateTaskType,
   ITaskType,
 } from '@/types'
@@ -18,7 +19,11 @@ export const useGetTasks = () => useHttp<{
 })
 
 export const useGetTask = (unit: string) => useHttp<{
-  data: ITaskType,
+  data: ITaskType & {
+    task_accounts: {
+      account: IAccountType
+    }[]
+  },
   meta: IMetaType
 }>({
   url: `/tasks/${unit}`,

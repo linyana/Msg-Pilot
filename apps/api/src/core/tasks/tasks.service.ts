@@ -201,6 +201,15 @@ export class TasksService {
         },
         connection_id: true,
         data: true,
+        name: true,
+        description: true,
+        status: true,
+        failed_reason: true,
+        expect_count: true,
+        type: true,
+        destribution_rule: true,
+        sent_count: true,
+        found_count: true,
       },
     });
 
