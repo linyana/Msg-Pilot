@@ -195,23 +195,23 @@ export const TaskDetails = () => {
           }}
           title="账号"
         >
-            <List
-              itemLayout="horizontal"
-              dataSource={accounts}
-              renderItem={(item, index) => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={<Avatar src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${index}`} />}
-                    title={<a href="https://ant.design">{item.name}</a>}
-                    description={item.description || '暂时没有描述'}
-                  />
-                </List.Item>
-              )}
-            />
+          <List
+            itemLayout="horizontal"
+            dataSource={accounts}
+            renderItem={(item, index) => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={<Avatar src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${index}`} />}
+                  title={<a href="https://ant.design">{item.name}</a>}
+                  description={item.description || '暂时没有描述'}
+                />
+              </List.Item>
+            )}
+          />
         </Card>
       </Flex>
       <Card style={{ marginTop: '16px' }}>
-         <div style={{ width: '100%', height: '400px' }}>
+         <div style={{ width: '100%', height: '300px' }}>
           <ReactECharts option={{
             title: {
               text: '发送频率'

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { TASK_STATUS } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -114,5 +114,34 @@ export class TaskUtilService {
         status,
       },
     });
+  }
+
+  async getMessageChartData(params: { task_id: number; account_id: number }) {
+    const { task_id, account_id } = params;
+
+    const earliestMessage = await this.prisma.messages.findFirst({
+      orderBy: {
+        ended_at: 'asc',
+      },
+      where: {
+        task_id,
+      },
+    });
+
+    const latestMessage = await this.prisma.messages.findFirst({
+      orderBy: {
+        ended_at: 'desc',
+      },
+      where: {
+        task_id,
+      },
+    });
+
+    if (!earliestMessage || !latestMessage) {
+      throw new BadRequestException('找不到数据');
+    }
+
+    const minDate = earliestMessage.ended_at;
+    const maxDate = latestMessage.ended_at;
   }
 }

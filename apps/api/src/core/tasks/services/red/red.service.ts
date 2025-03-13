@@ -465,6 +465,7 @@ export class RedTaskService extends BaseTaskService {
         data: {
           status: 'COMPLETED',
           failed_reason: '',
+          sent_date: new Date(),
         },
       });
 
