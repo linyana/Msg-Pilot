@@ -391,7 +391,7 @@ export class RedTaskService extends BaseTaskService {
     });
 
     await page.keyboard.type(content);
-    await sleep(5 * 1000);
+    await sleep(20 * 1000);
     await Click({
       page,
       name: '提交按钮',
